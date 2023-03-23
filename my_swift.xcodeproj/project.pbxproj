@@ -16,6 +16,7 @@
 		6061A362299DD9DB0089B271 /* NavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6061A361299DD9DB0089B271 /* NavigationController.swift */; };
 		6061A365299DE00C0089B271 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6061A364299DE00C0089B271 /* HomeViewController.swift */; };
 		6061A367299DE01D0089B271 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6061A366299DE01D0089B271 /* SettingViewController.swift */; };
+		60D70E0B29CC7B9B00E8793B /* SwipeInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D70E0A29CC7B9B00E8793B /* SwipeInteractionController.swift */; };
 		60F3A2DB2917EC7900DF9CE2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */; };
 		60F3A2DD2917EC7900DF9CE2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DC2917EC7900DF9CE2 /* SceneDelegate.swift */; };
 		60F3A2E42917EC7A00DF9CE2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60F3A2E32917EC7A00DF9CE2 /* Assets.xcassets */; };
@@ -53,6 +54,7 @@
 		6061A361299DD9DB0089B271 /* NavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationController.swift; sourceTree = "<group>"; };
 		6061A364299DE00C0089B271 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		6061A366299DE01D0089B271 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		60D70E0A29CC7B9B00E8793B /* SwipeInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeInteractionController.swift; sourceTree = "<group>"; };
 		60F3A2D72917EC7900DF9CE2 /* my_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = my_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60F3A2DC2917EC7900DF9CE2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -103,7 +105,7 @@
 				7704CB2629CC642F00707B57 /* Main.storyboard */,
 				7704CB1429CC642F00707B57 /* View controllers */,
 				7704CB1829CC642F00707B57 /* Animation controllers */,
-				7704CB1329CC642F00707B57 /* Interaction controllers */,
+				60D70E0929CC7B1A00E8793B /* Interaction controllers */,
 				7704CB1B29CC642F00707B57 /* Helpers */,
 				7704CB2229CC642F00707B57 /* Data */,
 				7704CB1129CC642F00707B57 /* Model */,
@@ -139,6 +141,14 @@
 				6061A366299DE01D0089B271 /* SettingViewController.swift */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		60D70E0929CC7B1A00E8793B /* Interaction controllers */ = {
+			isa = PBXGroup;
+			children = (
+				60D70E0A29CC7B9B00E8793B /* SwipeInteractionController.swift */,
+			);
+			path = "Interaction controllers";
 			sourceTree = "<group>";
 		};
 		60F3A2CE2917EC7900DF9CE2 = {
@@ -178,13 +188,6 @@
 				7704CB1229CC642F00707B57 /* PetCard.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		7704CB1329CC642F00707B57 /* Interaction controllers */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "Interaction controllers";
 			sourceTree = "<group>";
 		};
 		7704CB1429CC642F00707B57 /* View controllers */ = {
@@ -396,6 +399,7 @@
 				602A5B6D299F6BC0004BFA4A /* Session.swift in Sources */,
 				7704CB3B29CC675700707B57 /* ViewController.swift in Sources */,
 				7704CB2A29CC642F00707B57 /* RevealViewController.swift in Sources */,
+				60D70E0B29CC7B9B00E8793B /* SwipeInteractionController.swift in Sources */,
 				7704CB2C29CC642F00707B57 /* PageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
