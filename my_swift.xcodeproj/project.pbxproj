@@ -18,17 +18,26 @@
 		6061A367299DE01D0089B271 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6061A366299DE01D0089B271 /* SettingViewController.swift */; };
 		60F3A2DB2917EC7900DF9CE2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */; };
 		60F3A2DD2917EC7900DF9CE2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DC2917EC7900DF9CE2 /* SceneDelegate.swift */; };
-		60F3A2DF2917EC7900DF9CE2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DE2917EC7900DF9CE2 /* ViewController.swift */; };
-		60F3A2E22917EC7900DF9CE2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60F3A2E02917EC7900DF9CE2 /* Main.storyboard */; };
 		60F3A2E42917EC7A00DF9CE2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 60F3A2E32917EC7A00DF9CE2 /* Assets.xcassets */; };
-		60F3A2E72917EC7A00DF9CE2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 60F3A2E52917EC7A00DF9CE2 /* LaunchScreen.storyboard */; };
+		7704CB2929CC642F00707B57 /* PetCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1229CC642F00707B57 /* PetCard.swift */; };
+		7704CB2A29CC642F00707B57 /* RevealViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1529CC642F00707B57 /* RevealViewController.swift */; };
+		7704CB2B29CC642F00707B57 /* CardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1629CC642F00707B57 /* CardViewController.swift */; };
+		7704CB2C29CC642F00707B57 /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1729CC642F00707B57 /* PageViewController.swift */; };
+		7704CB2D29CC642F00707B57 /* FlipPresentAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1929CC642F00707B57 /* FlipPresentAnimationController.swift */; };
+		7704CB2E29CC642F00707B57 /* FlipDismissAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1A29CC642F00707B57 /* FlipDismissAnimationController.swift */; };
+		7704CB2F29CC642F00707B57 /* StoryboardSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1C29CC642F00707B57 /* StoryboardSupport.swift */; };
+		7704CB3029CC642F00707B57 /* AnimationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB1D29CC642F00707B57 /* AnimationHelper.swift */; };
+		7704CB3429CC642F00707B57 /* PetCardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB2329CC642F00707B57 /* PetCardStore.swift */; };
+		7704CB3529CC642F00707B57 /* Pets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7704CB2429CC642F00707B57 /* Pets.plist */; };
+		7704CB3629CC642F00707B57 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7704CB2629CC642F00707B57 /* Main.storyboard */; };
+		7704CB3B29CC675700707B57 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB3A29CC675700707B57 /* ViewController.swift */; };
+		7704CB3D29CC677A00707B57 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7704CB3C29CC677A00707B57 /* Launch Screen.storyboard */; };
 		9BDDB201CAF1E80D02C81F70 /* Pods_my_swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D66E3E1AE7B5D36DE4F38F95 /* Pods_my_swift.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		509F10843E23559D97FB2C20 /* Pods-my_swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-my_swift.release.xcconfig"; path = "Target Support Files/Pods-my_swift/Pods-my_swift.release.xcconfig"; sourceTree = "<group>"; };
 		602A5B1F299F6624004BFA4A /* EnumTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumTest.swift; sourceTree = "<group>"; };
-		602A5B41299F6A77004BFA4A /* my_swift copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "my_swift copy-Info.plist"; path = "/Users/sclcoder/Desktop/swift/my_swift/my_swift copy-Info.plist"; sourceTree = "<absolute>"; };
 		602A5B48299F6AD3004BFA4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		602A5B4A299F6AD3004BFA4A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		602A5B4C299F6AD3004BFA4A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -36,7 +45,6 @@
 		602A5B51299F6AD5004BFA4A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		602A5B54299F6AD5004BFA4A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		602A5B56299F6AD5004BFA4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		602A5B68299F6B04004BFA4A /* my_alamofire copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "my_alamofire copy-Info.plist"; path = "/Users/sclcoder/Desktop/swift/my_swift/my_alamofire copy-Info.plist"; sourceTree = "<absolute>"; };
 		602A5B69299F6BC0004BFA4A /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		602A5B6A299F6BC0004BFA4A /* NetworkReachabilityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachabilityManager.swift; sourceTree = "<group>"; };
 		602A5B6B299F6BC0004BFA4A /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamofire.swift; sourceTree = "<group>"; };
@@ -48,12 +56,22 @@
 		60F3A2D72917EC7900DF9CE2 /* my_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = my_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		60F3A2DC2917EC7900DF9CE2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		60F3A2DE2917EC7900DF9CE2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		60F3A2E12917EC7900DF9CE2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		60F3A2E32917EC7A00DF9CE2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		60F3A2E62917EC7A00DF9CE2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		60F3A2E82917EC7A00DF9CE2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		60F3A30D291A84A400DF9CE2 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		7704CB1229CC642F00707B57 /* PetCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PetCard.swift; sourceTree = "<group>"; };
+		7704CB1529CC642F00707B57 /* RevealViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RevealViewController.swift; sourceTree = "<group>"; };
+		7704CB1629CC642F00707B57 /* CardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardViewController.swift; sourceTree = "<group>"; };
+		7704CB1729CC642F00707B57 /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
+		7704CB1929CC642F00707B57 /* FlipPresentAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlipPresentAnimationController.swift; sourceTree = "<group>"; };
+		7704CB1A29CC642F00707B57 /* FlipDismissAnimationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlipDismissAnimationController.swift; sourceTree = "<group>"; };
+		7704CB1C29CC642F00707B57 /* StoryboardSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardSupport.swift; sourceTree = "<group>"; };
+		7704CB1D29CC642F00707B57 /* AnimationHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimationHelper.swift; sourceTree = "<group>"; };
+		7704CB2329CC642F00707B57 /* PetCardStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PetCardStore.swift; sourceTree = "<group>"; };
+		7704CB2429CC642F00707B57 /* Pets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Pets.plist; sourceTree = "<group>"; };
+		7704CB2729CC642F00707B57 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		7704CB3A29CC675700707B57 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		7704CB3C29CC677A00707B57 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		BA0A04D162C7B6BFD70D6982 /* Pods-my_swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-my_swift.debug.xcconfig"; path = "Target Support Files/Pods-my_swift/Pods-my_swift.debug.xcconfig"; sourceTree = "<group>"; };
 		D66E3E1AE7B5D36DE4F38F95 /* Pods_my_swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_my_swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -79,11 +97,18 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		602A5B1E299F553E004BFA4A /* Network */ = {
+		602A5B1E299F553E004BFA4A /* GussePet */ = {
 			isa = PBXGroup;
 			children = (
+				7704CB2629CC642F00707B57 /* Main.storyboard */,
+				7704CB1429CC642F00707B57 /* View controllers */,
+				7704CB1829CC642F00707B57 /* Animation controllers */,
+				7704CB1329CC642F00707B57 /* Interaction controllers */,
+				7704CB1B29CC642F00707B57 /* Helpers */,
+				7704CB2229CC642F00707B57 /* Data */,
+				7704CB1129CC642F00707B57 /* Model */,
 			);
-			path = Network;
+			path = GussePet;
 			sourceTree = "<group>";
 		};
 		602A5B47299F6AD3004BFA4A /* my_alamofire */ = {
@@ -119,13 +144,13 @@
 		60F3A2CE2917EC7900DF9CE2 = {
 			isa = PBXGroup;
 			children = (
-				60F3A2D92917EC7900DF9CE2 /* my_swift */,
+				602A5B1E299F553E004BFA4A /* GussePet */,
+				60F3A2D92917EC7900DF9CE2 /* Swift_Play */,
+				7704CB3929CC65EB00707B57 /* Playground */,
 				602A5B47299F6AD3004BFA4A /* my_alamofire */,
 				60F3A2D82917EC7900DF9CE2 /* Products */,
 				1F33632E168A7C3D63677304 /* Pods */,
 				E68D646AC13FDAE8B76BDD2A /* Frameworks */,
-				602A5B41299F6A77004BFA4A /* my_swift copy-Info.plist */,
-				602A5B68299F6B04004BFA4A /* my_alamofire copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -137,21 +162,94 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		60F3A2D92917EC7900DF9CE2 /* my_swift */ = {
+		60F3A2D92917EC7900DF9CE2 /* Swift_Play */ = {
 			isa = PBXGroup;
 			children = (
-				602A5B1E299F553E004BFA4A /* Network */,
 				6061A363299DDFF00089B271 /* ViewControllers */,
+				7704CB2529CC642F00707B57 /* UI */,
+				7704CB3829CC653D00707B57 /* Bundle Files */,
+			);
+			path = Swift_Play;
+			sourceTree = "<group>";
+		};
+		7704CB1129CC642F00707B57 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				7704CB1229CC642F00707B57 /* PetCard.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		7704CB1329CC642F00707B57 /* Interaction controllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Interaction controllers";
+			sourceTree = "<group>";
+		};
+		7704CB1429CC642F00707B57 /* View controllers */ = {
+			isa = PBXGroup;
+			children = (
+				7704CB1529CC642F00707B57 /* RevealViewController.swift */,
+				7704CB1629CC642F00707B57 /* CardViewController.swift */,
+				7704CB1729CC642F00707B57 /* PageViewController.swift */,
+			);
+			path = "View controllers";
+			sourceTree = "<group>";
+		};
+		7704CB1829CC642F00707B57 /* Animation controllers */ = {
+			isa = PBXGroup;
+			children = (
+				7704CB1929CC642F00707B57 /* FlipPresentAnimationController.swift */,
+				7704CB1A29CC642F00707B57 /* FlipDismissAnimationController.swift */,
+			);
+			path = "Animation controllers";
+			sourceTree = "<group>";
+		};
+		7704CB1B29CC642F00707B57 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				7704CB1C29CC642F00707B57 /* StoryboardSupport.swift */,
+				7704CB1D29CC642F00707B57 /* AnimationHelper.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		7704CB2229CC642F00707B57 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				7704CB2329CC642F00707B57 /* PetCardStore.swift */,
+				7704CB2429CC642F00707B57 /* Pets.plist */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		7704CB2529CC642F00707B57 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				7704CB3A29CC675700707B57 /* ViewController.swift */,
+				7704CB3C29CC677A00707B57 /* Launch Screen.storyboard */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		7704CB3829CC653D00707B57 /* Bundle Files */ = {
+			isa = PBXGroup;
+			children = (
 				60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */,
 				60F3A2DC2917EC7900DF9CE2 /* SceneDelegate.swift */,
-				60F3A2DE2917EC7900DF9CE2 /* ViewController.swift */,
-				60F3A2E02917EC7900DF9CE2 /* Main.storyboard */,
 				60F3A2E32917EC7A00DF9CE2 /* Assets.xcassets */,
-				60F3A2E52917EC7A00DF9CE2 /* LaunchScreen.storyboard */,
 				60F3A2E82917EC7A00DF9CE2 /* Info.plist */,
+			);
+			path = "Bundle Files";
+			sourceTree = "<group>";
+		};
+		7704CB3929CC65EB00707B57 /* Playground */ = {
+			isa = PBXGroup;
+			children = (
 				60F3A30D291A84A400DF9CE2 /* MyPlayground.playground */,
 			);
-			path = my_swift;
+			path = Playground;
 			sourceTree = "<group>";
 		};
 		E68D646AC13FDAE8B76BDD2A /* Frameworks */ = {
@@ -222,9 +320,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				60F3A2E72917EC7A00DF9CE2 /* LaunchScreen.storyboard in Resources */,
+				7704CB3629CC642F00707B57 /* Main.storyboard in Resources */,
 				60F3A2E42917EC7A00DF9CE2 /* Assets.xcassets in Resources */,
-				60F3A2E22917EC7900DF9CE2 /* Main.storyboard in Resources */,
+				7704CB3D29CC677A00707B57 /* Launch Screen.storyboard in Resources */,
+				7704CB3529CC642F00707B57 /* Pets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,18 +376,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7704CB2E29CC642F00707B57 /* FlipDismissAnimationController.swift in Sources */,
 				602A5B6E299F6BC0004BFA4A /* NetworkReachabilityManager.swift in Sources */,
-				60F3A2DF2917EC7900DF9CE2 /* ViewController.swift in Sources */,
 				6061A367299DE01D0089B271 /* SettingViewController.swift in Sources */,
 				602A5B20299F6624004BFA4A /* EnumTest.swift in Sources */,
 				6061A35E299DD98A0089B271 /* TabbarController.swift in Sources */,
 				6061A362299DD9DB0089B271 /* NavigationController.swift in Sources */,
 				6061A365299DE00C0089B271 /* HomeViewController.swift in Sources */,
 				60F3A2DB2917EC7900DF9CE2 /* AppDelegate.swift in Sources */,
+				7704CB2B29CC642F00707B57 /* CardViewController.swift in Sources */,
 				602A5B70299F6BC0004BFA4A /* HTTPMethod.swift in Sources */,
+				7704CB2F29CC642F00707B57 /* StoryboardSupport.swift in Sources */,
+				7704CB3029CC642F00707B57 /* AnimationHelper.swift in Sources */,
+				7704CB2D29CC642F00707B57 /* FlipPresentAnimationController.swift in Sources */,
 				602A5B6F299F6BC0004BFA4A /* Alamofire.swift in Sources */,
+				7704CB2929CC642F00707B57 /* PetCard.swift in Sources */,
 				60F3A2DD2917EC7900DF9CE2 /* SceneDelegate.swift in Sources */,
+				7704CB3429CC642F00707B57 /* PetCardStore.swift in Sources */,
 				602A5B6D299F6BC0004BFA4A /* Session.swift in Sources */,
+				7704CB3B29CC675700707B57 /* ViewController.swift in Sources */,
+				7704CB2A29CC642F00707B57 /* RevealViewController.swift in Sources */,
+				7704CB2C29CC642F00707B57 /* PageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -311,20 +419,12 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
-		60F3A2E02917EC7900DF9CE2 /* Main.storyboard */ = {
+		7704CB2629CC642F00707B57 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				60F3A2E12917EC7900DF9CE2 /* Base */,
+				7704CB2729CC642F00707B57 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		60F3A2E52917EC7A00DF9CE2 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				60F3A2E62917EC7A00DF9CE2 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -454,9 +554,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RVP44R23N8;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = my_swift/Info.plist;
+				INFOPLIST_FILE = "Swift_Play/Bundle Files/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = PlaySwift;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -484,9 +585,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = RVP44R23N8;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = my_swift/Info.plist;
+				INFOPLIST_FILE = "Swift_Play/Bundle Files/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = PlaySwift;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen";
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
