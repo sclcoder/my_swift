@@ -86,10 +86,10 @@ class FlipDismissAnimationController: NSObject , UIViewControllerAnimatedTransit
       completion: { _ in
          fromVC.view.isHidden = false
          snapshot.removeFromSuperview()
-         if transitionContext.transitionWasCancelled {
-           toVC.view.removeFromSuperview()
-         }
-
+          /// .Custom 下不要操作toVC， 不然会异常。
+//         if transitionContext.transitionWasCancelled {
+//           toVC.view.removeFromSuperview()
+//         }
          transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     })
     
