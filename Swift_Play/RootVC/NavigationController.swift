@@ -7,14 +7,25 @@
 
 import UIKit
 
-class NavigationController: UINavigationController {
+class NavigationController: UINavigationController,UINavigationControllerDelegate {
 
+    var inInteraction = false
+    var swipeGesture: UIPanGestureRecognizer!
+    let interactionController: UIPercentDrivenInteractiveTransition = UIPercentDrivenInteractiveTransition()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.setupAppearance()
+        
+        self.delegate = self
+        
+        swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(onPan(gesture:)))
+//        swipeGesture.edges = .left
+        
+        self.view.addGestureRecognizer(swipeGesture)
     }
-    
+
     
     private func setupAppearance() -> Void {
         let appearance: UINavigationBarAppearance = UINavigationBarAppearance()
@@ -40,4 +51,60 @@ class NavigationController: UINavigationController {
         }
         super.pushViewController(viewController, animated: animated)
     }
+}
+
+
+extension NavigationController{
+    func navigationController(_ navigationController: UINavigationController,
+                              animationControllerFor
+                              operation: UINavigationController.Operation,
+                              from fromVC: UIViewController,
+                              to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        
+        return SlideAnimationController(operation: operation)
+    }
+    
+    
+    func navigationController(_ navigationController: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        if(inInteraction){
+            return interactionController
+        } else {
+            return nil
+        }
+    }
+    
+    
+    @objc func onPan(gesture:UIScreenEdgePanGestureRecognizer) -> Void{
+        
+        let targetView = gesture.view!
+        
+        let translation:CGPoint = gesture.translation(in: targetView)
+        
+        var progress = translation.x / targetView.bounds.size.width
+        
+        progress = fmin(fmax(progress, 0.0), 1.0)
+        
+        switch gesture.state {
+        case .began:
+            inInteraction = true
+            self.popViewController(animated: true)
+        case .changed:
+//            inInteraction = true
+            interactionController.update(progress)
+        case .cancelled:
+            inInteraction = false
+            interactionController.cancel()
+            
+        case .ended:
+            inInteraction = false
+            if (progress > 0.4){
+                interactionController.finish()
+            } else {
+                interactionController.cancel()
+            }
+        default:
+            break
+        }
+    }
+
 }
