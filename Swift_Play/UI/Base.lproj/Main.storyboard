@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13189.4" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AGd-FU-LZL">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="oqA-yq-4op">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13165.3"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
-    <customFonts key="customFonts">
-        <array key="AvenirNext.ttc">
-            <string>AvenirNext-Bold</string>
-            <string>AvenirNext-Italic</string>
-            <string>AvenirNext-MediumItalic</string>
-        </array>
-    </customFonts>
     <scenes>
+        <!--Tabbar Controller-->
+        <scene sceneID="jEr-XI-PK0">
+            <objects>
+                <viewController id="oqA-yq-4op" customClass="TabbarController" customModule="my_swift" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Te9-F1-cHZ"/>
+                        <viewControllerLayoutGuide type="bottom" id="dP4-ij-htb"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="mPT-6M-nZN">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="OQu-bM-4BR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="217" y="579"/>
+        </scene>
         <!--Page View Controller-->
         <scene sceneID="3Mu-SM-wjz">
             <objects>
-                <pageViewController storyboardIdentifier="PageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="AGd-FU-LZL" customClass="PageViewController" customModule="Guess_the_Pet" customModuleProvider="target" sceneMemberID="viewController"/>
+                <pageViewController storyboardIdentifier="PageViewController" autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="AGd-FU-LZL" customClass="PageViewController" customModule="my_swift" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d4w-T5-gZb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="547" y="1271"/>
+            <point key="canvasLocation" x="217" y="1303"/>
         </scene>
         <!--Card View Controller-->
         <scene sceneID="414-sc-bQv">
             <objects>
-                <viewController storyboardIdentifier="CardViewController" id="YVg-2m-sqi" customClass="CardViewController" customModule="Guess_the_Pet" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CardViewController" id="YVg-2m-sqi" customClass="CardViewController" customModule="my_swift" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="zws-l1-jdr"/>
                         <viewControllerLayoutGuide type="bottom" id="0gx-9C-ZBh"/>
@@ -41,7 +49,7 @@
                                 <rect key="frame" x="62.5" y="167" width="250" height="333.5"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bT6-lC-jco">
-                                        <rect key="frame" x="102.5" y="154.5" width="45" height="25"/>
+                                        <rect key="frame" x="102.5" y="154" width="45" height="25"/>
                                         <fontDescription key="fontDescription" name="AvenirNext-Italic" family="Avenir Next" pointSize="18"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <nil key="highlightedColor"/>
@@ -105,22 +113,22 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1352" y="1271"/>
+            <point key="canvasLocation" x="1127" y="1303"/>
         </scene>
         <!--Reveal View Controller-->
         <scene sceneID="qP3-oN-gvn">
             <objects>
-                <viewController storyboardIdentifier="RevealViewController" id="uNX-72-ehJ" customClass="RevealViewController" customModule="Guess_the_Pet" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RevealViewController" id="uNX-72-ehJ" customClass="RevealViewController" customModule="my_swift" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bNc-W5-rSu"/>
                         <viewControllerLayoutGuide type="bottom" id="bZ4-Jc-mLk"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="e2C-ax-EbM">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xsQ-2z-rrg">
-                                <rect key="frame" x="147.5" y="626" width="80" height="33"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xsQ-2z-rrg">
+                                <rect key="frame" x="147.5" y="606" width="80" height="33"/>
                                 <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="15"/>
                                 <state key="normal" title="Start Over!">
                                     <color key="titleColor" red="0.0" green="0.50196081400000003" blue="0.25098040700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -131,7 +139,7 @@
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Umc-3p-hh4">
-                                <rect key="frame" x="0.0" y="83.5" width="375" height="500"/>
+                                <rect key="frame" x="5.5" y="81" width="364" height="485"/>
                                 <constraints>
                                     <constraint firstAttribute="height" secondItem="Umc-3p-hh4" secondAttribute="width" multiplier="3:4" id="hou-KN-tR6"/>
                                     <constraint firstAttribute="width" secondItem="Umc-3p-hh4" secondAttribute="height" multiplier="3:4" id="yDV-a4-pIt"/>
@@ -149,7 +157,7 @@
                                 </variation>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ucA-HX-5kc">
-                                <rect key="frame" x="166" y="51.5" width="43" height="24"/>
+                                <rect key="frame" x="166" y="49" width="43" height="24"/>
                                 <fontDescription key="fontDescription" name="AvenirNext-MediumItalic" family="Avenir Next" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.50196081400000003" blue="0.25098040700000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -185,7 +193,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GIv-r4-zpG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2110" y="1271"/>
+            <point key="canvasLocation" x="1993" y="1303"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

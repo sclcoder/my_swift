@@ -49,6 +49,8 @@ class TabbarController: UITabBarController {
         self.tabBar.standardAppearance = appearance
         
         self.tabBar.isTranslucent = true
+        
+        self.tabBar.backgroundColor = .systemYellow
 
     }
 
@@ -71,10 +73,14 @@ class TabbarController: UITabBarController {
         
         configVC(homeVC, "Home", "tab_home", "tab_home")
         
+       
+        let pageVC = PageViewController()
+        configVC(pageVC, "Guess", "tab_group", "tab_group")
     
         let settingVC = SettingViewController()
        
         configVC(settingVC, "Setting", "tab_settings", "tab_settings")
+       
     }
     
     

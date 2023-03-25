@@ -14,13 +14,13 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = .systemBackground
+        self.view.backgroundColor = .white
         
         self.title = "Home"
         
-        print(Event.Name.login)
+//        print(Event.Name.login)
         
-        request1()
+//        request1()
     }
 
 }

@@ -31,7 +31,6 @@
 		7704CB3429CC642F00707B57 /* PetCardStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB2329CC642F00707B57 /* PetCardStore.swift */; };
 		7704CB3529CC642F00707B57 /* Pets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7704CB2429CC642F00707B57 /* Pets.plist */; };
 		7704CB3629CC642F00707B57 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7704CB2629CC642F00707B57 /* Main.storyboard */; };
-		7704CB3B29CC675700707B57 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7704CB3A29CC675700707B57 /* ViewController.swift */; };
 		7704CB3D29CC677A00707B57 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7704CB3C29CC677A00707B57 /* Launch Screen.storyboard */; };
 		9BDDB201CAF1E80D02C81F70 /* Pods_my_swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D66E3E1AE7B5D36DE4F38F95 /* Pods_my_swift.framework */; };
 /* End PBXBuildFile section */
@@ -72,7 +71,6 @@
 		7704CB2329CC642F00707B57 /* PetCardStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PetCardStore.swift; sourceTree = "<group>"; };
 		7704CB2429CC642F00707B57 /* Pets.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Pets.plist; sourceTree = "<group>"; };
 		7704CB2729CC642F00707B57 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		7704CB3A29CC675700707B57 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		7704CB3C29CC677A00707B57 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		BA0A04D162C7B6BFD70D6982 /* Pods-my_swift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-my_swift.debug.xcconfig"; path = "Target Support Files/Pods-my_swift/Pods-my_swift.debug.xcconfig"; sourceTree = "<group>"; };
 		D66E3E1AE7B5D36DE4F38F95 /* Pods_my_swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_my_swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,7 +100,6 @@
 		602A5B1E299F553E004BFA4A /* GussePet */ = {
 			isa = PBXGroup;
 			children = (
-				7704CB2629CC642F00707B57 /* Main.storyboard */,
 				7704CB1429CC642F00707B57 /* View controllers */,
 				7704CB1829CC642F00707B57 /* Animation controllers */,
 				60D70E0929CC7B1A00E8793B /* Interaction controllers */,
@@ -131,16 +128,47 @@
 			path = my_alamofire;
 			sourceTree = "<group>";
 		};
-		6061A363299DDFF00089B271 /* ViewControllers */ = {
+		6061A363299DDFF00089B271 /* Module */ = {
+			isa = PBXGroup;
+			children = (
+				60A606A329CF2851004D72F2 /* Setting */,
+				60A606A229CF2847004D72F2 /* Home */,
+				602A5B1E299F553E004BFA4A /* GussePet */,
+			);
+			path = Module;
+			sourceTree = "<group>";
+		};
+		60A6069F29CF27DD004D72F2 /* RootVC */ = {
 			isa = PBXGroup;
 			children = (
 				6061A35D299DD98A0089B271 /* TabbarController.swift */,
 				6061A361299DD9DB0089B271 /* NavigationController.swift */,
-				6061A364299DE00C0089B271 /* HomeViewController.swift */,
+			);
+			path = RootVC;
+			sourceTree = "<group>";
+		};
+		60A606A129CF281D004D72F2 /* Others */ = {
+			isa = PBXGroup;
+			children = (
 				602A5B1F299F6624004BFA4A /* EnumTest.swift */,
+			);
+			path = Others;
+			sourceTree = "<group>";
+		};
+		60A606A229CF2847004D72F2 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				6061A364299DE00C0089B271 /* HomeViewController.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		60A606A329CF2851004D72F2 /* Setting */ = {
+			isa = PBXGroup;
+			children = (
 				6061A366299DE01D0089B271 /* SettingViewController.swift */,
 			);
-			path = ViewControllers;
+			path = Setting;
 			sourceTree = "<group>";
 		};
 		60D70E0929CC7B1A00E8793B /* Interaction controllers */ = {
@@ -154,7 +182,6 @@
 		60F3A2CE2917EC7900DF9CE2 = {
 			isa = PBXGroup;
 			children = (
-				602A5B1E299F553E004BFA4A /* GussePet */,
 				60F3A2D92917EC7900DF9CE2 /* Swift_Play */,
 				7704CB3929CC65EB00707B57 /* Playground */,
 				602A5B47299F6AD3004BFA4A /* my_alamofire */,
@@ -175,7 +202,9 @@
 		60F3A2D92917EC7900DF9CE2 /* Swift_Play */ = {
 			isa = PBXGroup;
 			children = (
-				6061A363299DDFF00089B271 /* ViewControllers */,
+				60A606A129CF281D004D72F2 /* Others */,
+				60A6069F29CF27DD004D72F2 /* RootVC */,
+				6061A363299DDFF00089B271 /* Module */,
 				7704CB2529CC642F00707B57 /* UI */,
 				7704CB3829CC653D00707B57 /* Bundle Files */,
 			);
@@ -230,7 +259,7 @@
 		7704CB2529CC642F00707B57 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				7704CB3A29CC675700707B57 /* ViewController.swift */,
+				7704CB2629CC642F00707B57 /* Main.storyboard */,
 				7704CB3C29CC677A00707B57 /* Launch Screen.storyboard */,
 			);
 			path = UI;
@@ -397,7 +426,6 @@
 				60F3A2DD2917EC7900DF9CE2 /* SceneDelegate.swift in Sources */,
 				7704CB3429CC642F00707B57 /* PetCardStore.swift in Sources */,
 				602A5B6D299F6BC0004BFA4A /* Session.swift in Sources */,
-				7704CB3B29CC675700707B57 /* ViewController.swift in Sources */,
 				7704CB2A29CC642F00707B57 /* RevealViewController.swift in Sources */,
 				60D70E0B29CC7B9B00E8793B /* SwipeInteractionController.swift in Sources */,
 				7704CB2C29CC642F00707B57 /* PageViewController.swift in Sources */,
