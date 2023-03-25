@@ -8,7 +8,8 @@ target 'my_swift' do
   # Pods for my_swift
   
 
-  pod 'Alamofire', :path => './Alamofire'
   pod 'Moya', '~> 15.0'
+  pod 'SnapKit'
+  pod 'Alamofire', :path => './Alamofire'
 
 end
