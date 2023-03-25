@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SlideAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
+class FlipAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     
     let operation :UINavigationController.Operation
     init(operation: UINavigationController.Operation = .none) {
@@ -15,7 +15,7 @@ class SlideAnimationController: NSObject, UIViewControllerAnimatedTransitioning 
     }
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 2
+        return 0.6
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -28,8 +28,7 @@ class SlideAnimationController: NSObject, UIViewControllerAnimatedTransitioning 
         
         let containerView = transitionContext.containerView
         
-        /// add toView
-        containerView.addSubview(toView)
+ 
         
         let tanslation = containerView.frame.size.width
         
@@ -42,12 +41,15 @@ class SlideAnimationController: NSObject, UIViewControllerAnimatedTransitioning 
         
         switch operation {
         case .push:
-            toTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, tanslation * 0.4, 0)
-            fromTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, -tanslation * 0.8, 0)
-            
+            toTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, tanslation, 0)
+            fromTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, -tanslation * 0.5, 0)
+            /// add toView
+            containerView.insertSubview(toView, aboveSubview: fromView)
         case .pop:
-            toTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, -tanslation * 0.8, 0)
-            fromTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, tanslation * 0.4, 0)
+            toTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, -tanslation * 0.5, 0)
+            fromTransform = CGAffineTransformTranslate(CGAffineTransformIdentity, tanslation, 0)
+            /// add toView
+            containerView.insertSubview(toView, belowSubview: fromView)
         default:
             break
         }

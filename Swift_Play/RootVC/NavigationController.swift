@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NavigationController: UINavigationController,UINavigationControllerDelegate {
+class NavigationController: UINavigationController {
 
     var inInteraction = false
     var swipeGesture: UIPanGestureRecognizer!
@@ -54,14 +54,15 @@ class NavigationController: UINavigationController,UINavigationControllerDelegat
 }
 
 
-extension NavigationController{
+extension NavigationController: UINavigationControllerDelegate{
+    
     func navigationController(_ navigationController: UINavigationController,
                               animationControllerFor
                               operation: UINavigationController.Operation,
                               from fromVC: UIViewController,
                               to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        return SlideAnimationController(operation: operation)
+        return FlipAnimationController(operation: operation)
     }
     
     
@@ -72,8 +73,9 @@ extension NavigationController{
             return nil
         }
     }
-    
-    
+}
+
+extension NavigationController{
     @objc func onPan(gesture:UIScreenEdgePanGestureRecognizer) -> Void{
         
         let targetView = gesture.view!
@@ -106,5 +108,4 @@ extension NavigationController{
             break
         }
     }
-
 }

@@ -19,7 +19,7 @@
 		60A606AB29CF2CEA004D72F2 /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A606A929CF2CEA004D72F2 /* ChatTableViewCell.swift */; };
 		60A606AC29CF2CEA004D72F2 /* ChatTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 60A606AA29CF2CEA004D72F2 /* ChatTableViewCell.xib */; };
 		60A606AE29CF365F004D72F2 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A606AD29CF365F004D72F2 /* ChatViewController.swift */; };
-		60A606B129CF38BF004D72F2 /* SlideAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A606B029CF38BF004D72F2 /* SlideAnimationController.swift */; };
+		60A606B129CF38BF004D72F2 /* FlipAnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60A606B029CF38BF004D72F2 /* FlipAnimationController.swift */; };
 		60D70E0B29CC7B9B00E8793B /* SwipeInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60D70E0A29CC7B9B00E8793B /* SwipeInteractionController.swift */; };
 		60F3A2DB2917EC7900DF9CE2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */; };
 		60F3A2DD2917EC7900DF9CE2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F3A2DC2917EC7900DF9CE2 /* SceneDelegate.swift */; };
@@ -62,7 +62,7 @@
 		60A606A929CF2CEA004D72F2 /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		60A606AA29CF2CEA004D72F2 /* ChatTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChatTableViewCell.xib; sourceTree = "<group>"; };
 		60A606AD29CF365F004D72F2 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
-		60A606B029CF38BF004D72F2 /* SlideAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlideAnimationController.swift; sourceTree = "<group>"; };
+		60A606B029CF38BF004D72F2 /* FlipAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlipAnimationController.swift; sourceTree = "<group>"; };
 		60D70E0A29CC7B9B00E8793B /* SwipeInteractionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeInteractionController.swift; sourceTree = "<group>"; };
 		60F3A2D72917EC7900DF9CE2 /* my_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = my_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		60F3A2DA2917EC7900DF9CE2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -212,7 +212,7 @@
 		60A606AF29CF38A7004D72F2 /* AnimationController */ = {
 			isa = PBXGroup;
 			children = (
-				60A606B029CF38BF004D72F2 /* SlideAnimationController.swift */,
+				60A606B029CF38BF004D72F2 /* FlipAnimationController.swift */,
 			);
 			path = AnimationController;
 			sourceTree = "<group>";
@@ -451,7 +451,7 @@
 				602A5B6E299F6BC0004BFA4A /* NetworkReachabilityManager.swift in Sources */,
 				6061A367299DE01D0089B271 /* SettingViewController.swift in Sources */,
 				602A5B20299F6624004BFA4A /* EnumTest.swift in Sources */,
-				60A606B129CF38BF004D72F2 /* SlideAnimationController.swift in Sources */,
+				60A606B129CF38BF004D72F2 /* FlipAnimationController.swift in Sources */,
 				6061A35E299DD98A0089B271 /* TabbarController.swift in Sources */,
 				60A606AB29CF2CEA004D72F2 /* ChatTableViewCell.swift in Sources */,
 				6061A362299DD9DB0089B271 /* NavigationController.swift in Sources */,
