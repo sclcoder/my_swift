@@ -25,30 +25,30 @@ class TabbarController: UITabBarController {
         
         appearance.backgroundColor = .yellow
         
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
-            NSAttributedString.Key.foregroundColor : UIColor.systemGray
-        ]
-        
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
-            NSAttributedString.Key.foregroundColor : UIColor.systemBlue
-        ]
-        
-        
-        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [
-            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
-            NSAttributedString.Key.foregroundColor : UIColor.systemGray
-        ]
-        
-        appearance.inlineLayoutAppearance.selected.titleTextAttributes = [
-            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
-            NSAttributedString.Key.foregroundColor : UIColor.systemBlue
-        ]
+//        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
+//            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+//            NSAttributedString.Key.foregroundColor : UIColor.systemGray
+//        ]
+//        
+//        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+//            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+//            NSAttributedString.Key.foregroundColor : UIColor.systemBlue
+//        ]
+//        
+//        
+//        appearance.inlineLayoutAppearance.normal.titleTextAttributes = [
+//            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+//            NSAttributedString.Key.foregroundColor : UIColor.systemGray
+//        ]
+//        
+//        appearance.inlineLayoutAppearance.selected.titleTextAttributes = [
+//            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
+//            NSAttributedString.Key.foregroundColor : UIColor.systemBlue
+//        ]
         
         self.tabBar.standardAppearance = appearance
         
-        self.tabBar.isTranslucent = true
+        self.tabBar.isTranslucent = false
         
         self.tabBar.backgroundColor = .systemYellow
 

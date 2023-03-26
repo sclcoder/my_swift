@@ -81,11 +81,13 @@ extension NavigationController{
         let targetView = gesture.view!
         
         let translation:CGPoint = gesture.translation(in: targetView)
-        
+        let velocity = gesture.velocity(in: targetView)
+
         var progress = translation.x / targetView.bounds.size.width
-        
+
         progress = fmin(fmax(progress, 0.0), 1.0)
-        
+        interactionController.completionSpeed = 1 - progress
+//        interactionController.completionSpeed = 100
         switch gesture.state {
         case .began:
             inInteraction = true
@@ -99,7 +101,7 @@ extension NavigationController{
             
         case .ended:
             inInteraction = false
-            if (progress > 0.4){
+            if (progress > 0.9 || velocity.x  > 100){
                 interactionController.finish()
             } else {
                 interactionController.cancel()
