@@ -14,6 +14,8 @@ class RxSwiftViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.navigationItem.title = "RxSwift"
     }
 
 

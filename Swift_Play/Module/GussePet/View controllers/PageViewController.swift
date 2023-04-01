@@ -34,6 +34,7 @@ class PageViewController: UIPageViewController {
   
   override func viewDidLoad() {
     super.viewDidLoad()
+    self.navigationItem.title = "Guess"
     dataSource = self
     setViewControllers([viewControllerForPage(at: 0)], direction: .forward, animated: false, completion: nil)
   }

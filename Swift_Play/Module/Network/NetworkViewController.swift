@@ -155,6 +155,12 @@ class NetworkViewController: UIViewController {
 
 
 extension NetworkViewController{
+    
+    override func viewDidLoad() {
+        self.navigationItem.title = "Network"
+    }
+    
+    
     func showHUD() {
 //        view.makeToast("Toast_Swift")
 //        ProgressHUD.show(icon: .heart)

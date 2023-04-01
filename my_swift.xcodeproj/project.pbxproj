@@ -11,6 +11,8 @@
 		6012AB9329D813B0001F94A6 /* NetworkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6012AB9129D813B0001F94A6 /* NetworkViewController.xib */; };
 		6012AB9E29D87020001F94A6 /* RxSwiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */; };
 		6012AB9F29D87020001F94A6 /* RxSwiftViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6012AB9D29D87020001F94A6 /* RxSwiftViewController.xib */; };
+		6012ABA829D875CC001F94A6 /* CodableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6012ABA629D875CB001F94A6 /* CodableViewController.swift */; };
+		6012ABA929D875CC001F94A6 /* CodableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6012ABA729D875CB001F94A6 /* CodableViewController.xib */; };
 		602A5B20299F6624004BFA4A /* EnumTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602A5B1F299F6624004BFA4A /* EnumTest.swift */; };
 		602A5B6D299F6BC0004BFA4A /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602A5B69299F6BC0004BFA4A /* Session.swift */; };
 		602A5B6E299F6BC0004BFA4A /* NetworkReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602A5B6A299F6BC0004BFA4A /* NetworkReachabilityManager.swift */; };
@@ -49,6 +51,8 @@
 		6012AB9129D813B0001F94A6 /* NetworkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkViewController.xib; sourceTree = "<group>"; };
 		6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxSwiftViewController.swift; sourceTree = "<group>"; };
 		6012AB9D29D87020001F94A6 /* RxSwiftViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RxSwiftViewController.xib; sourceTree = "<group>"; };
+		6012ABA629D875CB001F94A6 /* CodableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableViewController.swift; sourceTree = "<group>"; };
+		6012ABA729D875CB001F94A6 /* CodableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CodableViewController.xib; sourceTree = "<group>"; };
 		602A5B1F299F6624004BFA4A /* EnumTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumTest.swift; sourceTree = "<group>"; };
 		602A5B48299F6AD3004BFA4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		602A5B4A299F6AD3004BFA4A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -132,6 +136,23 @@
 			path = RxSwift;
 			sourceTree = "<group>";
 		};
+		6012ABA029D87279001F94A6 /* Coding */ = {
+			isa = PBXGroup;
+			children = (
+				6012ABA529D875CB001F94A6 /* Coding */,
+			);
+			path = Coding;
+			sourceTree = "<group>";
+		};
+		6012ABA529D875CB001F94A6 /* Coding */ = {
+			isa = PBXGroup;
+			children = (
+				6012ABA629D875CB001F94A6 /* CodableViewController.swift */,
+				6012ABA729D875CB001F94A6 /* CodableViewController.xib */,
+			);
+			name = Coding;
+			sourceTree = "<group>";
+		};
 		602A5B1E299F553E004BFA4A /* GussePet */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,6 +187,7 @@
 		6061A363299DDFF00089B271 /* Module */ = {
 			isa = PBXGroup;
 			children = (
+				6012ABA029D87279001F94A6 /* Coding */,
 				6012AB9B29D86F2F001F94A6 /* RxSwift */,
 				6012AB8F29D8139B001F94A6 /* Network */,
 				60A606A329CF2851004D72F2 /* Setting */,
@@ -424,6 +446,7 @@
 				7704CB3D29CC677A00707B57 /* Launch Screen.storyboard in Resources */,
 				7704CB3529CC642F00707B57 /* Pets.plist in Resources */,
 				6012AB9F29D87020001F94A6 /* RxSwiftViewController.xib in Resources */,
+				6012ABA929D875CC001F94A6 /* CodableViewController.xib in Resources */,
 				6012AB9329D813B0001F94A6 /* NetworkViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -479,6 +502,7 @@
 			files = (
 				7704CB2E29CC642F00707B57 /* FlipDismissAnimationController.swift in Sources */,
 				602A5B6E299F6BC0004BFA4A /* NetworkReachabilityManager.swift in Sources */,
+				6012ABA829D875CC001F94A6 /* CodableViewController.swift in Sources */,
 				6061A367299DE01D0089B271 /* SettingViewController.swift in Sources */,
 				6012AB9229D813B0001F94A6 /* NetworkViewController.swift in Sources */,
 				602A5B20299F6624004BFA4A /* EnumTest.swift in Sources */,

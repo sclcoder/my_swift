@@ -70,12 +70,14 @@ class TabbarController: UITabBarController {
 
        
        
-       let settingVC = RxSwiftViewController()
-       configVC(settingVC, "Setting", "tab_settings", "tab_settings")
-       
+       let RxSwiftVC = RxSwiftViewController()
+       configVC(RxSwiftVC, "RxSwift", "tab_settings", "tab_settings")
        
        let networkVC = NetworkViewController()
        configVC(networkVC, "Net", "tab_more", "tab_more")
+       
+       let CodingVC = CodableViewController()
+       configVC(CodingVC, "CodingVC", "tab_settings", "tab_settings")
         
        let homeVC = HomeViewController()
        configVC(homeVC, "Home", "tab_home", "tab_home")
