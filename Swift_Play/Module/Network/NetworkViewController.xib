@@ -18,8 +18,8 @@
             <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="100" translatesAutoresizingMaskIntoConstraints="NO" id="nER-SB-9of">
-                    <rect key="frame" x="36" y="203.66666666666663" width="321.33333333333331" height="445"/>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" alignment="top" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="nER-SB-9of">
+                    <rect key="frame" x="95.000000000000014" y="290.66666666666663" width="203.33333333333337" height="270.66666666666663"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Request" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a5g-jK-iXr">
                             <rect key="frame" x="0.0" y="0.0" width="146.33333333333334" height="42"/>
@@ -28,7 +28,10 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jKc-WJ-O3x">
-                            <rect key="frame" x="0.0" y="142.00000000000003" width="116.66666666666669" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="62" width="116.66666666666667" height="100"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="100" id="vBA-EH-bne"/>
+                            </constraints>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="removeHUD"/>
                             <connections>
@@ -36,7 +39,7 @@
                             </connections>
                         </button>
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Qfq-Qc-jii">
-                            <rect key="frame" x="0.0" y="276.33333333333337" width="321.33333333333331" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="182" width="203.33333333333334" height="34.333333333333343"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Alamofire" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rUY-lN-e5a">
                                     <rect key="frame" x="0.0" y="6.9999999999999982" width="86.333333333333329" height="20.333333333333329"/>
@@ -45,33 +48,17 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ug6-Ai-GBe">
-                                    <rect key="frame" x="96.333333333333343" y="0.0" width="49" height="34.333333333333336"/>
+                                    <rect key="frame" x="96.333333333333343" y="0.0" width="107" height="34.333333333333336"/>
                                     <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="tinted" title="get"/>
+                                    <buttonConfiguration key="configuration" style="tinted" title="AFRequest"/>
                                     <connections>
-                                        <action selector="get:" destination="-1" eventType="touchUpInside" id="XzH-HJ-Ue7"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RTp-NQ-SHO">
-                                    <rect key="frame" x="155.33333333333334" y="0.0" width="58" height="34.333333333333336"/>
-                                    <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="gray" title="post"/>
-                                    <connections>
-                                        <action selector="post:" destination="-1" eventType="touchUpInside" id="czU-O3-WGe"/>
-                                    </connections>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vNY-fv-qfy">
-                                    <rect key="frame" x="223.33333333333331" y="0.0" width="98" height="34.333333333333336"/>
-                                    <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="filled" title="download"/>
-                                    <connections>
-                                        <action selector="download:" destination="-1" eventType="touchUpInside" id="cDd-zH-Mhd"/>
+                                        <action selector="afRequest:" destination="-1" eventType="touchUpInside" id="bEq-Xb-bnb"/>
                                     </connections>
                                 </button>
                             </subviews>
                         </stackView>
                         <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="VZK-2A-B6s">
-                            <rect key="frame" x="0.0" y="410.66666666666674" width="314" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="236.33333333333331" width="184.33333333333334" height="34.333333333333314"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Moya" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Zh-g0-tk1">
                                     <rect key="frame" x="0.0" y="6.9999999999999982" width="46.666666666666664" height="20.333333333333329"/>
@@ -80,19 +67,12 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="L1J-hB-0hK">
-                                    <rect key="frame" x="67.333333333333329" y="0.0" width="49" height="34.333333333333336"/>
+                                    <rect key="frame" x="56.666666666666664" y="0.0" width="127.66666666666669" height="34.333333333333336"/>
                                     <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="gray" title="get"/>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GhC-j2-c7a">
-                                    <rect key="frame" x="137" y="0.0" width="58" height="34.333333333333336"/>
-                                    <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="tinted" title="post"/>
-                                </button>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cY0-Mt-7QG">
-                                    <rect key="frame" x="216" y="0.0" width="98" height="34.333333333333336"/>
-                                    <state key="normal" title="Button"/>
-                                    <buttonConfiguration key="configuration" style="plain" title="download"/>
+                                    <buttonConfiguration key="configuration" style="gray" title="MoyaRequest"/>
+                                    <connections>
+                                        <action selector="moyaReqeust:" destination="-1" eventType="touchUpInside" id="IVC-OA-FyW"/>
+                                    </connections>
                                 </button>
                             </subviews>
                         </stackView>

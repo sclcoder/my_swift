@@ -39,7 +39,7 @@ class NetworkViewController: UIViewController {
 
 
     // MARK: Actions
-    @IBAction func get(_ sender: Any) {
+    @IBAction func afRequest(_ sender: Any) {
         
         self.showHUD()
         
@@ -121,15 +121,20 @@ class NetworkViewController: UIViewController {
             case let .failure(error):
                 print(error)
             }
-        })        
-        
-        
-        
+        })
     }
     
     
     
     
+    
+    
+    @IBAction func moyaReqeust(_ sender: Any) {
+        
+        
+        
+    }
+
     func testCoding() {
         //解码 JSON 数据
         let json = #" {"name":"Tom", "age": 2} "#
@@ -145,18 +150,6 @@ class NetworkViewController: UIViewController {
         let data1 = try? JSONSerialization.data(withJSONObject: ["name": person!.name, "age": person!.age], options: [])
         print(String(data: data1!, encoding: .utf8)!) //{"name":"Tom","age":2}
     }
-    
-    
-    
-    
-    @IBAction func download(_ sender: Any) {
-        
-    }
-    
-    @IBAction func post(_ sender: Any) {
-        
-    }
-    
 }
 
 

@@ -68,23 +68,21 @@ class TabbarController: UITabBarController {
            self.addChild(navVC)
         }
 
-        
+       
+       
+       let settingVC = RxSwiftViewController()
+       configVC(settingVC, "Setting", "tab_settings", "tab_settings")
+       
+       
        let networkVC = NetworkViewController()
-        
        configVC(networkVC, "Net", "tab_more", "tab_more")
         
-       
        let homeVC = HomeViewController()
-       
        configVC(homeVC, "Home", "tab_home", "tab_home")
        
         let pageVC = PageViewController()
         configVC(pageVC, "Guess", "tab_group", "tab_group")
-    
-        let settingVC = SettingViewController()
-       
-        configVC(settingVC, "Setting", "tab_settings", "tab_settings")
-       
+
     }
     
     

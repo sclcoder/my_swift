@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import RxSwift
+
 
 class SettingViewController: UIViewController {
 

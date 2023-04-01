@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		6012AB9229D813B0001F94A6 /* NetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6012AB9029D813B0001F94A6 /* NetworkViewController.swift */; };
 		6012AB9329D813B0001F94A6 /* NetworkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6012AB9129D813B0001F94A6 /* NetworkViewController.xib */; };
+		6012AB9E29D87020001F94A6 /* RxSwiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */; };
+		6012AB9F29D87020001F94A6 /* RxSwiftViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6012AB9D29D87020001F94A6 /* RxSwiftViewController.xib */; };
 		602A5B20299F6624004BFA4A /* EnumTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602A5B1F299F6624004BFA4A /* EnumTest.swift */; };
 		602A5B6D299F6BC0004BFA4A /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602A5B69299F6BC0004BFA4A /* Session.swift */; };
 		602A5B6E299F6BC0004BFA4A /* NetworkReachabilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602A5B6A299F6BC0004BFA4A /* NetworkReachabilityManager.swift */; };
@@ -45,6 +47,8 @@
 		509F10843E23559D97FB2C20 /* Pods-my_swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-my_swift.release.xcconfig"; path = "Target Support Files/Pods-my_swift/Pods-my_swift.release.xcconfig"; sourceTree = "<group>"; };
 		6012AB9029D813B0001F94A6 /* NetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewController.swift; sourceTree = "<group>"; };
 		6012AB9129D813B0001F94A6 /* NetworkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkViewController.xib; sourceTree = "<group>"; };
+		6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RxSwiftViewController.swift; sourceTree = "<group>"; };
+		6012AB9D29D87020001F94A6 /* RxSwiftViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RxSwiftViewController.xib; sourceTree = "<group>"; };
 		602A5B1F299F6624004BFA4A /* EnumTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnumTest.swift; sourceTree = "<group>"; };
 		602A5B48299F6AD3004BFA4A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		602A5B4A299F6AD3004BFA4A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -119,6 +123,15 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		6012AB9B29D86F2F001F94A6 /* RxSwift */ = {
+			isa = PBXGroup;
+			children = (
+				6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */,
+				6012AB9D29D87020001F94A6 /* RxSwiftViewController.xib */,
+			);
+			path = RxSwift;
+			sourceTree = "<group>";
+		};
 		602A5B1E299F553E004BFA4A /* GussePet */ = {
 			isa = PBXGroup;
 			children = (
@@ -153,6 +166,7 @@
 		6061A363299DDFF00089B271 /* Module */ = {
 			isa = PBXGroup;
 			children = (
+				6012AB9B29D86F2F001F94A6 /* RxSwift */,
 				6012AB8F29D8139B001F94A6 /* Network */,
 				60A606A329CF2851004D72F2 /* Setting */,
 				60A606A229CF2847004D72F2 /* Home */,
@@ -409,6 +423,7 @@
 				60A606AC29CF2CEA004D72F2 /* ChatTableViewCell.xib in Resources */,
 				7704CB3D29CC677A00707B57 /* Launch Screen.storyboard in Resources */,
 				7704CB3529CC642F00707B57 /* Pets.plist in Resources */,
+				6012AB9F29D87020001F94A6 /* RxSwiftViewController.xib in Resources */,
 				6012AB9329D813B0001F94A6 /* NetworkViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -482,6 +497,7 @@
 				7704CB2929CC642F00707B57 /* PetCard.swift in Sources */,
 				60A606AE29CF365F004D72F2 /* ChatViewController.swift in Sources */,
 				60F3A2DD2917EC7900DF9CE2 /* SceneDelegate.swift in Sources */,
+				6012AB9E29D87020001F94A6 /* RxSwiftViewController.swift in Sources */,
 				7704CB3429CC642F00707B57 /* PetCardStore.swift in Sources */,
 				602A5B6D299F6BC0004BFA4A /* Session.swift in Sources */,
 				7704CB2A29CC642F00707B57 /* RevealViewController.swift in Sources */,
