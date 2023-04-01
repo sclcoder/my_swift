@@ -7,7 +7,12 @@ target 'my_swift' do
 
   # Pods for my_swift
   
+  pod 'Toast-Swift', '~> 5.0.1'
+  pod 'PKHUD', '~> 5.0'
+  pod 'ProgressHUD'
 
+  
+  
   pod 'Moya', '~> 15.0'
   pod 'SnapKit'
   pod 'Alamofire', :path => './Alamofire'

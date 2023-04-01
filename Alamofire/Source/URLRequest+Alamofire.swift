@@ -25,6 +25,13 @@
 import Foundation
 
 extension URLRequest {
+    /**
+        为URLRequest添加一个method属性(主要用来替代内部的httpMethod属性)
+        httpMethod是URLRequest的方法，是字符串类型
+        get方法：将httpMethod的值装换为HTTPMethod类型
+        set方法：将HTTPMethod类型的原始值(字符串类型)的值设置到httpMethod
+     */
+    
     /// Returns the `httpMethod` as Alamofire's `HTTPMethod` type.
     public var method: HTTPMethod? {
         get { httpMethod.flatMap(HTTPMethod.init) }

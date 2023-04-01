@@ -18,12 +18,12 @@ class NavigationController: UINavigationController {
         
         self.setupAppearance()
         
-        self.delegate = self
-        
-        swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(onPan(gesture:)))
-//        swipeGesture.edges = .left
-        
-        self.view.addGestureRecognizer(swipeGesture)
+//        self.delegate = self
+//        
+//        swipeGesture = UIPanGestureRecognizer(target: self, action: #selector(onPan(gesture:)))
+////        swipeGesture.edges = .left
+//        
+//        self.view.addGestureRecognizer(swipeGesture)
     }
 
     

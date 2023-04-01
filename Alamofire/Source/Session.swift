@@ -1056,36 +1056,42 @@ open class Session {
         let initialRequest: URLRequest
 
         do {
+            /// 通过传递过来的参数URLRequestConvertible, 初始化initialRequest
             initialRequest = try convertible.asURLRequest()
             try initialRequest.validate()
         } catch {
+            /// 执行回调函数
             rootQueue.async { request.didFailToCreateURLRequest(with: error.asAFError(or: .createURLRequestFailed(error: error))) }
             return
         }
-
+        /// 执行回调函数
         rootQueue.async { request.didCreateInitialURLRequest(initialRequest) }
-
+        
         guard !request.isCancelled else { return }
-
+        
+        /// request获取适配器
         guard let adapter = adapter(for: request) else {
             guard shouldCreateTask() else { return }
+            /// 没有适配器，直接使用initialRequest作为最终的参数，创建Task
             rootQueue.async { self.didCreateURLRequest(initialRequest, for: request) }
             return
         }
-
+        /// 获取适配器
         let adapterState = RequestAdapterState(requestID: request.id, session: self)
-
+        
+        /// adapt
         adapter.adapt(initialRequest, using: adapterState) { result in
             do {
                 let adaptedRequest = try result.get()
                 try adaptedRequest.validate()
-
+                /// 执行回调函数
                 self.rootQueue.async { request.didAdaptInitialRequest(initialRequest, to: adaptedRequest) }
-
+                
                 guard shouldCreateTask() else { return }
-
+                /// 执行didCreateURLRequest,创建Task
                 self.rootQueue.async { self.didCreateURLRequest(adaptedRequest, for: request) }
             } catch {
+                ///  执行回调函数
                 self.rootQueue.async { request.didFailToAdaptURLRequest(initialRequest, withError: .requestAdaptationFailed(error: error)) }
             }
         }
@@ -1095,15 +1101,16 @@ open class Session {
 
     func didCreateURLRequest(_ urlRequest: URLRequest, for request: Request) {
         dispatchPrecondition(condition: .onQueue(rootQueue))
-
+        /// 执行回调函数didCreateURLRequest
         request.didCreateURLRequest(urlRequest)
 
         guard !request.isCancelled else { return }
         /// 创建task
         let task = request.task(for: urlRequest, using: session)
         requestTaskMap[request] = task
+        /// 执行回调函数
         request.didCreateTask(task)
-        /// 更新task状态
+        /// 更新task状态, 内部会执行回调函数
         updateStatesForTask(task, request: request)
     }
 

@@ -6,8 +6,7 @@
 //
 
 import UIKit
-import Moya
-import Alamofire
+
 import SnapKit
 
 class HomeViewController: UIViewController,UITableViewDataSource,UITableViewDelegate {
@@ -37,17 +36,6 @@ class HomeViewController: UIViewController,UITableViewDataSource,UITableViewDele
             make.edges.equalToSuperview()
         }
     }
-    
-    
-    
-    // MARK: API
-    func makeRequest()->Void{
-        print(Event.Name.login)
-        AF.request("http://www.weather.com.cn/data/sk/101190408.html").responseJSON { response in
-        print(response)
-        }
-    }
-
 }
 
 

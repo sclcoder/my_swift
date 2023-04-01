@@ -69,10 +69,14 @@ class TabbarController: UITabBarController {
         }
 
         
-        let homeVC = HomeViewController()
+       let networkVC = NetworkViewController()
         
-        configVC(homeVC, "Home", "tab_home", "tab_home")
+       configVC(networkVC, "Net", "tab_more", "tab_more")
         
+       
+       let homeVC = HomeViewController()
+       
+       configVC(homeVC, "Home", "tab_home", "tab_home")
        
         let pageVC = PageViewController()
         configVC(pageVC, "Guess", "tab_group", "tab_group")

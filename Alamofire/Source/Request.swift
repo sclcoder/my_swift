@@ -469,9 +469,9 @@ public class Request {
         self.error = self.error ?? error
 
         validators.forEach { $0() }
-
+        /// 这个监视器,是为了对外发送相关状态通知的, 外界可以监听相关的状态 ????
         eventMonitor?.request(self, didCompleteTask: task, with: error)
-
+        /// 执行完成Task的代码
         retryOrFinish(error: self.error)
     }
 
@@ -520,6 +520,7 @@ public class Request {
         if let error = error { self.error = error }
 
         // Start response handlers
+        /// request完成，开始处理response相关工作
         processNextResponseSerializer()
 
         eventMonitor?.requestDidFinish(self)
@@ -532,6 +533,7 @@ public class Request {
     /// - Parameter closure: The closure containing the response serialization call.
     func appendResponseSerializer(_ closure: @escaping () -> Void) {
         $mutableState.write { mutableState in
+            /// 将response的解析回调记录到mutableState中
             mutableState.responseSerializers.append(closure)
 
             if mutableState.state == .finished {
