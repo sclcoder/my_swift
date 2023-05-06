@@ -23,4 +23,23 @@ try dataSource.write(to: URL(fileURLWithPath: plistPath))
 
 print(plistPath)
 
+
+
+/// email正则表达式  - chatGPT
+
+let emailString = "eric.thornley+testinglofty@chimeinc.com"
+let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegex)
+let isValidEmail = emailTest.evaluate(with: emailString)
+if isValidEmail {
+    print("\(emailString) 是一个有效的 email 地址。")
+} else {
+    print("\(emailString) 不是一个有效的 email 地址。")
+}
+
+
+
 //: [Next](@next)
+
+
+
