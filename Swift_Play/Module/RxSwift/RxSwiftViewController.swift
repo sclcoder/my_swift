@@ -30,9 +30,11 @@ class RxSwiftViewController: UIViewController {
         
 //        createObserableMethod()
         
-//        debugObserable()
-        
-        
+        debugObserable()
+    }
+    
+    
+    func testSubject() {
         
         print("----------------Subject----------------")
 /************************** Subject *************************************/

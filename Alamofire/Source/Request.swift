@@ -125,11 +125,20 @@ public class Request {
     }
 
     /// Protected `MutableState` value that provides thread-safe access to state values.
+    
+    /**
+    ！！！注意 @Protected 是个属性包装器: 内部会在访问相关属性时保证线程安全
+     - @propertyWrapper : https://gitbook.swiftgg.team/swift/swift-jiao-cheng/10_properties#property-wrappers
+     - $ :
+        在Swift中，当你在使用属性包装器时，可以通过在属性名称前加上$符号来访问被包装器包装的值的特定属性。这个符号用于访问包装器的投影（projection）。
+        当你在使用属性包装器时，实际上编译器会为你自动创建一个具有特定命名规则的属性，用于访问被包装器包装的值。这个属性的名称通常是在原始属性名称前加上$符号。
+        例如，如果你有一个被 @State属性包装器包装的属性name，那么编译器会为你生成一个名为$name的属性，用于访问被包装的值的特定属性。你可以使用这个属性来访问被包装值的一些特定属性或方法。
+     */
     @Protected
     fileprivate var mutableState = MutableState()
 
     /// `State` of the `Request`.
-    public var state: State { $mutableState.state }
+    public var state: State { $mutableState.state } /// $mutableState 访问包装器的被呈现值,属性包装器可以返回任何类型的值作为它的被呈现值
     /// Returns whether `state` is `.initialized`.
     public var isInitialized: Bool { state == .initialized }
     /// Returns whether `state is `.resumed`.

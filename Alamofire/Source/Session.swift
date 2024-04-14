@@ -1011,6 +1011,7 @@ open class Session {
     }
 
     func performDataRequest(_ request: DataRequest) {
+        /// 保证一下的执行在requestQueue队列，否则不会执行
         dispatchPrecondition(condition: .onQueue(requestQueue))
 
         performSetupOperations(for: request, convertible: request.convertible)

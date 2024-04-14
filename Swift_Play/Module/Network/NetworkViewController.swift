@@ -58,18 +58,18 @@ class NetworkViewController: UIViewController {
          open func request(_ convertible: URLConvertible,
                            method: HTTPMethod = .get,
                            parameters: Parameters? = nil,
-                           encoding: ParameterEncoding = URLEncoding.default,
+                           encoding: ParameterEncoding = URLEncodedFormParameterEncoder.default,
                            headers: HTTPHeaders? = nil,
                            interceptor: RequestInterceptor? = nil,
                            requestModifier: RequestModifier? = nil) -> DataRequest
          */
         /// requestModifier
-//        AF.request(url) { request in
-//            request.timeoutInterval = 30
-//        }.response { response in
-//            print(response)
-//        }
-        
+        AF.request(url) { request in
+            request.timeoutInterval = 30
+        }.response { response in
+            ProgressHUD.remove()
+            print(response)
+        }
         
 //        AF.request(url,
 //                   method: .post,
@@ -93,35 +93,35 @@ class NetworkViewController: UIViewController {
 //                    })
         
         
-        AF.request(url,method: .get).responseData { response in
-            switch response.result {
-            case let .success(dataInfo):
-                print(dataInfo)
-            case let .failure(error):
-                print(error)
-            }
-        }.responseString { response in
-            switch response.result{
-            case let .success(stringInfo):
-                print(stringInfo)
-            case let .failure(error):
-                print(error)
-            }
-        }.responseJSON { response in
-            print(response.value!)
-        }
-        
-        
-        struct WeatherInfo: Decodable { let weatherinfo: Dictionary<String, String> }
-
-        AF.request(url,method: .get).responseDecodable(of: WeatherInfo.self ,decoder: JSONDecoder(), completionHandler: { response in
-            switch response.result{
-            case let .success(dic):
-                print(dic)
-            case let .failure(error):
-                print(error)
-            }
-        })
+//        AF.request(url,method: .get).responseData { response in
+//            switch response.result {
+//            case let .success(dataInfo):
+//                print(dataInfo)
+//            case let .failure(error):
+//                print(error)
+//            }
+//        }.responseString { response in
+//            switch response.result{
+//            case let .success(stringInfo):
+//                print(stringInfo)
+//            case let .failure(error):
+//                print(error)
+//            }
+//        }.responseJSON { response in
+//            print(response.value!)
+//        }
+//
+//
+//        struct WeatherInfo: Decodable { let weatherinfo: Dictionary<String, String> }
+//
+//        AF.request(url,method: .get).responseDecodable(of: WeatherInfo.self ,decoder: JSONDecoder(), completionHandler: { response in
+//            switch response.result{
+//            case let .success(dic):
+//                print(dic)
+//            case let .failure(error):
+//                print(error)
+//            }
+//        })
     }
     
     
