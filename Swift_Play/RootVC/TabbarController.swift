@@ -79,12 +79,14 @@ class TabbarController: UITabBarController {
        let CodingVC = CodableViewController()
        configVC(CodingVC, "CodingVC", "tab_settings", "tab_settings")
         
-       let homeVC = HomeViewController()
-       configVC(homeVC, "Home", "tab_home", "tab_home")
+//       let homeVC = HomeViewController()
+//       configVC(homeVC, "Home", "tab_home", "tab_home")
        
-        let pageVC = PageViewController()
-        configVC(pageVC, "Guess", "tab_group", "tab_group")
-
+       let settingVC = SettingViewController()
+       configVC(settingVC, "Setting", "tab_settings", "tab_settings")
+       
+       let pageVC = PageViewController()
+       configVC(pageVC, "Guess", "tab_group", "tab_group")
     }
     
     

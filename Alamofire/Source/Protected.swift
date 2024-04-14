@@ -82,7 +82,7 @@ final class UnfairLock: Lock {
 
 /// A thread-safe wrapper around a value.
 @propertyWrapper
-@dynamicMemberLookup
+@dynamicMemberLookup /// https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
 final class Protected<T> {
     #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
     private let lock = UnfairLock()
@@ -125,8 +125,19 @@ final class Protected<T> {
     func write<U>(_ closure: (inout T) throws -> U) rethrows -> U {
         try lock.around { try closure(&self.value) }
     }
-
-    subscript<Property>(dynamicMember keyPath: WritableKeyPath<T, Property>) -> Property {
+    /**
+     https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
+     # @dynamicMemberLookup 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。
+     
+     - 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。该类型必须实现 subscript(dynamicMember:) 下标。
+     
+     - 在显式成员表达式中，如果指定成员没有相应的声明，则该表达式被理解为对该类型的 subscript(dynamicMember:) 下标调用，将有关该成员的信息作为参数传递。下标接收参数既可以是键路径，也可以是成员名称字符串；如果你同时实现这两种方式的下标调用，那么以键路径参数方式为准。
+     
+     - subscript(dynamicMember:) 实现允许接收 KeyPath，WritableKeyPath 或 ReferenceWritableKeyPath 类型的键路径参数。它可以使用遵循 ExpressibleByStringLiteral 协议的类型作为参数来接受成员名 -- 通常情况下是 String。下标返回值类型可以为任意类型。
+     
+     - 按成员名进行的动态成员查找可用于围绕编译时无法进行类型检查的数据创建包装类型，例如在将其他语言的数据桥接到 Swift 时
+     */
+    subscript<Property>(dynamicMember keyPath: WritableKeyPath<T, Property>) -> Property { //   keyPath = \MutableState.state
         get { lock.around { value[keyPath: keyPath] } }
         set { lock.around { value[keyPath: keyPath] = newValue } }
     }

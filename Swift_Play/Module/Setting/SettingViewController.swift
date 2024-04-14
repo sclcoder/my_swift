@@ -17,8 +17,7 @@ class SettingViewController: UIViewController {
         self.view.backgroundColor = .yellow
         self.title = "Settings"
 
+  
     }
     
-
-
 }

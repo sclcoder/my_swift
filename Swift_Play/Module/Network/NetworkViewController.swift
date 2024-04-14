@@ -154,10 +154,29 @@ class NetworkViewController: UIViewController {
 
 
 
+
+/// @dynamicMemberLookup  https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
+struct Point { var x: Double, y: Int }
+@dynamicMemberLookup
+struct PassthroughWrapper<Value> {
+    var value: Value
+    subscript<T>(dynamicMember member: KeyPath<Value, T>) -> T { // member = \Point.y
+        get { return value[keyPath: member] }
+    }
+}
+
 extension NetworkViewController{
     
     override func viewDidLoad() {
         self.navigationItem.title = "Network"
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let point = Point(x: 381.0, y: 431)
+        let wrapper = PassthroughWrapper(value: point)
+        print(wrapper.y)
     }
     
     
@@ -178,4 +197,5 @@ extension NetworkViewController{
         ProgressHUD.remove()
 
     }
+
 }
