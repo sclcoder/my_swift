@@ -162,6 +162,32 @@ class NetworkViewController: UIViewController {
  在显式成员表达式中，如果指定成员没有相应的声明，则该表达式被理解为对该类型的 subscript(dynamicMember:) 下标调用，将有关该成员的信息作为参数传递。下标接收参数既可以是键路径，也可以是成员名称字符串；如果你同时实现这两种方式的下标调用，那么以键路径参数方式为准。
 
  subscript(dynamicMember:) 实现允许接收 KeyPath，WritableKeyPath 或 ReferenceWritableKeyPath 类型的键路径参数。它可以使用遵循 ExpressibleByStringLiteral 协议的类型作为参数来接受成员名 -- 通常情况下是 String。下标返回值类型可以为任意类型。
+ 
+ 
+ Key-path 表达式
+ https://gitbook.swiftgg.team/swift/yu-yan-can-kao/04_expressions#key-path-expression
+ Key-path 表达式引用一个类型的属性或下标。在动态语言中使场景可以使用 Key-path 表达式，例如观察键值对。格式为：
+
+ \类型名.路径
+
+ 类型名是一个具体类型的名称，包含任何泛型参数，例如 String、[Int] 或 Set<Int>。
+
+ 路径可由属性名称、下标、可选链表达式或者强制解包表达式组成。以上任意 key-path 组件可以以任何顺序重复多次。
+
+ 在编译期，key-path 表达式会被一个 KeyPath 类的实例替换。
+
+ 对于所有类型，都可以通过传递 key-path 参数到下标方法 subscript(keyPath:) 来访问它的值。例如：
+ 
+ struct SomeStructure {
+     var someValue: Int
+ }
+
+ let s = SomeStructure(someValue: 12)
+ let pathToProperty = \SomeStructure.someValue
+
+ let value = s[keyPath: pathToProperty]
+ // 值为 12
+ 
  */
 
 /// 按成员名进行的动态成员查找可用于围绕编译时无法进行类型检查的数据创建包装类型，例如在将其他语言的数据桥接到 Swift 时。例如：
@@ -172,6 +198,12 @@ struct DynamicStruct {
     subscript(dynamicMember member: String) -> Int { // member = "someDynamicMember"
         return dictionary[member] ?? 1054
     }
+}
+
+
+struct DynamicStruct2 {
+    let dictionary = ["someDynamicMember": 325,
+                      "someOtherMember": 787]
 }
 
 /// 根据键路径来动态地查找成员，可用于创建一个包裹数据的包装类型，该类型支持在编译时期进行类型检查。例如：
@@ -210,6 +242,55 @@ extension NetworkViewController{
         let point = Point(x: 381.0, y: 431)
         let wrapper = PassthroughWrapper(value: point)
         print(wrapper.y)
+        
+        testKeyPath()
+        
+        testClosure()
+    }
+    
+    
+    func testKeyPath(){
+        let greetings = ["hello", "hola", "bonjour", "안녕"]
+        let myGreeting = greetings[keyPath: \[String].[1]]
+        
+        
+        var index = 2
+        let path = \[String].[index]
+        let fn: ([String]) -> String = { strings in strings[index] }
+
+        print(greetings[keyPath: path])
+        // 打印 "bonjour"
+        print(fn(greetings))
+        // 打印 "bonjour"
+
+        // 将 'index' 设置为一个新的值不会影响到 'path'
+        index += 1
+        print(greetings[keyPath: path])
+        // 打印 "bonjour"
+
+        // 'fn' 闭包使用了新值。
+        print(fn(greetings))
+        // 打印 "안녕"
+    }
+    /**
+     https://gitbook.swiftgg.team/swift/yu-yan-can-kao/04_expressions#capture-lists
+     默认情况下，闭包会捕获附近作用域中的常量和变量，并使用强引用指向它们。你可以通过一个捕获列表来显式指定它的捕获行为。
+
+     捕获列表在参数列表之前，由中括号括起来，里面是由逗号分隔的一系列表达式。一旦使用了捕获列表，就必须使用 in 关键字，即使省略了参数名、参数类型和返回类型。
+
+     捕获列表中的项会在闭包创建时被初始化。每一项都会用闭包附近作用域中的同名常量或者变量的值初始化。例如下面的代码示例中，捕获列表包含 a 而不包含 b，这将导致这两个变量具有不同的行为。
+     */
+    func testClosure(){
+        var a = 0
+        var b = 0
+        /// 捕获列表中的项会在闭包创建时被初始化
+        let closure = { [a] in
+            print(a, b)
+        }
+        
+        a = 10
+        b = 10
+        closure()
     }
     
     

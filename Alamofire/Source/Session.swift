@@ -188,6 +188,12 @@ open class Session {
         let serialRootQueue = (rootQueue === DispatchQueue.main) ? rootQueue : DispatchQueue(label: rootQueue.label,
                                                                                              target: rootQueue)
         let delegateQueue = OperationQueue(maxConcurrentOperationCount: 1, underlyingQueue: serialRootQueue, name: "\(serialRootQueue.label).sessionDelegate")
+        
+        /**
+         URLSession  的代理是 SessionDelegate。 SessionDelegate.stateProvider 是 Session。
+         SessionDelegate中的request函数会通过 stateProvider（即Alamofire.Session类）的   func request(for task: URLSessionTask) -> Request? 函数找到 Request（Alamofire.Request类）,并且在适当的时机调用Request中的对应函数
+         SessionDelegate 在URLSession回调里，会调用 Request的相应的函数
+         */
         let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: delegateQueue)
 
         self.init(session: session,

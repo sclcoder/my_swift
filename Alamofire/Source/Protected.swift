@@ -126,8 +126,9 @@ final class Protected<T> {
         try lock.around { try closure(&self.value) }
     }
     /**
-     https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
-     # @dynamicMemberLookup 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。
+    
+     # @dynamicMemberLookup 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。 
+      https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
      
      - 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。该类型必须实现 subscript(dynamicMember:) 下标。
      
@@ -136,8 +137,17 @@ final class Protected<T> {
      - subscript(dynamicMember:) 实现允许接收 KeyPath，WritableKeyPath 或 ReferenceWritableKeyPath 类型的键路径参数。它可以使用遵循 ExpressibleByStringLiteral 协议的类型作为参数来接受成员名 -- 通常情况下是 String。下标返回值类型可以为任意类型。
      
      - 按成员名进行的动态成员查找可用于围绕编译时无法进行类型检查的数据创建包装类型，例如在将其他语言的数据桥接到 Swift 时
+     
+     
+     # keyPath
+       https://gitbook.swiftgg.team/swift/yu-yan-can-kao/04_expressions#key-path-expression
+      -  Key-path 表达式引用一个类型的属性或下标。在动态语言中使场景可以使用 Key-path 表达式，例如观察键值对。格式为：  \类型名.路径
+     类型名是一个具体类型的名称，包含任何泛型参数，例如 String、[Int] 或 Set<Int>。
+     路径可由属性名称、下标、可选链表达式或者强制解包表达式组成。以上任意 key-path 组件可以以任何顺序重复多次。
+     在编译期，key-path 表达式会被一个 KeyPath 类的实例替换。
+     对于所有类型，都可以通过传递 key-path 参数到下标方法 subscript(keyPath:) 来访问它的值
      */
-    subscript<Property>(dynamicMember keyPath: WritableKeyPath<T, Property>) -> Property { //   keyPath = \MutableState.state
+    subscript<Property>(dynamicMember keyPath: WritableKeyPath<T, Property>) -> Property { //   keyPath = \MutableState.state  具体值是个Key-path表达式
         get { lock.around { value[keyPath: keyPath] } }
         set { lock.around { value[keyPath: keyPath] = newValue } }
     }

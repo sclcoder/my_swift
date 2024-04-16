@@ -133,7 +133,11 @@ public class Request {
         在Swift中，当你在使用属性包装器时，可以通过在属性名称前加上$符号来访问被包装器包装的值的特定属性。这个符号用于访问包装器的投影（projection）。
         当你在使用属性包装器时，实际上编译器会为你自动创建一个具有特定命名规则的属性，用于访问被包装器包装的值。这个属性的名称通常是在原始属性名称前加上$符号。
         例如，如果你有一个被 @State属性包装器包装的属性name，那么编译器会为你生成一个名为$name的属性，用于访问被包装的值的特定属性。你可以使用这个属性来访问被包装值的一些特定属性或方法。
+     
+     # @dynamicMemberLookup 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。
+      https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
      */
+    
     @Protected
     fileprivate var mutableState = MutableState()
 
@@ -190,6 +194,10 @@ public class Request {
     // MARK: Redirect Handling
 
     /// `RedirectHandler` set on the instance.
+    /**
+     public 表示这个属性在模块外部是可见的，任何模块都可以访问这个属性。
+     private(set) 表示这个属性的 setter 方法在模块外部是不可见的，只有在定义它的模块内部可以进行设置。也就是说，属性可以被外部访问，但只能在内部进行写操作。
+     */
     public private(set) var redirectHandler: RedirectHandler? {
         get { $mutableState.redirectHandler }
         set { $mutableState.redirectHandler = newValue }
