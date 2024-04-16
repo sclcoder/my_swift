@@ -157,10 +157,30 @@ public struct URLEncoding: ParameterEncoding {
     // MARK: Encoding
 
     public func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+        /**
+         URLRequest的asURLRequest() 返回自身
+         extension URLRequest: URLRequestConvertible {
+             /// Returns `self`.
+             public func asURLRequest() throws -> URLRequest { self }
+         }
+         */
         var urlRequest = try urlRequest.asURLRequest()
 
         guard let parameters = parameters else { return urlRequest }
-
+        /**
+         1. 可选类型（optionals）  https://gitbook.swiftgg.team/swift/swift-jiao-cheng/01_the_basics#optionals
+          - 使用 可选类型（optionals） 来处理值可能缺失的情况。可选类型表示两种可能： 或者有值， 你可以解析可选类型访问这个值， 或者根本没有值。
+         
+         2. 隐式解析可选类型 https://gitbook.swiftgg.team/swift/swift-jiao-cheng/01_the_basics#implicityly-unwrapped-optionals
+         可选状态被定义为隐式解析可选类型（implicitly unwrapped optionals）。
+         把想要用作可选的类型的后面的问号（String?）改成感叹号（String!）来声明一个隐式解析可选类型。与其在使用时把感叹号放在可选类型的名称的后面，你可以在定义它时，直接把感叹号放在可选类型的后面。
+         3. 可选绑定（optional binding）https://gitbook.swiftgg.team/swift/swift-jiao-cheng/01_the_basics#optional-binding
+         使用 可选绑定（optional binding） 来判断可选类型是否包含值，如果包含就把值赋给一个临时常量或者变量。可选绑定可以用在 if 和 while 语句中，这条语句不仅可以用来判断可选类型中是否有值，同时可以将可选类型中的值赋给一个常量或者变量
+         
+         可以包含多个可选绑定或多个布尔条件在一个 if 语句中，只要使用逗号分开就行。只要有任意一个可选绑定的值为 nil，或者任意一个布尔条件为 false，则整个 if 条件判断为 false
+         
+         4.值绑定模式（Value-Binding Pattern） https://gitbook.swiftgg.team/swift/yu-yan-can-kao/08_patterns#value-binding-pattern
+         */
         if let method = urlRequest.method, destination.encodesParametersInURL(for: method) {
             guard let url = urlRequest.url else {
                 throw AFError.parameterEncodingFailed(reason: .missingURL)

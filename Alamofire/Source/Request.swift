@@ -142,6 +142,7 @@ public class Request {
     fileprivate var mutableState = MutableState()
 
     /// `State` of the `Request`.
+    /// 通过Alamofire.Request.mutableState.state的值初始化Alamofire.Request.state
     public var state: State {
         /**
          奇怪,$mutableState是 Alamofire.Protected<Alamofire.Request.MutableState>类型 ， 怎么获取state呢？
@@ -566,9 +567,8 @@ public class Request {
     /// - Parameter closure: The closure containing the response serialization call.
     func appendResponseSerializer(_ closure: @escaping () -> Void) {
         $mutableState.write { mutableState in
-            /// 将response的解析回调记录到mutableState中
             mutableState.responseSerializers.append(closure)
-
+            
             if mutableState.state == .finished {
                 mutableState.state = .resumed
             }

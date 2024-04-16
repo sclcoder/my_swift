@@ -128,10 +128,12 @@ open class Session {
         self.startRequestsImmediately = startRequestsImmediately
         self.requestQueue = requestQueue ?? DispatchQueue(label: "\(rootQueue.label).requestQueue", target: rootQueue)
         self.serializationQueue = serializationQueue ?? DispatchQueue(label: "\(rootQueue.label).serializationQueue", target: rootQueue)
+        //// Session级别的请求拦截器 - 默认是nil
         self.interceptor = interceptor
         self.serverTrustManager = serverTrustManager
         self.redirectHandler = redirectHandler
         self.cachedResponseHandler = cachedResponseHandler
+        /// eventMonitor在此初始化 - 默认只有AlamofireNotifications这一个Monitor
         eventMonitor = CompositeEventMonitor(monitors: defaultEventMonitors + eventMonitors)
         delegate.eventMonitor = eventMonitor
         delegate.stateProvider = self
@@ -358,15 +360,16 @@ open class Session {
     ///
     /// - Returns:       The created `DataRequest`.
     open func request(_ convertible: URLRequestConvertible, interceptor: RequestInterceptor? = nil) -> DataRequest {
+        /// 注意：DataRequest的delegate是Session
         let request = DataRequest(convertible: convertible,
                                   underlyingQueue: rootQueue,
                                   serializationQueue: serializationQueue,
                                   eventMonitor: eventMonitor,
                                   interceptor: interceptor,
                                   delegate: self)
-
+        /// 异步函数: 会立马返回
         perform(request)
-
+        
         return request
     }
 
@@ -998,12 +1001,22 @@ open class Session {
     ///
     /// - Parameter request: The `Request` to perform.
     func perform(_ request: Request) {
-        rootQueue.async {
+        rootQueue.async { /// 异步函数
             guard !request.isCancelled else { return }
+
+            print(request.state) /// initialized
 
             self.activeRequests.insert(request)
 
+            print(request.state) /// initialized
+    /**
+     这里request.state更新为resumed了？ 在哪变化的呢？ 注意：perform函数是异步函数，在调用perform函数后就返回了
+     perform函数返回后，外界调用DataRequest.response函数这个函数内部会根据配置startRequestsImmediately、startImmediately,将Request的state更新
+     */
             self.requestQueue.async {
+                
+                print(request.state) /// resume
+
                 // Leaf types must come first, otherwise they will cast as their superclass.
                 switch request {
                 case let r as UploadRequest: self.performUploadRequest(r) // UploadRequest must come before DataRequest due to subtype relationship.
@@ -1067,38 +1080,38 @@ open class Session {
             initialRequest = try convertible.asURLRequest()
             try initialRequest.validate()
         } catch {
-            /// 执行回调函数
+            /// 报告状态：执行Alamofire.Request类中的函数 didFailToCreateURLRequest
             rootQueue.async { request.didFailToCreateURLRequest(with: error.asAFError(or: .createURLRequestFailed(error: error))) }
             return
         }
-        /// 执行回调函数
+        /// 报告状态：执行Alamofire.Request类中的函数 didCreateInitialURLRequest
         rootQueue.async { request.didCreateInitialURLRequest(initialRequest) }
         
         guard !request.isCancelled else { return }
         
-        /// request获取适配器
         guard let adapter = adapter(for: request) else {
             guard shouldCreateTask() else { return }
-            /// 没有适配器，直接使用initialRequest作为最终的参数，创建Task
+            /// 1.没有适配器: 处理创建URLRequest之后的事情， 直接使用initialRequest作为最终的参数，创建Task
             rootQueue.async { self.didCreateURLRequest(initialRequest, for: request) }
             return
         }
-        /// 获取适配器
-        let adapterState = RequestAdapterState(requestID: request.id, session: self)
         
-        /// adapt
+        /// 2.有适配器 : 这部分暂未研究
+        let adapterState = RequestAdapterState(requestID: request.id, session: self)
         adapter.adapt(initialRequest, using: adapterState) { result in
             do {
                 let adaptedRequest = try result.get()
+                
                 try adaptedRequest.validate()
-                /// 执行回调函数
+                
                 self.rootQueue.async { request.didAdaptInitialRequest(initialRequest, to: adaptedRequest) }
                 
                 guard shouldCreateTask() else { return }
+                
                 /// 执行didCreateURLRequest,创建Task
                 self.rootQueue.async { self.didCreateURLRequest(adaptedRequest, for: request) }
+                
             } catch {
-                ///  执行回调函数
                 self.rootQueue.async { request.didFailToAdaptURLRequest(initialRequest, withError: .requestAdaptationFailed(error: error)) }
             }
         }
@@ -1107,17 +1120,23 @@ open class Session {
     // MARK: - Task Handling
 
     func didCreateURLRequest(_ urlRequest: URLRequest, for request: Request) {
+        /// 条件检查，如果不是在rootQueue就返回了
         dispatchPrecondition(condition: .onQueue(rootQueue))
-        /// 执行回调函数didCreateURLRequest
+        
+        /// 报告状态: 执行回调函数didCreateURLRequest
         request.didCreateURLRequest(urlRequest)
 
         guard !request.isCancelled else { return }
+        
         /// 创建task
         let task = request.task(for: urlRequest, using: session)
+        
         requestTaskMap[request] = task
-        /// 执行回调函数
+        
+        /// 报告状态: 执行回调函数
         request.didCreateTask(task)
-        /// 更新task状态, 内部会执行回调函数
+        
+        /// Alamofire.Request的withState闭包，回调中会更新更新task状态
         updateStatesForTask(task, request: request)
     }
 

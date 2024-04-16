@@ -41,7 +41,7 @@ class NetworkViewController: UIViewController {
     // MARK: Actions
     @IBAction func afRequest(_ sender: Any) {
         
-        self.showHUD()
+//        self.showHUD()
         
         /// URLRequest系统写法
         var request = URLRequest(url: URL(string: url)!)
@@ -70,6 +70,15 @@ class NetworkViewController: UIViewController {
             ProgressHUD.remove()
             print(response)
         }
+        
+//        let rt = AF.request(url)
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+//            rt.response { data in
+//                print(data)
+//            }
+//        }
+//        print(rt)
+
         
 //        AF.request(url,
 //                   method: .post,
