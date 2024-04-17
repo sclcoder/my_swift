@@ -21,7 +21,7 @@
   "swift_versions": [
     "5"
   ],
-  "source_files": "Source/*.swift",
+  "source_files": "Source/**/*.swift",
   "frameworks": "CFNetwork",
   "swift_version": "5"
 }

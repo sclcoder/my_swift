@@ -23,7 +23,10 @@
 //
 
 import Foundation
-
+/**
+ EventMonitor 是 Alamofire 中用于监视网络请求生命周期事件的协议。通过实现这个协议，你可以监视网络请求的各个阶段，并且在这些阶段执行一些自定义的逻辑，比如记录日志、统计请求耗时等。
+ 具体来说，EventMonitor 定义了一系列网络请求生命周期事件，包括请求的开始、结束、失败等。你可以根据自己的需求来实现这些事件的处理方法，以便在请求的不同阶段执行自定义的逻辑。
+ */
 /// Protocol outlining the lifetime events inside Alamofire. It includes both events received from the various
 /// `URLSession` delegate protocols as well as various events from the lifetime of `Request` and its subclasses.
 public protocol EventMonitor {
