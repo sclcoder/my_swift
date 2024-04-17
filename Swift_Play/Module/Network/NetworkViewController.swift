@@ -40,13 +40,15 @@ class NetworkViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func afRequest(_ sender: Any) {
-        //        testRequest()
+        testRequest()
 
-        _Concurrency.Task { @MainActor in
-            print("-----before testAsync-----")
-            try await testAsync()
-            print("-----after testAsync-----")
-        }
+//        _Concurrency.Task { @MainActor in
+//            print("-----before testAsync-----")
+//            try await testAsync()
+//            print("-----after testAsync-----")
+//        }
+        
+        testQueue()
     }
     @IBAction func moyaReqeust(_ sender: Any) {
         
@@ -199,6 +201,29 @@ class NetworkViewController: UIViewController {
         let photos = try await [firstPhoto, secondPhoto, thirdPhoto]
         print(photos)
         print("-----并行执行结束-----")
+    }
+    
+    func testQueue(){
+//        let serialQueue1 = DispatchQueue(label: "com.example.serialQueue1")
+//        let serialQueue2 = DispatchQueue(label: "com.example.serialQueue2")
+//
+//        // 将任务添加到串行队列 serialQueue1，并且指定 serialQueue2 作为目标队列
+//        serialQueue1.async {
+//            print("Task 1 is executing on \(Thread.current)")
+//        }
+//
+//        serialQueue1.async {
+//            print("Task 2 is executing on \(Thread.current)")
+//        }
+//
+//        serialQueue1.async {
+//            print("Task 3 is executing on \(Thread.current)")
+//        }
+//
+//        // 等待 serialQueue1 中的所有任务执行完毕后，将结果传递给 serialQueue2
+//        serialQueue1.async(qos: .default, flags: .enforceQoS, target: serialQueue2) {
+//            print("All tasks on serialQueue1 are completed, and the result is passed to serialQueue2.")
+//        }
     }
 }
 

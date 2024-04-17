@@ -137,6 +137,7 @@ open class Session {
         self.delegate = delegate
         self.rootQueue = rootQueue
         self.startRequestsImmediately = startRequestsImmediately
+        /// ??? target参数：目标队列？什么作用
         self.requestQueue = requestQueue ?? DispatchQueue(label: "\(rootQueue.label).requestQueue", target: rootQueue)
         self.serializationQueue = serializationQueue ?? DispatchQueue(label: "\(rootQueue.label).serializationQueue", target: rootQueue)
         //// Session级别的请求拦截器 - 默认是nil
@@ -197,6 +198,11 @@ open class Session {
                             eventMonitors: [EventMonitor] = []) {
         precondition(configuration.identifier == nil, "Alamofire does not support background URLSessionConfigurations.")
 
+        /**
+         DispatchQueue??
+         OperationQueue??
+         */
+        
         // Retarget the incoming rootQueue for safety, unless it's the main queue, which we know is safe.
         let serialRootQueue = (rootQueue === DispatchQueue.main) ? rootQueue : DispatchQueue(label: rootQueue.label,
                                                                                              target: rootQueue)
