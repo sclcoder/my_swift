@@ -29,7 +29,18 @@ import Foundation
 /// cache handling.
 open class Session {
     /// Shared singleton instance used by all `AF.request` APIs. Cannot be modified.
-    // 使用 `` 来定义和关键字重名的方法和属性
+    /**
+     使用 `` 来定义和关键字重名的方法和属性 https://gitbook.swiftgg.team/swift/yu-yan-can-kao/02_lexical_structure#identifiers
+     标识符（identifier） 可以由以下的字符开始：大写或小写的字母 A 到 Z、下划线（_）、基本多文种平面（Basic Multilingual Plane）中非字符数字组合的 Unicode 字符以及基本多文种平面以外的非个人专用区字符。在首字符之后，允许使用数字和组合 Unicode 字符。
+
+     以下划线开头的标识视为内部标识符，即使声明了 public 访问级别。这个约定允许框架作者标记一部分不能被使用方调用或依赖的 API，即便因为某些限制原因导致它的声明必须是公开的。另外，双下划线开头的标识符是为 Swift 编译器和标准库预留的。
+
+     使用保留字作为标识符，需要在其前后增加反引号（`）。例如，class 不是合法的标识符，但可以使用 `class`。反引号不属于标识符的一部分，`x` 和 x 表示同一标识符。
+
+     闭包中如果没有明确指定参数名称，参数将被隐式命名为 $0、$1、$2 等等。这些命名在闭包作用域范围内是合法的标识符。
+
+     编译器给含有属性包装器呈现值的属性自动合成以美元符号（$）开头的标识符。你的代码可以与这些标识符进行交互，，但是不能使用该前缀声明标识符。更详细的介绍，请查看 特性 章节中的 属性包装器 部分。
+     */
     public static let `default` = Session()
 
     /// Underlying `URLSession` used to create `URLSessionTasks` for this instance, and for which this instance's

@@ -40,106 +40,103 @@ class NetworkViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func afRequest(_ sender: Any) {
-        
-//        self.showHUD()
-        
-        /// URLRequest系统写法
-        var request = URLRequest(url: URL(string: url)!)
-        request.httpMethod = "GET"
-        /// AF添加的extension属性
-        request.method = .post;
-        
-        /// method
-//        AF.request(url,method: .get).response{
-//            response in
-//                print(response)
-//        }
-        /**
-         open func request(_ convertible: URLConvertible,
-                           method: HTTPMethod = .get,
-                           parameters: Parameters? = nil,
-                           encoding: ParameterEncoding = URLEncodedFormParameterEncoder.default,
-                           headers: HTTPHeaders? = nil,
-                           interceptor: RequestInterceptor? = nil,
-                           requestModifier: RequestModifier? = nil) -> DataRequest
-         */
-        /// requestModifier
-        AF.request(url) { request in
-            request.timeoutInterval = 30
-        }.response { response in
-            ProgressHUD.remove()
-            print(response)
-        }
-        
-//        let rt = AF.request(url)
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-//            rt.response { data in
-//                print(data)
-//            }
-//        }
-//        print(rt)
-
-        
-//        AF.request(url,
-//                   method: .post,
-//                   parameters: login,
-//                   encoder: URLEncodedFormParameterEncoder.default).response(
-//                    completionHandler:{
-//                        response in
-//                        print(response)
-//                    })
-        
-//        AF.request(url,
-//                   method: .post,
-//                   parameters: login,
-//                   encoder: URLEncodedFormParameterEncoder.default).response(
-//                    completionHandler:{
-//                        afDataResponse in
-//                        print(afDataResponse.response!)
-//                        print(afDataResponse.request!.timeoutInterval)
-////                        print(afDataResponse.data!)
-////                        print(afDataResponse.result)
-//                    })
-        
-        
-//        AF.request(url,method: .get).responseData { response in
-//            switch response.result {
-//            case let .success(dataInfo):
-//                print(dataInfo)
-//            case let .failure(error):
-//                print(error)
-//            }
-//        }.responseString { response in
-//            switch response.result{
-//            case let .success(stringInfo):
-//                print(stringInfo)
-//            case let .failure(error):
-//                print(error)
-//            }
-//        }.responseJSON { response in
-//            print(response.value!)
-//        }
-//
-//
-//        struct WeatherInfo: Decodable { let weatherinfo: Dictionary<String, String> }
-//
-//        AF.request(url,method: .get).responseDecodable(of: WeatherInfo.self ,decoder: JSONDecoder(), completionHandler: { response in
-//            switch response.result{
-//            case let .success(dic):
-//                print(dic)
-//            case let .failure(error):
-//                print(error)
-//            }
-//        })
+        testRequest()
     }
-    
-    
-    
-    
-    
-    
+
+    func testRequest(){
+        //        self.showHUD()
+                
+                /// URLRequest系统写法
+                var request = URLRequest(url: URL(string: url)!)
+                request.httpMethod = "GET"
+                /// AF添加的extension属性
+                request.method = .post;
+                
+                /// method
+        //        AF.request(url,method: .get).response{
+        //            response in
+        //                print(response)
+        //        }
+                /**
+                 open func request(_ convertible: URLConvertible,
+                                   method: HTTPMethod = .get,
+                                   parameters: Parameters? = nil,
+                                   encoding: ParameterEncoding = URLEncodedFormParameterEncoder.default,
+                                   headers: HTTPHeaders? = nil,
+                                   interceptor: RequestInterceptor? = nil,
+                                   requestModifier: RequestModifier? = nil) -> DataRequest
+                 */
+                /// requestModifier
+                AF.request(url) { request in
+                    request.timeoutInterval = 30
+                }.response { response in
+        //            ProgressHUD.remove()
+                    print(response)
+                }
+                
+        //        let rt = AF.request(url)
+        //        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        //            rt.response { data in
+        //                print(data)
+        //            }
+        //        }
+        //        print(rt)
+
+                
+        //        AF.request(url,
+        //                   method: .post,
+        //                   parameters: login,
+        //                   encoder: URLEncodedFormParameterEncoder.default).response(
+        //                    completionHandler:{
+        //                        response in
+        //                        print(response)
+        //                    })
+                
+        //        AF.request(url,
+        //                   method: .post,
+        //                   parameters: login,
+        //                   encoder: URLEncodedFormParameterEncoder.default).response(
+        //                    completionHandler:{
+        //                        afDataResponse in
+        //                        print(afDataResponse.response!)
+        //                        print(afDataResponse.request!.timeoutInterval)
+        ////                        print(afDataResponse.data!)
+        ////                        print(afDataResponse.result)
+        //                    })
+                
+                
+        //        AF.request(url,method: .get).responseData { response in
+        //            switch response.result {
+        //            case let .success(dataInfo):
+        //                print(dataInfo)
+        //            case let .failure(error):
+        //                print(error)
+        //            }
+        //        }.responseString { response in
+        //            switch response.result{
+        //            case let .success(stringInfo):
+        //                print(stringInfo)
+        //            case let .failure(error):
+        //                print(error)
+        //            }
+        //        }.responseJSON { response in
+        //            print(response.value!)
+        //        }
+        //
+        //
+        //        struct WeatherInfo: Decodable { let weatherinfo: Dictionary<String, String> }
+        //
+        //        AF.request(url,method: .get).responseDecodable(of: WeatherInfo.self ,decoder: JSONDecoder(), completionHandler: { response in
+        //            switch response.result{
+        //            case let .success(dic):
+        //                print(dic)
+        //            case let .failure(error):
+        //                print(error)
+        //            }
+        //        })
+    }
+
     @IBAction func moyaReqeust(_ sender: Any) {
-        
         
         
     }
@@ -159,6 +156,7 @@ class NetworkViewController: UIViewController {
         let data1 = try? JSONSerialization.data(withJSONObject: ["name": person!.name, "age": person!.age], options: [])
         print(String(data: data1!, encoding: .utf8)!) //{"name":"Tom","age":2}
     }
+
 }
 
 
