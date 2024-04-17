@@ -40,33 +40,28 @@ class NetworkViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func afRequest(_ sender: Any) {
-        testRequest()
+        //        testRequest()
+
+        _Concurrency.Task { @MainActor in
+            print("-----before testAsync-----")
+            try await testAsync()
+            print("-----after testAsync-----")
+        }
+    }
+    @IBAction func moyaReqeust(_ sender: Any) {
+        
     }
 
     func testRequest(){
         //        self.showHUD()
                 
-                /// URLRequest系统写法
-                var request = URLRequest(url: URL(string: url)!)
-                request.httpMethod = "GET"
-                /// AF添加的extension属性
-                request.method = .post;
+//                /// URLRequest系统写法
+//                var request = URLRequest(url: URL(string: url)!)
+//                request.httpMethod = "GET"
+//                /// AF添加的extension属性
+//                request.method = .post;
                 
-                /// method
-        //        AF.request(url,method: .get).response{
-        //            response in
-        //                print(response)
-        //        }
-                /**
-                 open func request(_ convertible: URLConvertible,
-                                   method: HTTPMethod = .get,
-                                   parameters: Parameters? = nil,
-                                   encoding: ParameterEncoding = URLEncodedFormParameterEncoder.default,
-                                   headers: HTTPHeaders? = nil,
-                                   interceptor: RequestInterceptor? = nil,
-                                   requestModifier: RequestModifier? = nil) -> DataRequest
-                 */
-                /// requestModifier
+
                 AF.request(url) { request in
                     request.timeoutInterval = 30
                 }.response { response in
@@ -135,12 +130,7 @@ class NetworkViewController: UIViewController {
         //            }
         //        })
     }
-
-    @IBAction func moyaReqeust(_ sender: Any) {
-        
-        
-    }
-
+    
     func testCoding() {
         //解码 JSON 数据
         let json = #" {"name":"Tom", "age": 2} "#
@@ -157,6 +147,59 @@ class NetworkViewController: UIViewController {
         print(String(data: data1!, encoding: .utf8)!) //{"name":"Tom","age":2}
     }
 
+    /**
+     并发 https://gitbook.swiftgg.team/swift/swift-jiao-cheng/28_concurrency
+     async
+     await
+     Task : 任务和任务组 - 非结构化并发\任务取消
+     actor
+     可发送类型
+     */
+    func testAsync() async throws -> Void{
+        func listPhotos(inGallery name: String) async throws -> [String] {
+            // try await Task.sleep(until: .now + .seconds(2), clock: .continuous)
+            // 默认找的是Moya中的Task，所以这里改为_Concurrency.Task
+            try await _Concurrency.Task.sleep(until: .now + .seconds(2), clock: .continuous)
+            return ["IMG001", "IMG99", "IMG0404"]
+        }
+        
+        @Sendable func downloadPhoto(named: String) async throws -> String{
+            try await _Concurrency.Task.sleep(until: .now + .seconds(2), clock: .continuous)
+            return "Image - " + named
+        }
+        
+        /// 串行调用异步方法
+        print("-----串行执行开始-----")
+        print("-----before listPhotos-----")
+        let photoNames = try await listPhotos(inGallery: "Summer Vacation")
+        print("-----after listPhotos-----")
+        
+        let sortedNames = photoNames.sorted()
+        print(sortedNames)
+        let name = sortedNames[0]
+        
+        print("-----before downloadPhoto-----")
+        let photo = try await downloadPhoto(named: name)
+        print("-----after downloadPhoto-----")
+        print(photo)
+
+        print("-----串行执行结束-----")
+
+        
+        /// 并行的调用异步方法 : 为了在调用异步函数的时候让它附近的代码并发执行，定义一个常量时，在 let 前添加 async 关键字，然后在每次使用这个常量时添加 await 标记。
+        print("-----并行执行开始-----")
+
+        print("-----before downloadPhoto firstPhoto-----")
+        async let firstPhoto  = try await downloadPhoto(named: sortedNames[0])
+        print("-----before downloadPhoto secondPhoto-----")
+        async let secondPhoto = try await downloadPhoto(named: sortedNames[1])
+        print("-----before downloadPhoto thirdPhoto-----")
+        async let thirdPhoto  = try await downloadPhoto(named: sortedNames[2])
+        print("-----after downloadPhoto -----")
+        let photos = try await [firstPhoto, secondPhoto, thirdPhoto]
+        print(photos)
+        print("-----并行执行结束-----")
+    }
 }
 
 
