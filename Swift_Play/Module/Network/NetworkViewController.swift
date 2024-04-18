@@ -40,7 +40,7 @@ class NetworkViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func afRequest(_ sender: Any) {
-        testRequest()
+//        testRequest()
 
 //        _Concurrency.Task { @MainActor in
 //            print("-----before testAsync-----")
@@ -48,7 +48,9 @@ class NetworkViewController: UIViewController {
 //            print("-----after testAsync-----")
 //        }
         
-        testQueue()
+//        testQueue()
+        
+        testCoding()
     }
     @IBAction func moyaReqeust(_ sender: Any) {
         
@@ -144,23 +146,70 @@ class NetworkViewController: UIViewController {
     
     func testCoding() {
         
-      /// 详解 Codable 的用法和原理 https://juejin.cn/post/7142499077417074696
+        /// 详解 Codable 的用法和原理 https://juejin.cn/post/7142499077417074696
         
-        //解码 JSON 数据
-        let json = #" {"name":"Tom", "age": 2} "#
-        let person = try? JSONDecoder().decode(Person.self, from: json.data(using: .utf8)!)
-        print(person!) // Person(name: "Tom", age: 2)
-     
-        
-        //编码导出为 JSON 数据
-        let data0 = try? JSONEncoder().encode(person)
-        let dataObject = try? JSONSerialization.jsonObject(with: data0!, options: [])
-        print(dataObject ?? "nil") // { age = 2; name = Tom; }
+        struct User: Codable {
+            var name: String
+            var age: Int
+            var birthday: Date?
+            
+            enum CodingKeys: String, CodingKey {
+                case name = "userName"
+                case age = "userAge"
+                case birthday = "BT"
 
-        let data1 = try? JSONSerialization.data(withJSONObject: ["name": person!.name, "age": person!.age], options: [])
-        print(String(data: data1!, encoding: .utf8)!) //{"name":"Tom","age":2}
+            }
+        }
+        
+        
+        let user = User(name: "tiny", age: 33, birthday: Date(timeIntervalSince1970: 0))
+        do {
+            let jsonEncoder = JSONEncoder()
+            jsonEncoder.dateEncodingStrategy = .iso8601
+            let data = try jsonEncoder.encode(user)
+            let dataObject = try JSONSerialization.jsonObject(with: data, options: [])
+            print(dataObject)
+        } catch {
+            print(error)
+        }
+
+        
+        let json = """
+            {
+                "name": "zhangsan",
+                "age": 25,
+                "birthday": "2022-09-12T10:25:41+00:00"
+            }
+            """.data(using: .utf8)!
+        
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        
+        do {
+            let user = try decoder.decode(User.self, from: json)
+            print(user)
+        } catch {
+            print(error)
+        }
+        
+        
+        
+//        //解码 JSON 数据
+//        let json2 = #" {"name":"Tom", "age": 2} "#
+//        let person = try? JSONDecoder().decode(Person.self, from: json2.data(using: .utf8)!)
+//        print(person!) // Person(name: "Tom", age: 2)
+//
+//
+//        //编码导出为 JSON 数据
+//        let data0 = try? JSONEncoder().encode(person)
+//        let dataObject = try? JSONSerialization.jsonObject(with: data0!, options: [])
+//        print(dataObject ?? "nil") // { age = 2; name = Tom; }
+//
+//        let data1 = try? JSONSerialization.data(withJSONObject: ["name": person!.name, "age": person!.age], options: [])
+//        print(String(data: data1!, encoding: .utf8)!) //{"name":"Tom","age":2}
+        
+        
     }
-
     /**
      并发 https://gitbook.swiftgg.team/swift/swift-jiao-cheng/28_concurrency
      async
