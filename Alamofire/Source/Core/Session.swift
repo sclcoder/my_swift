@@ -28,7 +28,6 @@ import Foundation
 /// functionality for all `Request`s, including queuing, interception, trust management, redirect handling, and response
 /// cache handling.
 open class Session {
-    /// Shared singleton instance used by all `AF.request` APIs. Cannot be modified.
     /**
      使用 `` 来定义和关键字重名的方法和属性 https://gitbook.swiftgg.team/swift/yu-yan-can-kao/02_lexical_structure#identifiers
      标识符（identifier） 可以由以下的字符开始：大写或小写的字母 A 到 Z、下划线（_）、基本多文种平面（Basic Multilingual Plane）中非字符数字组合的 Unicode 字符以及基本多文种平面以外的非个人专用区字符。在首字符之后，允许使用数字和组合 Unicode 字符。
@@ -41,6 +40,8 @@ open class Session {
 
      编译器给含有属性包装器呈现值的属性自动合成以美元符号（$）开头的标识符。你的代码可以与这些标识符进行交互，，但是不能使用该前缀声明标识符。更详细的介绍，请查看 特性 章节中的 属性包装器 部分。
      */
+    
+    /// Shared singleton instance used by all `AF.request` APIs. Cannot be modified.
     public static let `default` = Session()
 
     /// Underlying `URLSession` used to create `URLSessionTasks` for this instance, and for which this instance's
@@ -50,41 +51,67 @@ open class Session {
     ///         break internal Alamofire logic that tracks those tasks.
     ///
     public let session: URLSession
+    
+    
     /// Instance's `SessionDelegate`, which handles the `URLSessionDelegate` methods and `Request` interaction.
     public let delegate: SessionDelegate
+    
+    
     /// Root `DispatchQueue` for all internal callbacks and state update. **MUST** be a serial queue.
     public let rootQueue: DispatchQueue
+    
+    
     /// Value determining whether this instance automatically calls `resume()` on all created `Request`s.
     public let startRequestsImmediately: Bool
+    
+    
     /// `DispatchQueue` on which `URLRequest`s are created asynchronously. By default this queue uses `rootQueue` as its
     /// `target`, but a separate queue can be used if request creation is determined to be a bottleneck. Always profile
     /// and test before introducing an additional queue.
     public let requestQueue: DispatchQueue
+    
+    
     /// `DispatchQueue` passed to all `Request`s on which they perform their response serialization. By default this
     /// queue uses `rootQueue` as its `target` but a separate queue can be used if response serialization is determined
     /// to be a bottleneck. Always profile and test before introducing an additional queue.
     public let serializationQueue: DispatchQueue
+    
+    
+    /**
+     `RequestInterceptor` 用于Session实例创建的所有 `Request`。 也可以在每个“Request”的基础上设置“RequestInterceptor”，在这种情况下，“Request”的拦截器优先于该值。
+     */
     /// `RequestInterceptor` used for all `Request` created by the instance. `RequestInterceptor`s can also be set on a
     /// per-`Request` basis, in which case the `Request`'s interceptor takes precedence over this value.
+    ///
     public let interceptor: RequestInterceptor?
+    
+    
     /// `ServerTrustManager` instance used to evaluate all trust challenges and provide certificate and key pinning.
     public let serverTrustManager: ServerTrustManager?
+    
     /// `RedirectHandler` instance used to provide customization for request redirection.
     public let redirectHandler: RedirectHandler?
+    
     /// `CachedResponseHandler` instance used to provide customization of cached response handling.
     public let cachedResponseHandler: CachedResponseHandler?
+    
     /// `CompositeEventMonitor` used to compose Alamofire's `defaultEventMonitors` and any passed `EventMonitor`s.
     public let eventMonitor: CompositeEventMonitor
+    
     /// `EventMonitor`s included in all instances. `[AlamofireNotifications()]` by default.
     public let defaultEventMonitors: [EventMonitor] = [AlamofireNotifications()]
 
     /// Internal map between `Request`s and any `URLSessionTasks` that may be in flight for them.
     var requestTaskMap = RequestTaskMap()
+    
     /// `Set` of currently active `Request`s.
     var activeRequests: Set<Request> = []
+    
     /// Completion events awaiting `URLSessionTaskMetrics`.
     var waitingCompletions: [URLSessionTask: () -> Void] = [:]
 
+    
+    
     /// Creates a `Session` from a `URLSession` and other parameters.
     ///
     /// - Note: When passing a `URLSession`, you must create the `URLSession` with a specific `delegateQueue` value and
@@ -117,6 +144,12 @@ open class Session {
     ///                               `nil` by default.
     ///   - eventMonitors:            Additional `EventMonitor`s used by the instance. Alamofire always adds a
     ///                               `AlamofireNotifications` `EventMonitor` to the array passed here. `[]` by default.
+
+    /**
+     -  DispatchQueue 是基于 Grand Central Dispatch (GCD) 的抽象，它提供了一个轻量级的、底层的接口来执行任务。你可以使用 DispatchQueue 来创建队列，并将任务提交到队列中执行，但是它没有提供诸如任务依赖、取消任务等高级功能。
+     -  OperationQueue 则是基于 Operation 和 OperationQueue 的抽象，它提供了更高级别的接口来管理任务。你可以创建 Operation 对象来表示一个任务，并将这些任务添加到 OperationQueue 中。OperationQueue 提供了一些额外的功能，比如任务依赖、取消任务、调整最大并发数等。
+     
+     */
     public init(session: URLSession,
                 delegate: SessionDelegate,
                 rootQueue: DispatchQueue,
@@ -128,29 +161,52 @@ open class Session {
                 redirectHandler: RedirectHandler? = nil,
                 cachedResponseHandler: CachedResponseHandler? = nil,
                 eventMonitors: [EventMonitor] = []) {
+        
+        
         precondition(session.configuration.identifier == nil,
                      "Alamofire does not support background URLSessionConfigurations.")
+        /**
+         session.delegateQueue是OperationQueue类型 ，underlyingQueue 是 DispatchQueue类型（GCD）
+         */
+        /// Alamofirle 要求 session.delegateQueue.underlyingQueue === rootQueue
         precondition(session.delegateQueue.underlyingQueue === rootQueue,
                      "Session(session:) initializer must be passed the DispatchQueue used as the delegateQueue's underlyingQueue as rootQueue.")
 
         self.session = session
+        
         self.delegate = delegate
+        
+        /// 一个以DispatchQueue(label: "org.alamofire.session.rootQueue")为targetQueue的串行队列
         self.rootQueue = rootQueue
+        
         self.startRequestsImmediately = startRequestsImmediately
-        /// ??? target参数：目标队列？什么作用
+        
+        /// 一个以DispatchQueue(label: "org.alamofire.session.rootQueue")为targetQueue的串行队列
         self.requestQueue = requestQueue ?? DispatchQueue(label: "\(rootQueue.label).requestQueue", target: rootQueue)
+        
+        /// 一个以DispatchQueue(label: "org.alamofire.session.rootQueue")为targetQueue的串行队列
         self.serializationQueue = serializationQueue ?? DispatchQueue(label: "\(rootQueue.label).serializationQueue", target: rootQueue)
+        
         //// Session级别的请求拦截器 - 默认是nil
         self.interceptor = interceptor
+        
         self.serverTrustManager = serverTrustManager
+        
         self.redirectHandler = redirectHandler
+        
         self.cachedResponseHandler = cachedResponseHandler
+        
         /// eventMonitor在此初始化 - 默认只有AlamofireNotifications这一个Monitor
         eventMonitor = CompositeEventMonitor(monitors: defaultEventMonitors + eventMonitors)
+        
         delegate.eventMonitor = eventMonitor
+        
         delegate.stateProvider = self
     }
 
+    
+    
+    
     /// Creates a `Session` from a `URLSessionConfiguration`.
     ///
     /// - Note: This initializer lets Alamofire handle the creation of the underlying `URLSession` and its
@@ -196,16 +252,23 @@ open class Session {
                             redirectHandler: RedirectHandler? = nil,
                             cachedResponseHandler: CachedResponseHandler? = nil,
                             eventMonitors: [EventMonitor] = []) {
+        
         precondition(configuration.identifier == nil, "Alamofire does not support background URLSessionConfigurations.")
 
         /**
-         DispatchQueue??
-         OperationQueue??
+          https://juejin.cn/post/6844903588930519047#heading-0  、https://www.humancode.us/2014/08/14/target-queues.html
+          目标队列：
+           - What does it mean for a queue to have a target queue?
+           - It’s a little surprising, actually: each time an enqueued block becomes ready to execute, the queue will re-enqueue that block on the target queue for actual execution.
+         
+         requestQueue、serializationQueue的targetQueue都是rootQueue
+         这里的rootQueue实际是作为了后续队列的targetQueue ， 默认值是DispatchQueue(label: "org.alamofire.session.rootQueue")
+         Session.rootQueue的真实值为serialRootQueue， 一个以rootQueue为targetQueue的串行队列
          */
-        
         // Retarget the incoming rootQueue for safety, unless it's the main queue, which we know is safe.
         let serialRootQueue = (rootQueue === DispatchQueue.main) ? rootQueue : DispatchQueue(label: rootQueue.label,
                                                                                              target: rootQueue)
+        /// delegateQueue.是OperationQueue类型，其underlyingQueue 是 serialRootQueue，即Session.rootQueue
         let delegateQueue = OperationQueue(maxConcurrentOperationCount: 1, underlyingQueue: serialRootQueue, name: "\(serialRootQueue.label).sessionDelegate")
         
         /**
@@ -217,8 +280,8 @@ open class Session {
 
         self.init(session: session,
                   delegate: delegate,
-                  rootQueue: serialRootQueue,
-                  startRequestsImmediately: startRequestsImmediately,
+                  rootQueue: serialRootQueue, /// 一个以DispatchQueue(label: "org.alamofire.session.rootQueue")为targetQueue的串行队列
+                  startRequestsImmediately: startRequestsImmediately, /// 默认YES
                   requestQueue: requestQueue,
                   serializationQueue: serializationQueue,
                   interceptor: interceptor,

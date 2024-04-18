@@ -24,6 +24,11 @@
 
 import Foundation
 
+/**
+  详解 Codable 的用法和原理  https://juejin.cn/post/7142499077417074696
+  通过了解Codable的原理，理解以下设计
+ */
+
 /// A type that can encode any `Encodable` type into a `URLRequest`.
 public protocol ParameterEncoder {
     /// Encode the provided `Encodable` parameters into `request`.

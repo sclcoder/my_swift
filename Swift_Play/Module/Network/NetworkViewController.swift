@@ -55,6 +55,15 @@ class NetworkViewController: UIViewController {
     }
 
     func testRequest(){
+        
+        
+        AF.request(url) { request in
+            request.timeoutInterval = 30
+        }.response { response in
+//            ProgressHUD.remove()
+            print(response)
+        }
+        
         //        self.showHUD()
                 
 //                /// URLRequest系统写法
@@ -63,13 +72,13 @@ class NetworkViewController: UIViewController {
 //                /// AF添加的extension属性
 //                request.method = .post;
                 
-
-                AF.request(url) { request in
-                    request.timeoutInterval = 30
-                }.response { response in
-        //            ProgressHUD.remove()
-                    print(response)
-                }
+//
+//                AF.request(url) { request in
+//                    request.timeoutInterval = 30
+//                }.response { response in
+//        //            ProgressHUD.remove()
+//                    print(response)
+//                }
                 
         //        let rt = AF.request(url)
         //        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -134,6 +143,9 @@ class NetworkViewController: UIViewController {
     }
     
     func testCoding() {
+        
+      /// 详解 Codable 的用法和原理 https://juejin.cn/post/7142499077417074696
+        
         //解码 JSON 数据
         let json = #" {"name":"Tom", "age": 2} "#
         let person = try? JSONDecoder().decode(Person.self, from: json.data(using: .utf8)!)
@@ -204,26 +216,36 @@ class NetworkViewController: UIViewController {
     }
     
     func testQueue(){
-//        let serialQueue1 = DispatchQueue(label: "com.example.serialQueue1")
-//        let serialQueue2 = DispatchQueue(label: "com.example.serialQueue2")
-//
-//        // 将任务添加到串行队列 serialQueue1，并且指定 serialQueue2 作为目标队列
-//        serialQueue1.async {
-//            print("Task 1 is executing on \(Thread.current)")
-//        }
-//
-//        serialQueue1.async {
-//            print("Task 2 is executing on \(Thread.current)")
-//        }
-//
-//        serialQueue1.async {
-//            print("Task 3 is executing on \(Thread.current)")
-//        }
-//
-//        // 等待 serialQueue1 中的所有任务执行完毕后，将结果传递给 serialQueue2
-//        serialQueue1.async(qos: .default, flags: .enforceQoS, target: serialQueue2) {
-//            print("All tasks on serialQueue1 are completed, and the result is passed to serialQueue2.")
-//        }
+    /** 目标队列
+        https://www.humancode.us/2014/08/14/target-queues.html
+        https://juejin.cn/post/6844903588930519047#heading-0
+     */
+        let serialQueue     = DispatchQueue(label: "com.example.serialQueue")
+        let concurrentQueue = DispatchQueue(label: "com.example.concurrentQueue",attributes: .concurrent)
+//        let concurrentQueue = DispatchQueue(label: "com.example.concurrentQueue",attributes: .concurrent,target: serialQueue)
+        
+        // 将任务添加到串行队列 serialQueue1，并且指定 serialQueue2 作为目标队列
+        concurrentQueue.async {
+            print("Task 1 is executing on \(Thread.current)")
+            for index in 1...10{
+                print("Task 1 is executing on \(Thread.current)" + "index \(index)")
+            }
+        }
+        
+        concurrentQueue.async {
+            print("Task 2 is executing on \(Thread.current)")
+            for index in 1...10{
+                print("Task 2 is executing on \(Thread.current)" + "index \(index)")
+            }
+        }
+        
+        concurrentQueue.async {
+            print("Task 3 is executing on \(Thread.current)")
+            for index in 1...10{
+                print("Task 3 is executing on \(Thread.current)" + "index \(index)")
+            }
+        }
+        
     }
 }
 
