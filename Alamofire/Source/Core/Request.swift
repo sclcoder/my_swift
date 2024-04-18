@@ -80,10 +80,15 @@ public class Request {
 
     // MARK: - Mutable State
 
+    /// 把Request中需要外界设置或Request内部操作的属性封装在MutableState结构体中，然后使用属性包装器@Protected 保证操作MutableState中的属性都是线程安全的
     /// Type encapsulating all mutable state that may need to be accessed from anything other than the `underlyingQueue`.
     struct MutableState {
         /// State of the `Request`.
         var state: State = .initialized
+        
+        /**
+            这些属性，是外界调者调用相关函数时赋值的。
+         */
         /// `ProgressHandler` and `DispatchQueue` provided for upload progress callbacks.
         var uploadProgressHandler: (handler: ProgressHandler, queue: DispatchQueue)?
         /// `ProgressHandler` and `DispatchQueue` provided for download progress callbacks.
@@ -98,6 +103,8 @@ public class Request {
         var urlRequestHandler: (queue: DispatchQueue, handler: (URLRequest) -> Void)?
         /// Queue and closure called when the `Request` creates a `URLSessionTask`.
         var urlSessionTaskHandler: (queue: DispatchQueue, handler: (URLSessionTask) -> Void)?
+        
+        
         /// Response serialization closures that handle response parsing.
         var responseSerializers: [() -> Void] = []
         /// Response serialization completion closures executed once all response serializers are complete.
@@ -124,7 +131,6 @@ public class Request {
         var finishHandlers: [() -> Void] = []
     }
 
-    /// Protected `MutableState` value that provides thread-safe access to state values.
     
     /**
     ！！！注意 @Protected 是个属性包装器: 内部会在访问相关属性时保证线程安全
@@ -138,6 +144,7 @@ public class Request {
       https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
      */
     
+    /// Protected `MutableState` value that provides thread-safe access to state values.
     @Protected
     fileprivate var mutableState = MutableState()
 
@@ -667,7 +674,10 @@ public class Request {
     func updateUploadProgress(totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         uploadProgress.totalUnitCount = totalBytesExpectedToSend
         uploadProgress.completedUnitCount = totalBytesSent
-
+        /**
+         uploadProgressHandler哪里有queue方法？
+         uploadProgressHandler的类型是 (handler: ProgressHandler, queue: DispatchQueue)? 元组
+         */
         uploadProgressHandler?.queue.async { self.uploadProgressHandler?.handler(self.uploadProgress) }
     }
 

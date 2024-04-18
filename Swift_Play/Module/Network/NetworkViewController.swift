@@ -40,7 +40,7 @@ class NetworkViewController: UIViewController {
 
     // MARK: Actions
     @IBAction func afRequest(_ sender: Any) {
-//        testRequest()
+        testRequest()
 
 //        _Concurrency.Task { @MainActor in
 //            print("-----before testAsync-----")
@@ -50,7 +50,7 @@ class NetworkViewController: UIViewController {
         
 //        testQueue()
         
-        testCoding()
+//        testCoding()
     }
     @IBAction func moyaReqeust(_ sender: Any) {
         
