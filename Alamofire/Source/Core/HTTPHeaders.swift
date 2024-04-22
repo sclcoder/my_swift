@@ -142,7 +142,11 @@ public struct HTTPHeaders {
         return Dictionary(namesAndValues, uniquingKeysWith: { _, last in last })
     }
 }
-
+/**
+    https://gitbook.swiftgg.team/swift/swift-jiao-cheng/14_initialization#initializer-delegation-for-value-types
+ 1. 将自定义的构造器写到扩展（extension）中
+  - 假如你希望默认构造器、逐一成员构造器以及你自己的自定义构造器都能用来创建实例，可以将自定义的构造器写到扩展（extension）中，而不是写在值类型的原始定义中。想查看更多内容，请查看 扩展 章节。
+  */
 extension HTTPHeaders: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, String)...) {
         self.init()
