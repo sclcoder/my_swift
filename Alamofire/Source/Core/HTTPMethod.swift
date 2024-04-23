@@ -48,7 +48,8 @@ public struct HTTPMethod: RawRepresentable, Equatable, Hashable {
     /// `TRACE` method.
     public static let trace = HTTPMethod(rawValue: "TRACE")
 
-    // RawRepresentable 协议: rawValue和关联的类型可以互相转换, 如HTTPMethod.connect是HTTPMethod类型的一个实例属性，其原始值是"CONNECT"。
+    // RawRepresentable 协议: A type that can be converted to and from an associated raw value. 可以在关联的原始值之间进行转换的类型。 
+    // 使用“RawRepresentable”类型，您可以在自定义类型和关联的“RawValue”类型之间来回切换，而不会丢失原始“RawRepresentable”类型的值
     public let rawValue: String
 
     public init(rawValue: String) {
