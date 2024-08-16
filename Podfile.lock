@@ -17,7 +17,7 @@ PODS:
 
 DEPENDENCIES:
   - Alamofire (from `./Alamofire`)
-  - Moya (~> 15.0)
+  - Moya (from `./Moya`)
   - PKHUD (~> 5.0)
   - ProgressHUD
   - RxCocoa
@@ -27,7 +27,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Moya
     - PKHUD
     - ProgressHUD
     - RxCocoa
@@ -39,10 +38,12 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Alamofire:
     :path: "./Alamofire"
+  Moya:
+    :path: "./Moya"
 
 SPEC CHECKSUMS:
   Alamofire: d8f5f600af84458d0eae180359ca097eb4504e54
-  Moya: 138f0573e53411fb3dc17016add0b748dfbd78ee
+  Moya: d3845c0e01c21ae58c1ca96c5344768a115d77cd
   PKHUD: 98f3e4bc904b9c916f1c5bb6d765365b5357291b
   ProgressHUD: 355915c8f033e626788fa9b0d99d06e8691595ab
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
@@ -51,6 +52,6 @@ SPEC CHECKSUMS:
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
 
-PODFILE CHECKSUM: bc85cef488343000577924fa0ae58061be1878fa
+PODFILE CHECKSUM: 2332eac82e17dad18ddec0f43103105a2b19d37b
 
-COCOAPODS: 1.10.2
+COCOAPODS: 1.15.2
