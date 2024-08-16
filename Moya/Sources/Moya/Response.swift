@@ -40,6 +40,16 @@ public final class Response: CustomDebugStringConvertible, Equatable {
 public extension Response {
 
     /**
+     Swift 标准库中的以下类型都符合 RangeExpression 协议：
+
+     Range<Bound>：表示不包括上界的连续区间，例如 0..<10。
+     ClosedRange<Bound>：表示包括上界的连续区间，例如 0...10。
+     PartialRangeThrough<Bound>：表示从某个值起直到并包括某个上界的区间，例如 ...5。
+     PartialRangeFrom<Bound>：表示从某个下界开始到无穷大的区间，例如 5...。
+     PartialRangeUpTo<Bound>：表示从某个值起直到但不包括某个上界的区间，例如 ..<5。
+     */
+    
+    /**
      Returns the `Response` if the `statusCode` falls within the specified range.
 
      - parameters:

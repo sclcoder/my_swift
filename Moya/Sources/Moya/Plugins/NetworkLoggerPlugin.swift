@@ -153,6 +153,8 @@ public extension NetworkLoggerPlugin {
     }
 }
 
+/// 引用嵌套类型
+/// 在外部引用嵌套类型时，在嵌套类型的类型名前加上其外部类型的类型名作为前缀   https://gitbook.swiftgg.team/swift/swift-jiao-cheng/19_nested_types
 public extension NetworkLoggerPlugin.Configuration {
     struct LogOptions: OptionSet {
         public let rawValue: Int
