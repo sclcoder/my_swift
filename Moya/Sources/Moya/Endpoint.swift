@@ -1,5 +1,30 @@
 import Foundation
+/**
+ Endpoint 是 Moya 中一个核心的设计，它代表了一个网络请求的抽象，包括请求的 URL、HTTP 方法、头信息、参数等。Endpoint 的设计使得请求的配置更加灵活，同时也为自定义请求行为（如签名、加密等）提供了可能。
 
+ 核心概念
+ Endpoint 的组成部分：
+
+ url: 完整的请求 URL，由基础 URL 和路径组合而成。
+ method: 请求的方法，比如 GET、POST、PUT、DELETE 等。
+ task: 表示请求的任务类型，可以是请求参数（如 requestParameters）、文件上传（如 uploadMultipart）等。
+ httpHeaderFields: 请求头信息的字典，用于设置请求的头信息。
+ sampleResponseClosure: 一个闭包，用于提供模拟响应的数据。这通常在测试和调试时使用。
+ Endpoint 的生成：
+
+ Moya 的设计理念是每个 TargetType 实例（如你的 API 枚举的一个 case）都可以生成一个 Endpoint。在默认实现中，MoyaProvider 会根据 TargetType 的属性自动生成 Endpoint
+ 
+ 自定义 Endpoint：
+
+ 你可以通过覆写 endpointClosure 来自定义生成 Endpoint 的过程。这在你需要对所有请求统一添加签名、认证信息等时候非常有用。
+ 
+
+ Endpoint 的灵活性：
+
+ Endpoint 的设计使得每个请求都可以在生成阶段进行高度自定义。这种灵活性允许你对每个请求进行不同的处理，比如动态地更改 URL、请求参数、添加头信息等。
+ 
+ Moya 中的 Endpoint 是对网络请求的一个高级抽象，提供了极大的灵活性和可定制性。通过自定义 Endpoint，你可以轻松地为每个请求添加特定的行为或配置，确保你的网络层能够适应各种需求。
+ */
 /// Used for stubbing responses.
 public enum EndpointSampleResponse {
 

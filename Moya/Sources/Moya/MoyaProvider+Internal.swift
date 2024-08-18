@@ -26,6 +26,7 @@ public extension MoyaProvider {
 
         // Allow plugins to modify response
         let pluginsWithCompletion: Moya.Completion = { result in
+            /// $1 是plugins数组中的plugins, $0 是 result
             let processedResult = self.plugins.reduce(result) { $1.process($0, target: target) }
             completion(processedResult)
         }
@@ -66,7 +67,7 @@ public extension MoyaProvider {
                 pluginsWithCompletion(result)
               }
             }
-
+            /// 得到最终的request后,发送请求performRequest中会对各种请求（data,upload,download,etc）进行针对性处理
             cancellableToken.innerCancellable = self.performRequest(target, request: request, callbackQueue: callbackQueue, progress: progress, completion: networkCompletion, endpoint: endpoint, stubBehavior: stubBehavior)
         }
 
@@ -81,6 +82,7 @@ public extension MoyaProvider {
         case .never:
             switch endpoint.task {
             case .requestPlain, .requestData, .requestJSONEncodable, .requestCustomJSONEncodable, .requestParameters, .requestCompositeData, .requestCompositeParameters:
+                /// 发送请求
                 return self.sendRequest(target, request: request, callbackQueue: callbackQueue, progress: progress, completion: completion)
             case .uploadFile(let file):
                 return self.sendUploadFile(target, request: request, callbackQueue: callbackQueue, file: file, progress: progress, completion: completion)
@@ -218,9 +220,13 @@ private extension MoyaProvider {
     }
 
     func sendRequest(_ target: Target, request: URLRequest, callbackQueue: DispatchQueue?, progress: Moya.ProgressBlock?, completion: @escaping Moya.Completion) -> CancellableToken {
+        /// 获取拦截器
         let interceptor = self.interceptor(target: target)
+        /// session,默认Moya使用的是Alamofire的session
         let initialRequest: DataRequest = session.requestQueue.sync {
+            /// session.request
             let initialRequest = session.request(request, interceptor: interceptor)
+            /// 配置拦截器
             setup(interceptor: interceptor, with: target, and: initialRequest)
 
             return initialRequest

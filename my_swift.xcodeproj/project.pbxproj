@@ -368,6 +368,7 @@
 			buildConfigurationList = 60F3A2EB2917EC7A00DF9CE2 /* Build configuration list for PBXNativeTarget "my_swift" */;
 			buildPhases = (
 				E1EDFDD8053D647E0F874E03 /* [CP] Check Pods Manifest.lock */,
+				2A6EA6E92BE0BD2200BD7663 /* ShellScript */,
 				60F3A2D32917EC7900DF9CE2 /* Sources */,
 				60F3A2D42917EC7900DF9CE2 /* Frameworks */,
 				60F3A2D52917EC7900DF9CE2 /* Resources */,
@@ -434,6 +435,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		2A6EA6E92BE0BD2200BD7663 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\necho '------env--------'\n\nenv\n\necho '------plateform--------'\necho $PLATFORM_NAME\necho '------arch--------'\necho $ARCHS\n\n\n\n\n";
+		};
 		642D4B3A6F01C275E39E822A /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

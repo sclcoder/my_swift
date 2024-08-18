@@ -20,10 +20,15 @@ public protocol TargetType {
 
     /// The HTTP method used in the request.
     var method: Moya.Method { get }
-
+    /**
+     sampleData：
+     在 TargetType 协议中，sampleData 属性用于提供一个模拟响应的数据。这通常是一个 JSON 字符串的 Data 表示，可以表示成功或失败的响应。
+     在实际网络请求时不会使用 sampleData，但是当使用 stub 时，这个数据会作为模拟响应返回。
+     */
     /// Provides stub data for use in testing. Default is `Data()`.
     var sampleData: Data { get }
-
+    
+    /// 请求参数相关的设置
     /// The type of HTTP task to be performed.
     var task: Task { get }
 

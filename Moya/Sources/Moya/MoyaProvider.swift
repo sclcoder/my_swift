@@ -60,6 +60,17 @@ open class MoyaProvider<Target: TargetType>: MoyaProviderType {
     /// Closure that resolves an `Endpoint` into a `RequestResult`.
     public typealias RequestClosure = (Endpoint, @escaping RequestResultClosure) -> Void
 
+    
+    /**
+     stub 的核心概念
+     目的：
+
+     模拟网络请求：在开发过程中，API 可能尚未完成，或者你不希望每次都依赖真实的网络请求（例如，避免频繁请求导致服务器负载或请求限制）。stub 允许你返回一个模拟的响应。
+     测试：在测试环境中，stub 可以用来模拟各种 API 响应，包括成功和失败的情况，以验证你的代码对不同响应的处理逻辑。
+     使用方式：
+
+     在 Moya 中，stub 是通过 stubClosure 实现的。你可以在创建 MoyaProvider 实例时，指定一个 stubClosure 来决定什么时候使用 stub 响应而不是实际的网络请求。
+     */
     /// Closure that decides if/how a request should be stubbed.
     public typealias StubClosure = (Target) -> Moya.StubBehavior
 
@@ -167,9 +178,14 @@ public enum StubBehavior {
     /// Do not stub.
     case never
 
+    /**
+     immediatelyStub 是一个预定义的 stubClosure，表示请求立即返回 sampleData，而不进行实际的网络请求。
+     */
     /// Return a response immediately.
     case immediate
-
+    /**
+     延迟指定的时间后返回 sampleData，模拟网络延迟。
+     */
     /// Return a response after a delay.
     case delayed(seconds: TimeInterval)
 }

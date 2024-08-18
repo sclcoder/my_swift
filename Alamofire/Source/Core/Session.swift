@@ -150,6 +150,7 @@ open class Session {
      -  OperationQueue 则是基于 Operation 和 OperationQueue 的抽象，它提供了更高级别的接口来管理任务。你可以创建 Operation 对象来表示一个任务，并将这些任务添加到 OperationQueue 中。OperationQueue 提供了一些额外的功能，比如任务依赖、取消任务、调整最大并发数等。
      
      */
+    /// 指定构造器:确保所有存储型属性都被初始化
     public init(session: URLSession,
                 delegate: SessionDelegate,
                 rootQueue: DispatchQueue,
@@ -241,6 +242,8 @@ open class Session {
     ///                               `nil` by default.
     ///   - eventMonitors:            Additional `EventMonitor`s used by the instance. Alamofire always adds a
     ///                               `AlamofireNotifications` `EventMonitor` to the array passed here. `[]` by default.
+    
+    /// 便利构造器
     public convenience init(configuration: URLSessionConfiguration = URLSessionConfiguration.af.default,
                             delegate: SessionDelegate = SessionDelegate(),
                             rootQueue: DispatchQueue = DispatchQueue(label: "org.alamofire.session.rootQueue"),

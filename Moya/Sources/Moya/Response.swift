@@ -49,6 +49,47 @@ public extension Response {
      PartialRangeUpTo<Bound>：表示从某个值起直到但不包括某个上界的区间，例如 ..<5。
      */
     
+    
+    /** 区间类型
+     1.闭区间 (ClosedRange)
+     语法: a...b
+     类型: ClosedRange<T>
+     
+     2. 半开区间 (Range)
+     语法: a..<b
+     类型: Range<T>
+     描述: 表示从 a 到 b 之间的所有值，包含 a 但不包含 b。
+     
+     
+     单侧区间
+    a. 起始区间 (PartialRangeFrom)
+    语法: a...
+    类型: PartialRangeFrom<T>
+    描述: 表示从 a 到任意大（无限）的所有值，包含 a。
+     
+    b. 结束区间 (PartialRangeUpTo)
+    语法: ..<b
+    类型: PartialRangeUpTo<T>
+    描述: 表示从起点到 b 之间的所有值，不包含 b。
+     
+    c. 结束区间（包含边界）(PartialRangeThrough)
+     语法: ...b
+     类型: PartialRangeThrough<T>
+     描述: 表示从起点到 b 的所有值，包含 b。
+
+     4. 范围表达式 (RangeExpression)
+     类型: RangeExpression
+     描述: RangeExpression 是一个协议，ClosedRange、Range、PartialRangeFrom、PartialRangeUpTo、PartialRangeThrough 都符合这个协议。这些范围表达式可以用来表示区间并在各种集合类型上使用，例如数组、字符串的切片等。
+     
+     
+    
+     总结
+     ClosedRange<T>: 表示闭区间，包含起点和终点 (a...b)。
+     Range<T>: 表示半开区间，包含起点，不包含终点 (a..<b)。
+     PartialRangeFrom<T>: 从某个起点开始的区间，延伸到无穷大 (a...)。
+     PartialRangeUpTo<T>: 到某个终点之前的区间 (..<b)。
+     PartialRangeThrough<T>: 从起点到某个终点（包含终点）的区间 (...b)。
+     */
     /**
      Returns the `Response` if the `statusCode` falls within the specified range.
 

@@ -56,6 +56,8 @@ public protocol ParameterEncoding {
 ///
 /// `BoolEncoding` can be used to configure how boolean values are encoded. The default behavior is to encode
 /// `true` as 1 and `false` as 0.
+
+/// URL-Encoding : 参数编码方式是 application/x-www-form-urlencoded
 public struct URLEncoding: ParameterEncoding {
     // MARK: Helper Types
 
@@ -258,6 +260,8 @@ public struct URLEncoding: ParameterEncoding {
 
 /// Uses `JSONSerialization` to create a JSON representation of the parameters object, which is set as the body of the
 /// request. The `Content-Type` HTTP header field of an encoded request is set to `application/json`.
+
+/// `application/json`
 public struct JSONEncoding: ParameterEncoding {
     public enum Error: Swift.Error {
         case invalidJSONObject
