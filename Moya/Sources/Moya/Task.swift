@@ -13,15 +13,17 @@ import Foundation
  swift
  Copy code
  .requestPlain
+ 
+ 
  requestData(Data)
-
  用于发送原始的二进制数据作为请求体。这种方式适合发送 JSON、XML 或其他自定义格式的数据。
  例如，发送 JSON 数据：
  swift
  Copy code
  .requestData(jsonData)
+ 
+ 
  requestJSONEncodable(Encodable)
-
  将一个 Swift 对象（符合 Encodable 协议）编码为 JSON 并作为请求体。这种方式简化了 JSON 数据的构建过程。
  例如，发送一个用户对象：
  swift
@@ -32,8 +34,10 @@ import Foundation
  }
  let user = User(id: 1, name: "John")
  .requestJSONEncodable(user)
+ 
+ 
+ 
  requestCustomJSONEncodable(Encodable, encoder: JSONEncoder)
-
  与 requestJSONEncodable 类似，但允许你使用自定义的 JSONEncoder 来编码对象。
  例如，使用自定义日期格式的 JSONEncoder：
  swift
@@ -41,51 +45,59 @@ import Foundation
  let encoder = JSONEncoder()
  encoder.dateEncodingStrategy = .iso8601
  .requestCustomJSONEncodable(user, encoder: encoder)
+ 
+ 
  requestParameters([String: Any], encoding: ParameterEncoding)
-
  用于发送参数的请求，你可以指定参数和编码方式（如 URL 编码、JSON 编码等）。这在需要发送表单数据或查询参数时非常常用。
  例如，发送查询参数：
  swift
  Copy code
  .requestParameters(["name": "John", "age": 30], encoding: URLEncoding.default)
+ 
+ 
  requestCompositeData(bodyData: Data, urlParameters: [String: Any])
-
  允许你同时发送二进制数据作为请求体，并在 URL 中附加查询参数。
  例如，上传文件并附带查询参数：
  swift
  Copy code
  .requestCompositeData(bodyData: fileData, urlParameters: ["id": 123])
+ 
+ 
  requestCompositeParameters(bodyParameters: [String: Any], bodyEncoding: ParameterEncoding, urlParameters: [String: Any])
-
  允许你同时指定请求体参数和 URL 参数，并为请求体参数选择编码方式。
  例如，发送表单数据并附加查询参数：
  swift
  Copy code
  .requestCompositeParameters(bodyParameters: ["name": "John"], bodyEncoding: JSONEncoding.default, urlParameters: ["id": 123])
+ 
+ 
  uploadFile(URL)
-
  表示一个文件上传任务，文件以 URL 的形式提供。
  例如，上传本地文件：
  swift
  Copy code
  .uploadFile(fileURL)
+ 
+ 
  uploadMultipart([MultipartFormData])
-
  表示一个多部分表单数据的上传任务，适用于上传文件和其他表单数据的组合请求。
  例如，上传图片和文本：
  swift
  Copy code
  let multipartData = MultipartFormData(provider: .data(imageData), name: "image", fileName: "image.jpg", mimeType: "image/jpeg")
  .uploadMultipart([multipartData])
+ 
+ 
  uploadCompositeMultipart([MultipartFormData], urlParameters: [String: Any])
-
  允许你上传多部分表单数据并附加 URL 参数。
  例如，上传文件并附加查询参数：
  swift
  Copy code
  .uploadCompositeMultipart([multipartData], urlParameters: ["id": 123])
+ 
+ 
+ 
  downloadDestination(DownloadDestination)
-
  表示一个下载任务，并指定文件下载到的位置。
  例如，下载文件到本地：
  swift
@@ -94,8 +106,10 @@ import Foundation
      let destinationURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent(response.suggestedFilename!)
      return (destinationURL, [.removePreviousFile, .createIntermediateDirectories])
  }
+ 
+ 
+ 
  downloadParameters([String: Any], encoding: ParameterEncoding, destination: DownloadDestination)
-
  允许你在下载任务中附加参数，并指定文件下载位置。
  例如，带参数的文件下载：
  swift
@@ -108,8 +122,6 @@ import Foundation
  文件下载：使用 .downloadDestination 或 .downloadParameters 来处理文件下载请求。
  总结
  Task 是 Moya 中定义网络请求内容的核心组件。通过不同类型的 Task，你可以轻松处理各种复杂的请求需求，从简单的 GET 请求到文件上传、下载任务，Task 提供了极大的灵活性和功能覆盖，使得 Moya 成为处理网络请求的强大工具。
- 
- 
  
  */
 /// Represents an HTTP task.

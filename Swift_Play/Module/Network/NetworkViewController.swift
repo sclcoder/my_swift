@@ -449,7 +449,6 @@ extension NetworkViewController{
         ProgressHUD.colorStatus   = .red
         ProgressHUD.animationType = .multipleCirclePulse
         ProgressHUD.show("Loading...")
-        
     }
 
     
