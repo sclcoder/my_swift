@@ -44,10 +44,13 @@ class RxSwiftViewController: UIViewController {
 //        rxCreate()
 //        rxJust()
 //        rxOf()
+//        rxRepeatElement()
 //        rxError()
 //        rxEmpty()
 //        rxNever()
 //        rxDeferred()
+//        rxFrom()
+//        rxUsing()
 
         
 //        rxTake()
@@ -59,6 +62,7 @@ class RxSwiftViewController: UIViewController {
 //        rxSkipWhile()
 //        rxStartWith()
 //        rxElementAt()
+//        rxSingle()
         
 //        rxIgnoreElements()
 //        rxDistinctUntilChanged()
@@ -66,7 +70,7 @@ class RxSwiftViewController: UIViewController {
 //        rxCacheError()
 //        rxBuffer()
         
-        rxInterval()
+//        rxInterval()
 
 
 //        rxScheduler()
@@ -79,15 +83,27 @@ class RxSwiftViewController: UIViewController {
 //        rxDelaySubscription()
     
 //        rxAmb()
+//        rxMerge()
+        rxZip()
 //        rxCombineLatest()
 //        rxContact()
 //        rxContactMap()
 //        rxConnect()
+//        rxSample()
+        
+//        rxGroupBy()
         
 //        rxFilter()
 //        rxMap()
 //        rxFlatMap()
 //        rxFlatMapLatest()
+//        rxReduce()
+//        rxScan()
+        
+//        rxRetry()
+        
+//        rxReplay()
+//        rxShareReplay()
 
     }
 
@@ -358,6 +374,31 @@ extension RxSwiftViewController{
             .disposed(by: disposeBag)
     }
     
+    func rxRepeatElement() -> Void {
+        /**
+         repeatElement
+         创建重复发出某个元素的 Observable
+         repeatElement 操作符将创建一个 Observable，这个 Observable 将无止尽地发出同一个元素。
+         */
+        
+//        创建重复发出 0 的 Observable
+        let id = Observable.repeatElement(0)
+        id.subscribe(onNext: { value in
+                print(value)
+        })
+        .disposed(by: disposeBag)
+        
+//        它相当于：
+//        let id = Observable<Int>.create { observer in
+//            observer.onNext(0)
+//            observer.onNext(0)
+//            observer.onNext(0)
+//            observer.onNext(0)
+//            ... // 无数次
+//            return Disposables.create()
+//        }
+    }
+    
     func rxCreate() -> Void{
         // 创建一个自定义 Observable
         let customObservable = Observable<String>.create { observer in
@@ -621,6 +662,152 @@ extension RxSwiftViewController{
          */
     }
     
+    func rxFrom() -> Void {
+      /**
+       from
+       将其他类型或者数据结构转换为 Observable
+       当你在使用 Observable 时，如果能够直接将其他类型转换为 Observable，这将是非常省事的。from 操作符就提供了这种功能。
+       
+       
+       在 RxSwift 中，from 操作符用于将一个序列（如数组、集合等）转换为一个 Observable。该 Observable 会依次发出序列中的每个元素，并在所有元素发出完毕后发送完成事件 (onCompleted)。from 操作符非常适合用于将现有的集合类型数据转换为响应式的事件流，以便在 RxSwift 的链式操作中进行处理。
+
+       基本概念
+       from：接受一个符合 Sequence 协议的集合（如数组、集合等），并将集合中的每个元素依次作为 onNext 事件发出，最后发送 onCompleted 事件。
+       适用场景：将现有的集合数据转换为 Observable，以便在响应式编程中进行进一步的操作，如过滤、映射、合并等。
+       */
+    
+    /**
+     将一个数组转换为 Observable：
+             let numbers = Observable.from([0, 1, 2])
+     它相当于：
+     let numbers = Observable<Int>.create { observer in
+         observer.onNext(0)
+         observer.onNext(1)
+         observer.onNext(2)
+         observer.onCompleted()
+         return Disposables.create()
+     }
+     */
+    
+        let numbers = [1, 2, 3, 4, 5]
+
+        // 使用 from 操作符将数组转换为 Observable
+        Observable.from(numbers)
+            .subscribe(
+                onNext: { value in
+                    print("Value: \(value)")
+                },
+                onCompleted: {
+                    print("Sequence completed")
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        /**
+         Value: 1
+         Value: 2
+         Value: 3
+         Value: 4
+         Value: 5
+         */
+        
+    }
+    
+    func rxUsing() -> Void {
+        /**
+         using
+         创建一个可被清除的资源，它和 Observable 具有相同的寿命
+         通过使用 using 操作符创建 Observable 时，同时创建一个可被清除的资源，一旦 Observable 终止了，那么这个资源就会被清除掉了。
+
+         
+         
+         
+         在 RxSwift 中，using 操作符用于创建一个 Observable，并同时管理一个资源的生命周期。它允许你在创建 Observable 时使用某种资源，并确保该资源在 Observable 的生命周期结束时（即当 Observable 发出 onCompleted 或 onError 后）被正确地释放或清理。通常用于需要在 Observable 生命周期中绑定资源的场景，例如打开文件、数据库连接等需要明确关闭或释放的资源。
+
+         基本概念：
+         using：用于在 Observable 的生命周期内绑定并管理资源。
+         该操作符接收一个工厂方法来创建 Observable，同时接收另一个工厂方法来创建与之关联的资源。资源的释放与 Observable 的结束紧密关联，确保不发生资源泄漏。
+         
+         语法：
+         func using<Resource: Disposable>(
+             _ resourceFactory: @escaping () throws -> Resource,
+             observableFactory: @escaping (Resource) throws -> Observable<Element>
+         ) -> Observable<Element>
+         resourceFactory：用于创建资源的工厂函数。该资源需要遵循 Disposable 协议。
+         observableFactory：用于创建 Observable 的工厂函数，它接受一个资源作为参数，返回一个 Observable。
+         
+         
+         工作原理：
+         创建资源：using 首先通过 resourceFactory 创建资源。
+         创建 Observable：然后通过 observableFactory 生成与该资源相关联的 Observable。
+         管理资源生命周期：当 Observable 终止时，using 操作符确保资源被正确地释放。
+         
+         
+         使用场景：
+         管理外部资源：特别是在与外部资源交互（如文件句柄、数据库连接、网络连接等）的场景下，确保资源在 Observable 的生命周期结束时正确释放。
+         自动释放资源：避免手动管理资源的释放，减少资源泄漏的风险。
+         绑定资源与 Observable：适合将资源与数据流绑定的场景，确保资源的生命周期与数据流一致。
+         总结：
+         using 操作符在 RxSwift 中提供了一种方便的方法，用于创建与 Observable 关联的资源，并在 Observable 终止时自动清理这些资源。
+         适用于需要确保资源在数据流结束时释放的场景，比如文件操作、数据库连接等。
+         通过 using，你可以轻松地确保资源的创建与销毁与 Observable 的生命周期保持一致，避免资源泄漏。
+         */
+        
+        
+        /**
+         示例 1：使用 using 管理资源
+         假设我们需要使用一个资源（比如文件句柄）来读取数据，并确保在读取完成后文件句柄被正确关闭。
+         */
+        
+        // 模拟的文件资源类
+        class FileHandle: Disposable {
+            let fileName: String
+            
+            init(fileName: String) {
+                self.fileName = fileName
+                print("Opened file: \(fileName)")
+            }
+            
+            func dispose() {
+                print("Closed file: \(fileName)")
+            }
+        }
+
+        // 使用 using 操作符管理文件资源
+        let observable = Observable<String>.using(
+            { () -> FileHandle in
+                return FileHandle(fileName: "example.txt")
+            },
+            observableFactory: { fileHandle in
+                return Observable.of("Line 1", "Line 2", "Line 3")
+            }
+        )
+
+        observable
+            .subscribe(
+                onNext: { line in
+                    print("Read: \(line)")
+                },
+                onCompleted: {
+                    print("Completed reading")
+                }
+            )
+            .disposed(by: disposeBag)
+        
+        /**
+         Opened file: example.txt
+         Read: Line 1
+         Read: Line 2
+         Read: Line 3
+         Completed reading
+         Closed file: example.txt
+         解释：
+         using 操作符首先通过 resourceFactory 打开文件句柄。
+         observableFactory 返回一个 Observable，用于读取文件中的每一行。
+         当 Observable 终止时（发出 onCompleted），文件句柄会自动关闭，确保资源被正确释放。
+         */
+        
+    }
     
     // MARK: Observable - 元素发送相关-增删查
     func rxStartWith() -> Void{
@@ -855,8 +1042,64 @@ extension RxSwiftViewController{
 
         
     }
-    
 
+    func rxSingle() -> Void {
+        /**
+         single
+         限制 Observable 只有一个元素，否出发出一个 error 事件
+         
+         single 操作符将限制 Observable 只产生一个元素。如果 Observable 只有一个元素，它将镜像这个 Observable 。如果 Observable 没有元素或者元素数量大于一，它将产生一个 error 事件。
+         
+         
+         在 RxSwift 中，single 操作符用于从 Observable 中只发出一个满足条件的元素。如果该条件满足的元素有多个，或者没有任何元素满足条件，single 操作符会发出一个错误事件。
+
+         single 有两种常见的使用方式：
+
+         发出 Observable 中的唯一一个元素（该 Observable 必须只包含一个元素，否则会抛出错误）。
+         发出 Observable 中满足给定条件的唯一一个元素。如果有多个元素满足条件或没有满足条件的元素，都会抛出错误。
+         基本概念：
+         single：如果 Observable 发出多个元素或者没有元素，single 操作符会报错。如果只发出一个元素或者一个满足条件的元素，则顺利发出该元素并结束序列。
+         它非常适用于期望 Observable 只发出一个元素的场景。
+         */
+        
+//        示例 1：single() 无条件版本
+        let numbers = Observable.just(42)
+        // 使用 single 操作符确保只发出一个元素
+        numbers
+            .single()
+            .subscribe(onNext: { value in
+                print("Single value: \(value)")
+            })
+            .disposed(by: disposeBag)
+/**
+ Single value: 42
+ 解释：
+ numbers 只发出一个值 42，然后结束。
+ single() 操作符确保 Observable 中只发出一个元素，因此正常发出 42。
+ */
+        
+//        示例 2：single() 带条件版本
+        let numbers2 = Observable.from([1, 2, 3, 4, 5])
+        // 使用 single 操作符查找唯一一个偶数
+        numbers2
+            .single { $0 % 2 == 0 }
+            .subscribe(
+                onNext: { value in
+                    print("Single even number: \(value)")
+                },
+                onError: { error in
+                    print("Error:", error)
+                }
+            )
+            .disposed(by: disposeBag)
+/**
+ 输出：
+ Single even number: 2
+ Error: Sequence contains more than one element.
+ */
+        
+    }
+    
     // MARK: Observable - 元素变换 - 改
     func rxInterval() -> Void {
         /**
@@ -1151,6 +1394,132 @@ extension RxSwiftViewController{
          */
     }
     
+    func rxReduce() -> Void {
+        /**
+         reduce
+         持续的将 Observable 的每一个元素应用一个函数，然后发出最终结果
+         reduce 操作符将对第一个元素应用一个函数。然后，将结果作为参数填入到第二个元素的应用函数中。以此类推，直到遍历完全部的元素后发出最终结果。
+         这种操作符在其他地方有时候被称作是 accumulator，aggregate，compress，fold 或者 inject。
+         
+         
+         
+         在 RxSwift 中，reduce 操作符用于将一个 Observable 中发出的多个值聚合为一个值。它通过一个初始值和一个聚合函数，依次处理序列中的每个元素，并返回一个最终结果。这使得 reduce 非常适合用于累积计算或汇总数据的场景。
+
+         基本概念：
+         reduce：接收一个初始值和一个聚合函数，依次将 Observable 中的每个元素与累积值进行合并，最终返回一个单一的值。
+         该操作符的返回值是一个 Observable，其发出的值是聚合后的结果。
+         语法：
+         swift
+         Copy code
+         func reduce<Result>(_ initial: Result, accumulator: @escaping (Result, Element) throws -> Result) -> Observable<Result>
+         initial: 初始值，用于开始累积。
+         accumulator: 聚合函数，接收当前累积值和当前元素，返回新的累积值。
+         */
+
+
+//        示例 1：基本用法
+//        在这个例子中，我们创建一个 Observable，并使用 reduce 来计算数组中所有数字的总和。
+        
+        let numbers = Observable.from([1, 2, 3, 4, 5])
+
+        // 使用 reduce 计算总和
+        numbers
+            .reduce(0) { accumulator, value in
+                accumulator + value
+            }
+            .subscribe(onNext: { total in
+                print("Total sum: \(total)")
+            })
+            .disposed(by: disposeBag)
+//        输出：
+//        Total sum: 15
+//        解释：
+//        numbers 是一个发出数字的 Observable。
+//        使用 reduce(0)，从 0 开始，依次将每个数字与累积值相加。
+//        最终结果是 15，表示数组中所有数字的总和。
+        
+        
+        /**
+         reduce 操作符在 RxSwift 中用于将多个发出的值聚合为一个值，非常适合进行累积计算或数据汇总。
+         它通过初始值和聚合函数来处理每个元素，最终返回单一结果。
+         可以与其他操作符结合使用，以实现更复杂的逻辑和处理。
+         */
+    }
+    
+    func rxScan() -> Void {
+        /**
+         scan
+         持续的将 Observable 的每一个元素应用一个函数，然后发出每一次函数返回的结果
+         scan 操作符将对第一个元素应用一个函数，将结果作为第一个元素发出。然后，将结果作为参数填入到第二个元素的应用函数中，创建第二个元素。以此类推，直到遍历完全部的元素
+         这种操作符在其他地方有时候被称作是 accumulator。
+         
+         
+         在 RxSwift 中，scan 操作符是一个聚合操作符，它会从第一个元素开始，依次应用一个累加器闭包对序列中的元素进行处理，并将每一次处理的中间结果作为新的 Observable 发出。换句话说，scan 可以看作是一个可以逐步积累的操作，它类似于标准集合中的 reduce，但不同的是，scan 会在每一步都发出累加的结果，而不是只在最后发出一次。
+
+         基本概念：
+         scan 会对序列中的元素应用一个累加器闭包，并发出每一次的累积结果。
+         你可以指定一个初始值，并将该初始值与序列的第一个元素结合起来应用累加器。
+         语法：
+         swift
+         Copy code
+         func scan<A>(
+             _ seed: A,
+             accumulator: @escaping (A, Element) throws -> A
+         ) -> Observable<A>
+         seed：累加的初始值。
+         accumulator：一个累加器闭包，接收两个参数：上一个累加的结果（或初始值）和当前元素，返回累加后的新值。
+         返回值：返回一个新的 Observable，它会发出每一次累加后的结果。
+         
+         
+         */
+        
+//        示例 1：计算累加和
+//        我们可以使用 scan 来累加序列中的值，并在每次计算后发出当前的累加结果。
+
+        let numbers = Observable.of(1, 2, 3, 4, 5)
+
+        numbers
+            .scan(0) { accumulatedValue, newValue in
+                return accumulatedValue + newValue
+            }
+            .subscribe(onNext: { result in
+                print("Accumulated result: \(result)")
+            })
+            .disposed(by: disposeBag)
+  /**
+   Accumulated result: 1
+   Accumulated result: 3
+   Accumulated result: 6
+   Accumulated result: 10
+   Accumulated result: 15
+   解释：
+   我们使用 scan(0) 指定初始值为 0。
+   每次通过累加器闭包，将当前值与之前的累积值相加，累加结果会在每一步都被发出。
+   */
+        
+        
+//        示例 2：统计字符串长度
+//        可以使用 scan 操作符来累积字符串的长度，并在每一步都输出累计长度。
+
+        let words = Observable.of("Hello", "RxSwift", "is", "awesome")
+
+        words
+            .scan(0) { totalLength, word in
+                return totalLength + word.count
+            }
+            .subscribe(onNext: { result in
+                print("Total length so far: \(result)")
+            })
+            .disposed(by: disposeBag)
+ 
+  /**
+   Total length so far: 5
+   Total length so far: 12
+   Total length so far: 14
+   Total length so far: 21
+   */
+    }
+    
     // MARK: Observable - 延时
     func rxTimeout() -> Void{
         /**
@@ -1296,6 +1665,77 @@ extension RxSwiftViewController{
 
 
     // MARK: Observable - 多个Observable
+    
+    func rxMerge() -> Void {
+        /**
+         merge
+         将多个 Observables 合并成一个
+         
+         通过使用 merge 操作符你可以将多个 Observables 合并成一个，当某一个 Observable 发出一个元素时，他就将这个元素发出。
+         如果，某一个 Observable 发出一个 onError 事件，那么被合并的 Observable 也会将它发出，并且立即终止序列。
+         */
+    
+        let subject1 = PublishSubject<String>()
+        let subject2 = PublishSubject<String>()
+
+        Observable.of(subject1, subject2)
+            .merge()
+            .subscribe(onNext: { print($0) })
+            .disposed(by: disposeBag)
+
+        subject1.onNext("🅰️")
+
+        subject1.onNext("🅱️")
+
+        subject2.onNext("①")
+
+        subject2.onNext("②")
+
+        subject1.onNext("🆎")
+
+        subject2.onNext("③")
+        
+        /**
+         🅰️
+         🅱️
+         ①
+         ②
+         🆎
+         ③
+         */
+    }
+    
+    func rxZip() -> Void {
+        /**
+         zip
+         通过一个函数将多个 Observables 的元素组合起来，然后将每一个组合的结果发出来
+         
+         zip 操作符将多个(最多不超过8个) Observables 的元素通过一个函数组合起来，然后将这个组合的结果发出来。它会严格的按照序列的索引数进行组合。例如，返回的 Observable 的第一个元素，是由每一个源 Observables 的第一个元素组合出来的。它的第二个元素 ，是由每一个源 Observables 的第二个元素组合出来的。它的第三个元素 ，是由每一个源 Observables 的第三个元素组合出来的，以此类推。它的元素数量等于源 Observables 中元素数量最少的那个。
+         */
+        
+        let first = PublishSubject<String>()
+        let second = PublishSubject<String>()
+
+        Observable.zip(first, second) { $0 + $1 }
+                  .subscribe(onNext: { print($0) })
+                  .disposed(by: disposeBag)
+
+        first.onNext("1")
+        second.onNext("A")
+        first.onNext("2")
+        second.onNext("B")
+        second.onNext("C")
+        second.onNext("D")
+        first.onNext("3")
+        first.onNext("4")
+        /**
+         1A
+         2B
+         3C
+         4D
+         */
+    }
+    
     func rxCombineLatest() -> Void{
         
         let first = PublishSubject<String>()
@@ -1622,6 +2062,531 @@ extension RxSwiftViewController{
          Received 2
          */
     }
+    
+    func rxSample() -> Void {
+        /**
+         sample
+         不定期的对 Observable 取样
+         
+         sample 操作符将不定期的对源 Observable 进行取样操作。通过第二个 Observable 来控制取样时机。一旦第二个 Observable 发出一个元素，就从源 Observable 中取出最后产生的元素。
+         
+         
+         在 RxSwift 中，sample 操作符用于从源 Observable 中取样，在另一个 Observable 发出值时，取源 Observable 最近的一个值并发出。这个操作符特别适用于需要从源序列中获取最新数据，但只在另一个序列触发时发出数据的场景。
+
+         基本概念：
+         sample：监听一个触发 Observable（称为“采样器”），每当采样器发出事件时，sample 会从源 Observable 中取出最近的一个值并发出。如果在采样器发出事件时，源 Observable 没有新值，则不发出任何值。
+         sample 只在采样器发出 onNext 事件时发出值，并且只发出源 Observable 的最新值。
+         */
+        
+        
+        let source = PublishSubject<String>()
+        let trigger = PublishSubject<Void>()
+
+        // 使用 sample 操作符
+        source
+            .sample(trigger)
+            .subscribe(onNext: { value in
+                print("Sampled value: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        // 模拟源 Observable 发出值
+        source.onNext("🍎")
+        source.onNext("🍐")
+
+        // 模拟触发 Observable 发出事件，采样最近的值
+        trigger.onNext(())
+        // 输出: Sampled value: 🍐
+
+        source.onNext("🍊")
+        source.onNext("🍉")
+
+        // 再次触发采样
+        trigger.onNext(())
+        // 输出: Sampled value: 🍉
+        
+        source.onNext("🍎")
+        
+        trigger.onNext(()) // 输出: Sampled value: 🍎
+        
+        // 没有新值时触发
+        trigger.onNext(()) // 不会有任何输出
+
+        
+        /**
+         Sampled value: 🍐
+         Sampled value: 🍉
+         Sampled value: 🍎
+         解释：
+         source 是源 Observable，它发出了几个水果符号的值。
+         trigger 是采样器 Observable，它决定何时从 source 取样并发出最近的一个值。
+         每次 trigger.onNext(()) 被调用时，sample 操作符会取 source 的最新值并发出。
+         如果 trigger 触发时 source 没有新值，那么不会发出任何值。
+         */
+
+    }
+    
+    func rxGroupBy() -> Void {
+        /**
+         在 RxSwift 中，groupBy 操作符用于将一个 Observable 序列中的元素按照某个条件进行分组，并为每一个组返回一个新的 Observable。每个组中的元素都是符合该组条件的值。分组后的每个 Observable 会发出属于该组的元素。
+
+         基本概念：
+         groupBy：将 Observable 中的元素按某个分类键进行分组，并返回一个 Observable，这个 Observable 发出分组后的 GroupedObservable 对象。每个 GroupedObservable 代表一个分组，其中包含所有属于该组的元素。
+         可以根据元素的某些属性进行分组，比如根据类型、值的范围等。
+         
+         语法：
+         swift
+         Copy code
+         func groupBy<Key>(
+             _ keySelector: @escaping (Element) throws -> Key
+         ) -> Observable<GroupedObservable<Key, Element>>
+         keySelector：一个闭包，用于根据元素生成分组的键。
+         返回值是一个 Observable，它会发出 GroupedObservable，每个 GroupedObservable 是属于该组的元素流。
+         */
+        
+//        示例 1：根据奇偶性分组
+        let numbers = Observable.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        numbers
+            .groupBy { $0 % 2 == 0 ? "Even" : "Odd" } // 按奇偶性分组
+            .flatMap { group -> Observable<String> in
+                group.map { number in
+                    return "\(group.key): \(number)"
+                }
+            }
+            .subscribe(onNext: { print($0) })
+            .disposed(by: disposeBag)
+    /**
+     输出：
+     Odd: 1
+     Even: 2
+     Odd: 3
+     Even: 4
+     Odd: 5
+     Even: 6
+     Odd: 7
+     Even: 8
+     Odd: 9
+     Even: 10
+     解释：
+     groupBy { $0 % 2 == 0 ? "Even" : "Odd" } 根据奇偶性将序列中的数字分为两组：偶数和奇数。
+     每个 GroupedObservable 持有属于该组的所有元素。
+     使用 flatMap 将每个分组的元素映射为字符串形式，并发出结果。
+     */
+        
+        
+        
+//        示例 2：根据字符串长度分组
+  
+        let strings = Observable.from(["Swift", "RxSwift", "Objective-C", "Kotlin", "Java"])
+
+        strings
+            .groupBy { $0.count } // 按字符串长度分组
+            .flatMap { group -> Observable<String> in
+                group.map { element in
+                    return "Length \(group.key): \(element)"
+                }
+            }
+            .subscribe(onNext: { print($0) })
+            .disposed(by: disposeBag)
+/**
+ Length 5: Swift
+ Length 7: RxSwift
+ Length 11: Objective-C
+ Length 6: Kotlin
+ Length 4: Java
+ 解释：
+ groupBy { $0.count } 根据字符串的长度将字符串分组。
+ 每个 GroupedObservable 代表长度相同的字符串。
+ */
+    
+        
+        /**
+         使用场景：
+         分类处理：当需要对流中的元素按照某种规则进行分类处理时，groupBy 是一个有用的操作符。
+         分离不同类型的数据：可以根据某个属性将不同类型的数据分开处理。
+         流式聚合：适用于对流中的元素进行动态聚合或分组处理的场景。
+         总结：
+         groupBy 是一种将 Observable 序列按某个键进行分组的操作符，它为每个组创建一个独立的 Observable。
+         每个 GroupedObservable 都会发出属于该组的元素，允许对分组后的元素进行单独处理。
+         常用于对数据按某个规则进行分类、过滤或分离处理。
+         */
+    }
+    
+    
+
+    // MARK: Observable - 暂未分组
+    
+    func rxRetry() -> Void {
+        /**
+         retry
+         如果源 Observable 产生一个错误事件，重新对它进行订阅，希望它不会再次产生错误
+         
+         retry 操作符将不会将 error 事件，传递给观察者，然而，它会从新订阅源 Observable，给这个 Observable 一个重试的机会，让它有机会不产生 error 事件。retry 总是对观察者发出 next 事件，即便源序列产生了一个 error 事件，所以这样可能会产生重复的元素（如上图所示）。
+         
+         
+         */
+        var count = 1
+
+        let sequenceThatErrors = Observable<String>.create { observer in
+            observer.onNext("🍎")
+            observer.onNext("🍐")
+            observer.onNext("🍊")
+
+            if count == 1 {
+                observer.onError(TestError(msg: "rxRetry"))
+                print("Error encountered")
+                count += 1
+            }
+
+            observer.onNext("🐶")
+            observer.onNext("🐱")
+            observer.onNext("🐭")
+            observer.onCompleted()
+
+            return Disposables.create()
+        }
+
+        sequenceThatErrors
+            .retry()
+            .subscribe(onNext: { print($0) })
+            .disposed(by: disposeBag)
+        
+        /**
+         🍎
+         🍐
+         🍊
+         Error encountered
+         🍎
+         🍐
+         🍊
+         🐶
+         🐱
+         🐭
+         */
+    }
+    
+
+    func rxReplay() -> Void {
+        /**
+         replay
+         确保观察者接收到同样的序列，即使是在 Observable 发出元素后才订阅
+         
+         可被连接的 Observable 和普通的 Observable 十分相似，不过在被订阅后不会发出元素，直到 connect 操作符被应用为止。这样一来你可以控制 Observable 在什么时候开始发出元素。
+
+         replay 操作符将 Observable 转换为可被连接的 Observable，并且这个可被连接的 Observable 将缓存最新的 n 个元素。当有新的观察者对它进行订阅时，它就把这些被缓存的元素发送给观察者。
+         */
+        
+        let intSequence = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .replay(5)
+
+        _ = intSequence
+            .subscribe(onNext: { print("Subscription 1:, Event: \($0)") })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            _ = intSequence.connect()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+          _ = intSequence
+              .subscribe(onNext: { print("Subscription 2:, Event: \($0)") })
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
+          _ = intSequence
+              .subscribe(onNext: { print("Subscription 3:, Event: \($0)") })
+        }
+        /**
+         Subscription 1:, Event: 0
+         Subscription 2:, Event: 0
+         Subscription 1:, Event: 1
+         Subscription 2:, Event: 1
+         Subscription 1:, Event: 2
+         Subscription 2:, Event: 2
+         Subscription 1:, Event: 3
+         Subscription 2:, Event: 3
+         Subscription 1:, Event: 4
+         Subscription 2:, Event: 4
+         Subscription 3:, Event: 0
+         Subscription 3:, Event: 1
+         Subscription 3:, Event: 2
+         Subscription 3:, Event: 3
+         Subscription 3:, Event: 4
+         Subscription 1:, Event: 5
+         Subscription 2:, Event: 5
+         Subscription 3:, Event: 5
+         Subscription 1:, Event: 6
+         Subscription 2:, Event: 6
+         Subscription 3:, Event: 6
+         */
+        
+      
+
+    }
+    
+    func rxShareReplay() -> Void {
+        /**
+         shareReplay
+         使观察者共享 Observable，观察者会立即收到最新的元素，即使这些元素是在订阅前产生的
+         shareReplay 操作符将使得观察者共享源 Observable，并且缓存最新的 n 个元素，将这些元素直接发送给新的观察者。
+
+
+         
+         在 RxSwift 中，shareReplay 是一个帮助操作符，通常用于多个订阅者共享同一个 Observable 的元素并对这些元素进行缓存。它的作用类似于 share 操作符，但带有缓存功能，会缓存最近发出的元素，并在新订阅者订阅时重播这些元素。
+
+         基本概念：
+         shareReplay：共享 Observable 的数据流，并为新订阅者重播最近的 N 个元素。
+         通过重放机制，多个订阅者可以避免重新执行昂贵的操作（例如网络请求、计算等），而直接获取之前发出的数据。
+         它会缓存最新发出的 N 个元素，并在新订阅者订阅时重新发送这些缓存的值。
+         为什么使用 shareReplay？
+         如果你有一个会产生副作用的 Observable，例如网络请求或复杂计算，你可能希望多个订阅者共享同一个数据流，而不必重复执行副作用。shareReplay 允许你做到这一点。
+         你还可以指定缓存多少个最近的值，并确保当新订阅者加入时，他们能收到最近缓存的值。
+         
+         语法：
+
+         observable.shareReplay(_ bufferSize: Int)
+         bufferSize：指定缓存的最近元素个数，也就是当新订阅者订阅时，最多能重播多少个上次发出的值。
+         
+         
+         使用场景：
+         网络请求共享：避免同一个网络请求被多次执行，多个订阅者可以共享同一个请求的结果。
+         重放最新值：你希望新订阅者能够立即获取到最近的值，而不是等待 Observable 发出新的值。
+         昂贵计算的结果共享：如果 Observable 代表一个昂贵的计算过程，使用 shareReplay 可以避免重复计算。
+         缓冲数据：当你希望在多个订阅者之间共享一个 Observable，并且这些订阅者需要接收到最近发出的数据时，可以使用 shareReplay。
+         总结：
+         shareReplay 是 RxSwift 中一个强大的操作符，它允许你将 Observable 的数据流共享给多个订阅者，同时缓存最近发出的 N 个元素，以便新订阅者可以接收到之前的值。
+         它常用于避免重复执行副作用（如网络请求、复杂计算），并确保数据能够在多个订阅者之间重用。
+         
+         */
+
+        
+//        示例 1：基本用法
+//        假设我们有一个 Observable，它会每隔 1 秒钟发出一个递增的整数，使用 shareReplay(2) 可以缓存最近的两个值，并重播给新订阅者。
+
+
+//        let source = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance).share(replay: 2)
+//
+//        source
+//            .subscribe(onNext: { print("Subscription 1: \($0)") })
+//            .disposed(by: disposeBag)
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+//            source
+//                .subscribe(onNext: { print("Subscription 2: \($0)") })
+//                .disposed(by: self.disposeBag)
+//        }
+//
+        /**
+         Subscription 1: 0
+         Subscription 1: 1
+         Subscription 1: 2
+         Subscription 1: 3
+         Subscription 1: 4
+         Subscription 2: 3
+         Subscription 2: 4
+         Subscription 2: 5
+         解释：
+         Subscription 1 开始订阅时，每隔 1 秒钟收到一个递增的整数。
+         在 5 秒后，Subscription 2 开始订阅时，由于使用了 shareReplay(2)，它会收到最近缓存的两个值（即 3 和 4），并且继续接收后续发出的值。
+         */
+        
+    
+//        示例 2：共享网络请求
+//        使用 shareReplay 可以共享一次网络请求的结果，避免多次发起同样的请求
+//        func fetchData() -> Observable<String> {
+//            return Observable<String>.create { observer in
+//                print("Fetching data from network...")
+//                observer.onNext("Server response")
+//                observer.onCompleted()
+//                return Disposables.create()
+//            }
+//        }
+//
+//        let sharedRequest = fetchData()
+//            .share(replay: 1, scope: .forever) // 缓存最近1个网络请求结果
+//        // 测试发现 scope使用 .whileConnected, 每次订阅都会触发Observable的创建
+//
+//        sharedRequest
+//            .subscribe(onNext: { print("Subscriber 1 received: \($0)") })
+//            .disposed(by: disposeBag)
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//            sharedRequest
+//                .subscribe(onNext: { print("Subscriber 3 received: \($0)") })
+//                .disposed(by: self.disposeBag)
+//        }
+//
+//        sharedRequest
+//            .subscribe(onNext: { print("Subscriber 2 received: \($0)") })
+//            .disposed(by: self.disposeBag)
+        /**
+         
+         
+         Fetching data from network...
+         Subscriber 1 received: Server response
+         Subscriber 2 received: Server response
+         Subscriber 3 received: Server response
+         
+         */
+        
+
+        // 创建一个每秒发出一个整数的 Observable
+        let source = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+//
+//        // 示例 1: 使用 share(replay: 1, scope: .forever)
+//        let foreverShared = source.share(replay: 1, scope: .forever)
+//
+//        print("Example 1: share(replay: 1, scope: .forever)")
+//
+//        // 第一个订阅
+//        let firstSubscription = foreverShared.subscribe(onNext: { value in
+//            print("First subscriber: \(value)")
+//        })
+//
+//        // 2 秒后取消第一个订阅
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//            // 实际取消订阅
+//            print("First subscriber disposed")
+//            firstSubscription.dispose()
+//        }
+//
+//        // 4 秒后，新的订阅
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+//            foreverShared.subscribe(onNext: { value in
+//                print("Second subscriber: \(value)")
+//            }).disposed(by: self.disposeBag)
+//        }
+        
+        /**
+         Example 1: share(replay: 1, scope: .forever)
+         First subscriber: 0
+         First subscriber: 1
+         First subscriber disposed
+         Second subscriber: 1
+         Second subscriber: 0
+         Second subscriber: 1
+         Second subscriber: 2
+         Second subscriber: 3
+         ...
+         */
+
+        // 示例 2: 使用 share(replay: 1, scope: .whileConnected)
+        let whileConnectedShared = source.share(replay: 1, scope: .whileConnected)
+
+        print("\nExample 2: share(replay: 1, scope: .whileConnected)")
+
+        // 第一个订阅
+        let firstSubscriptionWhileConnected = whileConnectedShared.subscribe(onNext: { value in
+            print("First subscriber: \(value)")
+        })
+
+        // 2 秒后取消第一个订阅
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            // 实际取消订阅
+            print("First subscriber disposed")
+            firstSubscriptionWhileConnected.dispose()
+        }
+
+        // 4 秒后，新的订阅
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            whileConnectedShared.subscribe(onNext: { value in
+                print("Second subscriber: \(value)")
+            }).disposed(by: self.disposeBag)
+        }
+
+        /**
+         
+         Example 2: share(replay: 1, scope: .whileConnected)
+         First subscriber: 0
+         First subscriber: 1
+         First subscriber disposed
+         Second subscriber: 0
+         Second subscriber: 1
+         Second subscriber: 2
+         Second subscriber: 3
+         Second subscriber: 4
+         ...
+         */
+
+    }
+    
+    func rxPublish() -> Void {
+        /**
+         publish
+         将 Observable 转换为可被连接的 Observable
+
+         publish 会将 Observable 转换为可被连接的 Observable。可被连接的 Observable 和普通的 Observable 十分相似，不过在被订阅后不会发出元素，直到 connect 操作符被应用为止。这样一来你可以控制 Observable 在什么时候开始发出元素。
+         */
+        
+        let intSequence = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .publish()
+
+        _ = intSequence
+            .subscribe(onNext: { print("Subscription 1:, Event: \($0)") })
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            _ = intSequence.connect()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+          _ = intSequence
+              .subscribe(onNext: { print("Subscription 2:, Event: \($0)") })
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+          _ = intSequence
+              .subscribe(onNext: { print("Subscription 3:, Event: \($0)") })
+        }
+        /**
+         Subscription 1:, Event: 0
+         Subscription 1:, Event: 1
+         Subscription 2:, Event: 1
+         Subscription 1:, Event: 2
+         Subscription 2:, Event: 2
+         Subscription 1:, Event: 3
+         Subscription 2:, Event: 3
+         Subscription 3:, Event: 3
+         Subscription 1:, Event: 4
+         Subscription 2:, Event: 4
+         Subscription 3:, Event: 4
+         Subscription 1:, Event: 5
+         Subscription 2:, Event: 5
+         Subscription 3:, Event: 5
+         Subscription 1:, Event: 6
+         Subscription 2:, Event: 6
+         Subscription 3:, Event: 6
+         ...
+         */
+    }
+    
+    func rxRefCount() -> Void {
+        /**
+         refCount
+         将可被连接的 Observable 转换为普通 Observable
+
+         可被连接的 Observable 和普通的 Observable 十分相似，不过在被订阅后不会发出元素，直到 connect 操作符被应用为止。这样一来你可以控制 Observable 在什么时候开始发出元素。
+
+         refCount 操作符将自动连接和断开可被连接的 Observable。它将可被连接的 Observable 转换为普通 Observable。当第一个观察者对它订阅时，那么底层的 Observable 将被连接。当最后一个观察者离开时，那么底层的 Observable 将被断开连接。
+         */
+    }
+    
+ 
+    
+
+    
+    
+  
+    
+    
+    
+
+    
+    
+    
+
+    
+    
+    
+
 }
 
 
