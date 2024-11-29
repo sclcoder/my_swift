@@ -23,7 +23,7 @@ class TabbarController: UITabBarController {
     private func setupAppearance() -> Void {
         let appearance: UITabBarAppearance = UITabBarAppearance()
         
-        appearance.backgroundColor = .yellow
+        appearance.backgroundColor = .white
         
 //        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
 //            NSAttributedString.Key.font : UIFont.systemFont(ofSize: 10),
@@ -47,7 +47,8 @@ class TabbarController: UITabBarController {
 //        ]
         
         self.tabBar.standardAppearance = appearance
-        
+        self.tabBar.scrollEdgeAppearance = appearance
+
         self.tabBar.isTranslucent = false
         
         self.tabBar.backgroundColor = .systemYellow
@@ -67,11 +68,16 @@ class TabbarController: UITabBarController {
            
            self.addChild(navVC)
         }
+       
+       let richTextVC = RichTextEditorVeiwController()
+       configVC(richTextVC, "Editor", "tab_settings", "tab_settings")
+       
+       let homeVC = HomeViewController()
+       configVC(homeVC, "Home", "tab_home", "tab_home")
 
        
-       
-       let RxSwiftVC = RxSwiftViewController()
-       configVC(RxSwiftVC, "RxSwift", "tab_settings", "tab_settings")
+       let rxSwiftVC = RxSwiftViewController()
+       configVC(rxSwiftVC, "RxSwift", "tab_settings", "tab_settings")
        
        let networkVC = NetworkViewController()
        configVC(networkVC, "Net", "tab_more", "tab_more")
@@ -79,11 +85,10 @@ class TabbarController: UITabBarController {
        let CodingVC = CodableViewController()
        configVC(CodingVC, "CodingVC", "tab_settings", "tab_settings")
         
-//       let homeVC = HomeViewController()
-//       configVC(homeVC, "Home", "tab_home", "tab_home")
-       
-       let settingVC = SettingViewController()
-       configVC(settingVC, "Setting", "tab_settings", "tab_settings")
+
+//       
+//       let settingVC = SettingViewController()
+//       configVC(settingVC, "Setting", "tab_settings", "tab_settings")
        
        let pageVC = PageViewController()
        configVC(pageVC, "Guess", "tab_group", "tab_group")

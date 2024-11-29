@@ -30,15 +30,16 @@ class NavigationController: UINavigationController {
     private func setupAppearance() -> Void {
         let appearance: UINavigationBarAppearance = UINavigationBarAppearance()
         
-        appearance.backgroundColor = .yellow
+        appearance.backgroundColor = .white
         
         appearance.titleTextAttributes = [
             NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20),
-            NSAttributedString.Key.foregroundColor : UIColor.white
+            NSAttributedString.Key.foregroundColor : UIColor.black
         ]
         
-        self.navigationBar.standardAppearance = appearance
-        
+        self.navigationBar.standardAppearance   = appearance
+        self.navigationBar.scrollEdgeAppearance = appearance
+
         self.navigationBar.isTranslucent = true
         
         self.navigationBar.backgroundColor = .systemYellow

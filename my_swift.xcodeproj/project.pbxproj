@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18F3515B2CE713B80012EC85 /* RichTextEditorVeiwController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F3515A2CE713B80012EC85 /* RichTextEditorVeiwController.swift */; };
+		18F3515D2CE719660012EC85 /* editor.html in Resources */ = {isa = PBXBuildFile; fileRef = 18F3515C2CE715680012EC85 /* editor.html */; };
+		18F3515F2CE71ADF0012EC85 /* quill.html in Resources */ = {isa = PBXBuildFile; fileRef = 18F3515E2CE71ADF0012EC85 /* quill.html */; };
 		6012AB9229D813B0001F94A6 /* NetworkViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6012AB9029D813B0001F94A6 /* NetworkViewController.swift */; };
 		6012AB9329D813B0001F94A6 /* NetworkViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6012AB9129D813B0001F94A6 /* NetworkViewController.xib */; };
 		6012AB9E29D87020001F94A6 /* RxSwiftViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */; };
@@ -44,6 +47,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		18F3515A2CE713B80012EC85 /* RichTextEditorVeiwController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichTextEditorVeiwController.swift; sourceTree = "<group>"; };
+		18F3515C2CE715680012EC85 /* editor.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = editor.html; sourceTree = "<group>"; };
+		18F3515E2CE71ADF0012EC85 /* quill.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = quill.html; sourceTree = "<group>"; };
 		509F10843E23559D97FB2C20 /* Pods-my_swift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-my_swift.release.xcconfig"; path = "Target Support Files/Pods-my_swift/Pods-my_swift.release.xcconfig"; sourceTree = "<group>"; };
 		6012AB9029D813B0001F94A6 /* NetworkViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkViewController.swift; sourceTree = "<group>"; };
 		6012AB9129D813B0001F94A6 /* NetworkViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetworkViewController.xib; sourceTree = "<group>"; };
@@ -98,6 +104,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18F351592CE713220012EC85 /* WebView */ = {
+			isa = PBXGroup;
+			children = (
+				18F3515A2CE713B80012EC85 /* RichTextEditorVeiwController.swift */,
+				18F3515C2CE715680012EC85 /* editor.html */,
+				18F3515E2CE71ADF0012EC85 /* quill.html */,
+			);
+			path = WebView;
+			sourceTree = "<group>";
+		};
 		1F33632E168A7C3D63677304 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -158,6 +174,7 @@
 		6061A363299DDFF00089B271 /* Module */ = {
 			isa = PBXGroup;
 			children = (
+				18F351592CE713220012EC85 /* WebView */,
 				77F7931929ED2B0000B4C5FD /* Tools */,
 				6012ABA029D87279001F94A6 /* Coding */,
 				6012AB9B29D86F2F001F94A6 /* RxSwift */,
@@ -422,12 +439,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7704CB3629CC642F00707B57 /* Main.storyboard in Resources */,
+				18F3515D2CE719660012EC85 /* editor.html in Resources */,
 				60F3A2E42917EC7A00DF9CE2 /* Assets.xcassets in Resources */,
 				60A606AC29CF2CEA004D72F2 /* ChatTableViewCell.xib in Resources */,
 				7704CB3D29CC677A00707B57 /* Launch Screen.storyboard in Resources */,
 				7704CB3529CC642F00707B57 /* Pets.plist in Resources */,
 				6012AB9F29D87020001F94A6 /* RxSwiftViewController.xib in Resources */,
 				6012ABA929D875CC001F94A6 /* CodableViewController.xib in Resources */,
+				18F3515F2CE71ADF0012EC85 /* quill.html in Resources */,
 				6012AB9329D813B0001F94A6 /* NetworkViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -506,6 +525,7 @@
 				60A606B129CF38BF004D72F2 /* FlipAnimationController.swift in Sources */,
 				6061A35E299DD98A0089B271 /* TabbarController.swift in Sources */,
 				60A606AB29CF2CEA004D72F2 /* ChatTableViewCell.swift in Sources */,
+				18F3515B2CE713B80012EC85 /* RichTextEditorVeiwController.swift in Sources */,
 				6061A362299DD9DB0089B271 /* NavigationController.swift in Sources */,
 				6061A365299DE00C0089B271 /* HomeViewController.swift in Sources */,
 				77F7931B29ED2B2700B4C5FD /* Tools.swift in Sources */,
