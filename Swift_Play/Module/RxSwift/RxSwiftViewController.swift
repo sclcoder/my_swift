@@ -84,7 +84,7 @@ class RxSwiftViewController: UIViewController {
     
 //        rxAmb()
 //        rxMerge()
-        rxZip()
+//        rxZip()
 //        rxCombineLatest()
 //        rxContact()
 //        rxContactMap()
@@ -96,7 +96,7 @@ class RxSwiftViewController: UIViewController {
 //        rxFilter()
 //        rxMap()
 //        rxFlatMap()
-//        rxFlatMapLatest()
+        rxFlatMapLatest()
 //        rxReduce()
 //        rxScan()
         
@@ -1341,7 +1341,38 @@ extension RxSwiftViewController{
          2024-09-30 18:04:07.914: flatMap -> isDisposed
          */
         
-        
+        let first = BehaviorSubject(value: "👦🏻")
+        let second = BehaviorSubject(value: "🅰️")
+        let subject = BehaviorSubject(value: first)
+
+        subject.asObservable()
+                .debug("subject")
+                .flatMap { $0 }
+                .debug("innerSubject")
+                .subscribe(onNext: { print($0) })
+                .disposed(by: disposeBag)
+
+        first.onNext("🐱")
+        subject.onNext(second)
+        first.onNext("🐶")
+        second.onNext("🅱️")
+
+        /**
+         2025-01-14 17:38:41.726: innerSubject -> subscribed
+         2025-01-14 17:38:41.726: subject -> subscribed
+         2025-01-14 17:38:41.732: subject -> Event next(RxSwift.BehaviorSubject<Swift.String>)
+         2025-01-14 17:38:41.732: innerSubject -> Event next(👦🏻)
+         👦🏻
+         2025-01-14 17:38:41.732: innerSubject -> Event next(🐱)
+         🐱
+         2025-01-14 17:38:41.732: subject -> Event next(RxSwift.BehaviorSubject<Swift.String>)
+         2025-01-14 17:38:41.732: innerSubject -> Event next(🅰️)
+         🅰️
+         2025-01-14 17:38:41.732: innerSubject -> Event next(🐶)
+         🐶
+         2025-01-14 17:38:41.732: innerSubject -> Event next(🅱️)
+         🅱️
+         */
     }
     
     func rxFlatMapLatest() -> Void {
@@ -1370,8 +1401,9 @@ extension RxSwiftViewController{
 
         first.onNext("🐱")
         subject.onNext(second)
-        second.onNext("🅱️")
         first.onNext("🐶")
+        second.onNext("🅱️")
+
         /**
          👦🏻
          🐱
@@ -1379,17 +1411,17 @@ extension RxSwiftViewController{
          🅱️
          
          debug:
-         2024-09-30 18:17:01.204: innerSubject -> subscribed
-         2024-09-30 18:17:01.205: subject -> subscribed
-         2024-09-30 18:17:01.209: subject -> Event next(RxSwift.BehaviorSubject<Swift.String>)
-         2024-09-30 18:17:01.210: innerSubject -> Event next(👦🏻)
+         2025-01-14 17:39:42.432: innerSubject -> subscribed
+         2025-01-14 17:39:42.434: subject -> subscribed
+         2025-01-14 17:39:42.437: subject -> Event next(RxSwift.BehaviorSubject<Swift.String>)
+         2025-01-14 17:39:42.438: innerSubject -> Event next(👦🏻)
          👦🏻
-         2024-09-30 18:17:01.210: innerSubject -> Event next(🐱)
+         2025-01-14 17:39:42.439: innerSubject -> Event next(🐱)
          🐱
-         2024-09-30 18:17:01.210: subject -> Event next(RxSwift.BehaviorSubject<Swift.String>)
-         2024-09-30 18:17:01.210: innerSubject -> Event next(🅰️)
+         2025-01-14 17:39:42.439: subject -> Event next(RxSwift.BehaviorSubject<Swift.String>)
+         2025-01-14 17:39:42.439: innerSubject -> Event next(🅰️)
          🅰️
-         2024-09-30 18:17:01.210: innerSubject -> Event next(🅱️)
+         2025-01-14 17:39:42.439: innerSubject -> Event next(🅱️)
          🅱️
          */
     }
@@ -2264,7 +2296,6 @@ extension RxSwiftViewController{
          🐭
          */
     }
-    
 
     func rxReplay() -> Void {
         /**
@@ -2568,25 +2599,6 @@ extension RxSwiftViewController{
          refCount 操作符将自动连接和断开可被连接的 Observable。它将可被连接的 Observable 转换为普通 Observable。当第一个观察者对它订阅时，那么底层的 Observable 将被连接。当最后一个观察者离开时，那么底层的 Observable 将被断开连接。
          */
     }
-    
- 
-    
-
-    
-    
-  
-    
-    
-    
-
-    
-    
-    
-
-    
-    
-    
-
 }
 
 
@@ -2801,7 +2813,6 @@ extension RxSwiftViewController{
     }
 }
 
-
 extension RxSwiftViewController{
     func creteObservable() -> Observable<Any> {
         // 6.create : 自定义可观察的sequence
@@ -2813,8 +2824,6 @@ extension RxSwiftViewController{
             return Disposables.create()
         }
     }
-    
-    
     func myJustObserable(element: String) -> Observable<String> {
         return Observable.create { (observer : AnyObserver<String>) -> Disposable in
             observer.onNext(element)
@@ -2937,11 +2946,8 @@ extension RxSwiftViewController{
     }
 }
 
-
-
 /// UIButton
 extension RxSwiftViewController{
-    
     func testBtn() -> Void {
         
         let _ = startBtn.rx.tap.subscribe({event in
@@ -2974,7 +2980,6 @@ extension RxSwiftViewController{
 
 /// UITextField
 extension RxSwiftViewController{
-    
     func testTF() -> Void {
         
         
