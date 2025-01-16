@@ -18,11 +18,15 @@ class RxSwiftViewController: UIViewController {
     @IBOutlet weak var nameTF: UITextField!
     @IBOutlet weak var pwdTF: UITextField!
     @IBOutlet weak var contentLabel: UILabel!
+    
+    struct TestError: Error {
+        let msg: String
+    }
+    
     /// RxSwiftViewController 释放时，释放bag对象，同时将DisposeBag中的dispose销毁
     fileprivate lazy var bag : DisposeBag = DisposeBag()
     
     let disposeBag = DisposeBag()
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,7 +44,23 @@ class RxSwiftViewController: UIViewController {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        //MARK: Operations 操作符
+        
+        testSubject()
+        
+//        testOperations()
+        
+    }
+    
+    func testSubject() -> Void {
+//        testColdObservable()
+        testMulticastObservable()
+//        testPublishSubject()
+//        testBehaviorSubject()
+//        testReplaySubject()
+//        testAsyncSubject()
+    }
+    
+    func testOperations() -> Void {
 //        rxCreate()
 //        rxJust()
 //        rxOf()
@@ -96,7 +116,7 @@ class RxSwiftViewController: UIViewController {
 //        rxFilter()
 //        rxMap()
 //        rxFlatMap()
-        rxFlatMapLatest()
+//        rxFlatMapLatest()
 //        rxReduce()
 //        rxScan()
         
@@ -104,18 +124,355 @@ class RxSwiftViewController: UIViewController {
         
 //        rxReplay()
 //        rxShareReplay()
-
     }
-
 }
 
 
-// https://beeth0ven.github.io/RxSwift-Chinese-Documentation/content/decision_tree.html
 extension RxSwiftViewController{
-    struct TestError: Error {
-        let msg: String
+    
+    /**
+     在 RxSwift 中，Subject 是一个非常重要的类型。它既是一个 Observable，又是一个 Observer，这种双重身份使得 Subject 在 RxSwift 中非常灵活和强大。
+     Subject 的双重身份
+     作为 Observable：其他观察者可以订阅 Subject，以接收它发射的事件。
+     作为 Observer：Subject 可以订阅其他 Observable，接收并处理它们发射的事件。
+     Subject 还可以通过 onNext、onError 和 onCompleted 方法手动发射事件。
+     这种双重身份使得 Subject 可以充当“桥梁”，将命令式代码与响应式代码结合起来。
+     
+     
+     Subject 是 RxSwift 中的一个核心类型，既是 Observable，又是 Observer。
+     常见的 Subject 类型包括 PublishSubject、BehaviorSubject、ReplaySubject 和 AsyncSubject，每种类型的行为不同，适用于不同的场景。
+     Subject 在 RxSwift 中扮演着桥梁和多播的角色，是连接命令式代码和响应式代码的重要工具。
+     */
+    
+    
+    /**
+     1. 桥接命令式代码与响应式代码
+     背景
+     在开发中，我们经常会遇到一些命令式代码（Imperative Code），例如：
+     按钮点击事件、网络请求的回调、用户输入事件
+     这些代码通常是基于回调或委托的模式，而 RxSwift 的响应式编程（Reactive Programming）则是基于数据流和观察者模式。为了将这两种模式结合起来，我们可以使用 Subject。
+     
+     如何使用 Subject 桥接？
+     Subject 既可以作为 Observer 接收命令式代码的事件，又可以作为 Observable 将这些事件转换为响应式流。以下是具体步骤：
+
+     示例：将按钮点击事件转换为响应式流
+     */
+  
+    func testSubjectBridge() -> Void {
+        // 假设有一个按钮
+        let button = UIButton()
+
+        // 创建一个 PublishSubject 来接收按钮点击事件
+        let buttonTapSubject = PublishSubject<Void>() // PublishSubject 是一个 热 Observable，它不会缓存事件。
+
+        // 将按钮的点击事件绑定到 Subject
+        button.rx.tap
+            .subscribe(onNext: {
+                buttonTapSubject.onNext(())
+            })
+            .disposed(by: disposeBag)
+
+        // 订阅 Subject，将按钮点击事件转换为响应式流
+        buttonTapSubject
+            .subscribe(onNext: {
+                print("Button was tapped!")
+            })
+            .disposed(by: disposeBag)
+        
+        /**
+         分析
+         命令式代码：按钮的点击事件是通过 button.rx.tap 监听的，这是一个命令式的回调。
+         桥接：通过 PublishSubject，我们将按钮点击事件转换为一个响应式流。
+         响应式代码：订阅 buttonTapSubject，可以像处理其他 Observable 一样处理按钮点击事件。
+         优点
+         统一编程模型：将命令式代码和响应式代码统一为数据流，简化代码逻辑。
+         灵活性：可以在响应式流中添加操作符（如 map、filter 等），对事件进行进一步处理。
+         */
     }
     
+    
+    /**
+     2. 多播（Multicast）
+     背景
+     在 RxSwift 中，默认的 Observable 是 冷 Observable（Cold Observable），即每次订阅时都会重新执行其创建逻辑。例如：
+     */
+    
+    func testColdObservable() -> Void {
+        let observable = Observable<Int>.create { observer in
+            print("Creating observable")
+            observer.onNext(1)
+            observer.onNext(2)
+            observer.onCompleted()
+            return Disposables.create()
+        }
+
+        observable.subscribe(onNext: { value in
+            print("Subscriber 1: \(value)")
+        }).disposed(by: disposeBag)
+
+        observable.subscribe(onNext: { value in
+            print("Subscriber 2: \(value)")
+        }).disposed(by: disposeBag)
+
+        // 输出：
+        // Creating observable
+        // Subscriber 1: 1
+        // Subscriber 1: 2
+        // Creating observable
+        // Subscriber 2: 1
+        // Subscriber 2: 2
+//        可以看到，每次订阅时，Observable 都会重新执行一次。如果创建逻辑涉及耗时操作（如网络请求），这会导致性能问题。
+    }
+    
+    /**
+     如何使用 Subject 实现多播？
+     Subject 可以作为 热 Observable（Hot Observable），将同一个 Observable 序列共享给多个观察者，从而避免重复执行。
+
+     示例：使用 PublishSubject 实现多播
+
+     */
+    
+    func testMulticastObservable() -> Void {
+        let observable = Observable<Int>.create { observer in
+            print("Creating observable")
+            observer.onNext(1)
+            observer.onNext(2)
+            observer.onCompleted()
+            return Disposables.create()
+        }
+
+        // 创建一个 PublishSubject 作为多播的桥梁
+        let subject = PublishSubject<Int>() // PublishSubject 是一个 热 Observable，它不会缓存事件。
+
+        // 多个观察者订阅 Subject
+        subject.subscribe(onNext: { value in
+            print("Subscriber 1: \(value)")
+        }).disposed(by: disposeBag)
+
+        subject.subscribe(onNext: { value in
+            print("Subscriber 2: \(value)")
+        }).disposed(by: disposeBag)
+
+        // 将 Observable 订阅到 Subject
+        observable.subscribe(subject).disposed(by: disposeBag)
+        
+        // 输出：
+        // Creating observable
+        // Subscriber 1: 1
+        // Subscriber 2: 1
+        // Subscriber 1: 2
+        // Subscriber 2: 2
+        
+        
+        
+        let observable2 = Observable<Int>.create { observer in
+            print("Creating observable")
+            observer.onNext(1)
+            observer.onNext(2)
+            observer.onCompleted()
+            return Disposables.create()
+        }
+
+        // 使用 ReplaySubject 缓存所有事件
+        let replaySubject = ReplaySubject<Int>.create(bufferSize: 2)
+
+        // 将 Observable 订阅到 Subject
+        observable2.subscribe(replaySubject).disposed(by: disposeBag)
+
+        // 多个观察者订阅 Subject
+        replaySubject.subscribe(onNext: { value in
+            print("Subscriber 1: \(value)")
+        }).disposed(by: disposeBag)
+
+        replaySubject.subscribe(onNext: { value in
+            print("Subscriber 2: \(value)")
+        }).disposed(by: disposeBag)
+
+        // 输出：
+        // Creating observable
+        // Subscriber 1: 1
+        // Subscriber 1: 2
+        // Subscriber 2: 1
+        // Subscriber 2: 2
+    }
+    /**
+     Subject 的核心作用
+     桥接命令式代码与响应式代码：
+     将命令式事件（如按钮点击、网络回调）转换为响应式流。
+     统一编程模型，简化代码逻辑。
+     多播（Multicast）：
+     将 Observable 序列共享给多个观察者，避免重复执行。
+     提升性能，确保数据一致性。
+     
+     适用场景
+     桥接：处理 UI 事件、网络回调等命令式代码。
+     多播：共享网络请求结果、数据库查询结果等耗时操作。
+     通过合理使用 Subject，可以更好地结合命令式编程和响应式编程，提升代码的可读性和性能。
+     */
+    
+    
+    
+    /**
+     PublishSubject
+    特点：
+    只向订阅者发射订阅之后的事件。
+    不会缓存任何事件。
+    使用场景：
+    适用于只需要处理订阅后事件的场景。
+     */
+    func testPublishSubject() -> Void {
+        
+        let publishSubject = PublishSubject<String>()
+
+        publishSubject.onNext("Event 1") // 不会被接收，因为还没有订阅者
+
+        publishSubject
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        publishSubject.onNext("Event 2")
+        publishSubject.onNext("Event 3")
+        
+//        Received value: Event 2
+//        Received value: Event 3
+        
+    }
+
+    
+    /**
+     BehaviorSubject
+     特点：
+     向订阅者发射订阅之前的最后一个事件（如果有），以及订阅之后的所有事件。
+     需要提供一个初始值。
+     使用场景：
+     适用于需要获取最新状态的场景，例如当前用户状态。
+     */
+    
+    func testBehaviorSubject() -> Void {
+        let behaviorSubject = BehaviorSubject<String>(value: "Initial Value")
+
+        behaviorSubject
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        behaviorSubject.onNext("Event 1")
+        behaviorSubject.onNext("Event 2")
+        
+//        Received value: Initial Value
+//        Received value: Event 1
+//        Received value: Event 2
+    }
+    
+    /**
+     ReplaySubject
+     特点：
+     向订阅者发射订阅之前的所有事件（缓存的事件数量可配置），以及订阅之后的所有事件。
+     使用场景：
+     适用于需要重放历史事件的场景。
+     */
+    func testReplaySubject() -> Void {
+        let replaySubject = ReplaySubject<String>.create(bufferSize: 2)
+
+        replaySubject.onNext("Event 1")
+        replaySubject.onNext("Event 2")
+        replaySubject.onNext("Event 3")
+
+        replaySubject
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        // 输出：
+        // Received value: Event 2
+        // Received value: Event 3
+    }
+
+    func testAsyncSubject() -> Void {
+        /**
+         在 RxSwift 中，AsyncSubject 是一种特殊的 Subject，它仅在 Observable 序列完成时发射最后一个事件（或错误）。如果序列没有发射任何事件就完成了，AsyncSubject 也不会发射任何事件。
+
+         1. AsyncSubject 的特点
+         只发射最后一个事件：AsyncSubject 会等待 Observable 序列完成，然后发射最后一个事件（onNext）。
+         完成时发射：只有在序列完成时，AsyncSubject 才会发射事件。
+         错误处理：如果序列以错误终止，AsyncSubject 会发射该错误，而不是最后一个事件。
+         无事件完成：如果序列没有发射任何事件就完成了，AsyncSubject 也不会发射任何事件。
+         2. 使用场景，为什么要使用 AsyncSubject？
+         AsyncSubject 的核心价值在于它只关注 Observable 序列的最终结果。这种特性非常适合以下场景：
+         等待异步操作的最终结果：例如，等待网络请求的最终响应。
+         忽略中间过程，只关心最终状态：例如，等待某个任务的完成状态。
+         */
+        let asyncSubject1 = AsyncSubject<String>()
+        
+        asyncSubject1
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            }, onCompleted: {
+                print("Completed")
+            })
+            .disposed(by: disposeBag)
+
+        asyncSubject1.onNext("Event 1")
+        asyncSubject1.onNext("Event 2")
+        asyncSubject1.onNext("Event 3")
+        asyncSubject1.onCompleted()
+
+        // 输出：
+        // Received value: Event 3
+        // Completed
+
+        let asyncSubject2 = AsyncSubject<String>()
+
+        asyncSubject2
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            }, onError: { error in
+                print("Error: \(error)")
+            })
+            .disposed(by: disposeBag)
+
+        asyncSubject2.onNext("Event 1")
+        asyncSubject2.onNext("Event 2")
+        asyncSubject2.onError(TestError(msg: "someError"))
+
+        // 输出：
+        // Error: TestError(msg: "someError")
+        
+        
+        let asyncSubject3 = AsyncSubject<String>()
+
+        asyncSubject3
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            }, onCompleted: {
+                print("Completed")
+            })
+            .disposed(by: disposeBag)
+
+        asyncSubject3.onCompleted()
+
+        // 输出：
+        // Completed
+        
+        /**
+         总结
+        AsyncSubject 只在 Observable 序列完成时发射最后一个事件。
+        如果序列以错误终止，AsyncSubject 会发射该错误。
+        如果序列没有发射任何事件就完成了，AsyncSubject 也不会发射任何事件。
+        AsyncSubject 适用于需要等待操作完成并获取最终结果的场景，例如网络请求的最终响应
+         */
+    }
+}
+
+//MARK: Operations 操作符
+
+// https://beeth0ven.github.io/RxSwift-Chinese-Documentation/content/decision_tree.html
+extension RxSwiftViewController{
+
     // MARK: Observable - 多线程
     func rxScheduler() -> Void {
         /**
@@ -2608,7 +2965,7 @@ extension RxSwiftViewController{
 // MARK: 非我自己写的
 
 extension RxSwiftViewController{
-    func testSubject() {
+    func testSubject2() {
         print("----------------Subject----------------")
 /************************** Subject *************************************/
 
