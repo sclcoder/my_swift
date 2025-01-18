@@ -53,7 +53,8 @@ class RxSwiftViewController: UIViewController {
     
     func testSubject() -> Void {
 //        testColdObservable()
-        testMulticastObservable()
+//        testMulticastObservable()
+        testSubjectMultiThread()
 //        testPublishSubject()
 //        testBehaviorSubject()
 //        testReplaySubject()
@@ -63,7 +64,8 @@ class RxSwiftViewController: UIViewController {
     func testRelay() -> Void {
 //        testPublishRelay()
 //        testBehaviorRelay()
-        testReplayRelay()
+//        testReplayRelay()
+        testRelayMultiThread()
     }
     
     func testOperations() -> Void {
@@ -318,6 +320,10 @@ extension RxSwiftViewController{
      */
     
     
+    func testSubjectMultiThread() -> Void {
+        
+    }
+    
     
     /**
      PublishSubject
@@ -473,7 +479,9 @@ extension RxSwiftViewController{
         AsyncSubject 适用于需要等待操作完成并获取最终结果的场景，例如网络请求的最终响应
          */
     }
-    
+}
+
+extension RxSwiftViewController{
     // MARK: RxRelay
     /**
      RxRelay 既是 可监听序列 也是 观察者。
@@ -590,6 +598,17 @@ extension RxSwiftViewController{
         // Subscriber 1: Event 3
         // Subscriber 2: Event 2
         // Subscriber 2: Event 3
+    }
+    
+    
+    /**
+     在多线程环境中，多个线程可能会同时访问和修改共享资源（如事件流）。如果没有适当的同步机制，可能会导致数据竞争（Data Race）或不可预测的行为。例如：
+     一个线程正在发射事件，而另一个线程正在订阅事件。
+     多个线程同时调用 accept 方法发射事件。
+     为了保证事件流的正确性和一致性，Relay 必须是线程安全的。
+     */
+    func testRelayMultiThread() -> Void {
+        
     }
 
 }
