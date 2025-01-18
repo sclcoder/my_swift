@@ -45,8 +45,8 @@ class RxSwiftViewController: UIViewController {
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        testSubject()
-        
+//        testSubject()
+        testRelay()
 //        testOperations()
         
     }
@@ -58,6 +58,12 @@ class RxSwiftViewController: UIViewController {
 //        testBehaviorSubject()
 //        testReplaySubject()
 //        testAsyncSubject()
+    }
+    
+    func testRelay() -> Void {
+//        testPublishRelay()
+//        testBehaviorRelay()
+        testReplayRelay()
     }
     
     func testOperations() -> Void {
@@ -129,7 +135,8 @@ class RxSwiftViewController: UIViewController {
 
 
 extension RxSwiftViewController{
-    
+    // MARK: Subject
+
     /**
      在 RxSwift 中，Subject 是一个非常重要的类型。它既是一个 Observable，又是一个 Observer，这种双重身份使得 Subject 在 RxSwift 中非常灵活和强大。
      Subject 的双重身份
@@ -466,6 +473,125 @@ extension RxSwiftViewController{
         AsyncSubject 适用于需要等待操作完成并获取最终结果的场景，例如网络请求的最终响应
          */
     }
+    
+    // MARK: RxRelay
+    /**
+     RxRelay 既是 可监听序列 也是 观察者。
+     他和 Subjects 相似，唯一的区别是不会接受 onError 或 onCompleted 这样的终止事件。
+     
+     在将非 Rx 样式的 API 转化为 Rx 样式时，Subjects 是非常好用的。不过一旦 Subjects 接收到了终止事件 onError 或 onCompleted。他就无法继续工作了，也不会转发后续任何事件。有些时候这是合理的，但在多数场景中这并不符合我们的预期。
+
+     在这些场景中一个更严谨的做法就是，创造一种特殊的 Subjects，这种 Subjects 不会接受终止事件。有了他，我们将 API 转化为 Rx 样式时，就不必担心一个意外的终止事件，导致后续事件转发失效。
+     
+     RxRelay 是 RxSwift 生态系统中的一个重要组件，它基于 RxCocoa，提供了一种更安全和更方便的方式来处理 UI 相关的事件流。Relay 是 Subject 的一种特殊形式，专门用于处理永远不会终止的事件流（即不会调用 onError 或 onCompleted）。
+
+     1. Relay 的核心特点
+     不会终止：Relay 不会调用 onError 或 onCompleted，因此它始终处于活跃状态，适合用于 UI 事件流。
+     基于 Subject：Relay 是对 Subject 的封装，提供了更简单的 API。
+     线程安全：Relay 的操作是线程安全的，适合在多线程环境中使用。
+     
+     Relay 的优势
+     安全性：
+     Relay 不会调用 onError 或 onCompleted，因此不会意外终止事件流。
+     特别适合用于 UI 事件流，因为 UI 事件通常不会终止。
+
+     简洁性：
+     Relay 提供了更简单的 API（如 accept 方法），避免了直接操作 onNext、onError 和 onCompleted。
+     线程安全：
+     Relay 的操作是线程安全的，可以在多线程环境中安全使用。
+     
+     Relay 的使用场景
+     UI 事件：
+     按钮点击、文本输入、手势事件等。
+     
+     状态管理：
+     当前用户状态、应用配置、主题设置等。
+     
+     数据绑定：
+     将数据流绑定到 UI 组件，例如将网络请求结果绑定到表格视图。
+     */
+    
+    /**
+     PublishRelay 就是 PublishSubject 去掉终止事件 onError 或 onCompleted
+     */
+    func testPublishRelay() -> Void {
+        let publishRelay = PublishRelay<String>()
+
+        publishRelay.accept("Event 1") // 不会被接收，因为还没有订阅者
+
+        publishRelay
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        publishRelay.accept("Event 2")
+        publishRelay.accept("Event 3")
+        
+//        Received value: Event 2
+//        Received value: Event 3
+    }
+    
+    
+    
+    /**
+     BehaviorRelay 就是 BehaviorSubject 去掉终止事件 onError 或 onCompleted。
+     */
+    func testBehaviorRelay() -> Void {
+        
+        let behaviorRelay = BehaviorRelay<String>(value: "Initial Value")
+
+        behaviorRelay
+            .subscribe(onNext: { value in
+                print("Received value: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        behaviorRelay.accept("Event 1")
+        behaviorRelay.accept("Event 2")
+        
+//        Received value: Initial Value
+//        Received value: Event 1
+//        Received value: Event 2
+    }
+    
+    
+    /**
+     ReplayRelay 就是 ReplaySubject 去掉终止事件 onError 或 onCompleted。
+     */
+    func testReplayRelay() -> Void {
+
+        // 创建一个缓存最近 2 个事件的 ReplayRelay
+        let replayRelay = ReplayRelay<String>.create(bufferSize: 2)
+
+        // 发射事件
+        replayRelay.accept("Event 1")
+        replayRelay.accept("Event 2")
+
+        // 第一个订阅者
+        replayRelay
+            .subscribe(onNext: { value in
+                print("Subscriber 1: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        // 发射新事件
+        replayRelay.accept("Event 3")
+
+        // 第二个订阅者
+        replayRelay
+            .subscribe(onNext: { value in
+                print("Subscriber 2: \(value)")
+            })
+            .disposed(by: disposeBag)
+
+        // Subscriber 1: Event 1
+        // Subscriber 1: Event 2
+        // Subscriber 1: Event 3
+        // Subscriber 2: Event 2
+        // Subscriber 2: Event 3
+    }
+
 }
 
 //MARK: Operations 操作符
