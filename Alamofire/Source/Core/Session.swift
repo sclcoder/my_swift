@@ -163,13 +163,11 @@ open class Session {
                 cachedResponseHandler: CachedResponseHandler? = nil,
                 eventMonitors: [EventMonitor] = []) {
         
-        
+        /// 断言
         precondition(session.configuration.identifier == nil,
                      "Alamofire does not support background URLSessionConfigurations.")
-        /**
-         session.delegateQueue是OperationQueue类型 ，underlyingQueue 是 DispatchQueue类型（GCD）
-         */
-        /// Alamofirle 要求 session.delegateQueue.underlyingQueue === rootQueue
+        
+        /// 确保 session.delegateQueue.underlyingQueue 和 rootQueue 是同一个 GCD 队列，如果不匹配，则触发 precondition 断言，导致程序崩溃并输出错误信息。
         precondition(session.delegateQueue.underlyingQueue === rootQueue,
                      "Session(session:) initializer must be passed the DispatchQueue used as the delegateQueue's underlyingQueue as rootQueue.")
 
@@ -259,52 +257,47 @@ open class Session {
         precondition(configuration.identifier == nil, "Alamofire does not support background URLSessionConfigurations.")
 
         /**
-          https://juejin.cn/post/6844903588930519047#heading-0  、https://www.humancode.us/2014/08/14/target-queues.html
-          目标队列：
+         ## Target Queue： https://juejin.cn/post/6844903588930519047#heading-0  、https://www.humancode.us/2014/08/14/target-queues.html
            - What does it mean for a queue to have a target queue?
            - It’s a little surprising, actually: each time an enqueued block becomes ready to execute, the queue will re-enqueue that block on the target queue for actual execution.
+        
+         ## DispatchQueue(label: rootQueue.label, target: rootQueue)的作用
+         在 rootQueue 不是 DispatchQueue.main 的情况下，创建一个新的串行队列 (serialRootQueue)，但让它的 target 仍然是 rootQueue。这有助于控制任务的调度和执行顺序，同时继承 rootQueue 的 QoS 和执行环境。它不会独立管理自己的任务，而是把任务交给 rootQueue，从而保持与 rootQueue 统一的调度策略。
          
-         requestQueue、serializationQueue的targetQueue都是rootQueue
-         这里的rootQueue实际是作为了后续队列的targetQueue ， 默认值是DispatchQueue(label: "org.alamofire.session.rootQueue")
-         Session.rootQueue的真实值为serialRootQueue， 一个以rootQueue为targetQueue的串行队列
+         serialRootQueue 本身是一个串行队列，但它的任务会被 rootQueue 处理。
          
-         
-         ChatGPT
-         在 GCD（Grand Central Dispatch）中，DispatchQueue 的 target 参数 用于指定该队列的目标队列（Target Queue），从而控制任务的执行顺序和继承行为。
-         (1) 影响队列的优先级继承
-         let rootQueue = DispatchQueue(label: "com.example.root", qos: .utility)
-         let childQueue = DispatchQueue(label: "com.example.child", target: rootQueue
-         childQueue 不会单独管理自己的执行优先级，而是 继承 rootQueue 的 QoS（Quality of Service，服务质量）。
-         这样可以确保 childQueue 的任务不会因为 qos 级别不同而意外地比 rootQueue 的任务更快或更慢执行。
-         
-         (2) 控制队列的执行上下文
-         通常，一个 DispatchQueue 会将任务提交到 系统默认的 GCD 线程池，但是如果设置 target，它的任务会优先在 target 队列所运行的线程上下文中执行
-         let serialQueue = DispatchQueue(label: "com.example.serial")
-         let workerQueue = DispatchQueue(label: "com.example.worker", target: serialQueue)
-         workerQueue 不是独立运行的，而是 其所有任务都将在 serialQueue 上执行。
-         这样可以保证 多个子队列的任务都按 serialQueue 设定的顺序运行。
-         
-         3) 组合多个子队列到同一个目标队列
-         假设有多个不同的 DispatchQueue，但你希望它们的任务最终都交由同一个 targetQueue 处理：
-         let rootQueue = DispatchQueue(label: "com.example.root", qos: .utility)
-         let queue1 = DispatchQueue(label: "com.example.queue1", target: rootQueue)
-         let queue2 = DispatchQueue(label: "com.example.queue2", target: rootQueue)
-         queue1 和 queue2 都将它们的任务提交到 rootQueue，最终在 rootQueue 的执行上下文中被调度。
-         这可以确保 不同队列的任务按 rootQueue 的规则执行，而不会相互竞争 CPU 资源。
-         
-         3. target 与 underlyingQueue 的区别
+         # 假如rootQueue 是并发队列的情况下，仍然确保某些任务按顺序执行。
+         serialRootQueue 只是按顺序把任务交给 rootQueue，但 rootQueue 如何执行任务仍然是它自己的规则（即并发执行）。
+         serialRootQueue 里面的任务 1 必须先被提交到 rootQueue，然后才能提交任务 2，以此类推。
+         但是 rootQueue 仍然是并发的，它可能还在处理其他任务（比如任务 X、Y、Z），所以任务 1 在 rootQueue 里 可能会和其他任务并发执行
+         但任务 2 仍然要等任务 1 提交完毕后才能进入 rootQueue。
+         */
+        
+        // Retarget the incoming rootQueue for safety, unless it's the main queue, which we know is safe.
+        let serialRootQueue = (rootQueue === DispatchQueue.main) ? rootQueue : DispatchQueue(label: rootQueue.label,
+                                                                                             target: rootQueue)
+        /**
+         ## target 与 underlyingQueue 的区别
          属性    target（目标队列）                 underlyingQueue（底层队列）
-         适用于    DispatchQueue                  OperationQueue
+         适用于   DispatchQueue                   OperationQueue
          作用    控制任务提交到哪个 DispatchQueue    允许 OperationQueue 共享一个 DispatchQueue
          影响    影响 QoS 继承、任务调度             主要用于 OperationQueue 与 DispatchQueue 结合
          
          target 主要用于 DispatchQueue，让多个队列共享同一个执行上下文。
-         underlyingQueue 主要用于 OperationQueue，让 OperationQueue 在 GCD 队列上运行。
+         underlyingQueue主要用于OperationQueue，让OperationQueue在指定的GCD 队列上运行。
+        
+         ❌ 如果不设置 delegateQueue.underlyingQueue = rootQueue：
+         delegateQueue 会创建自己的 DispatchQueue，导致 URLSessionDelegate 的回调不在 rootQueue 上执行。
+         可能导致 任务执行顺序不一致，影响请求的管理和状态同步。
+         可能导致 Alamofire 内部逻辑失效，因为 Alamofire 假设 delegateQueue 是 rootQueue 的子队列。
+         
+         ✅ 如果正确设置 underlyingQueue = rootQueue：
+         保证 URLSessionDelegate 的回调在 rootQueue 上执行，防止任务乱序。
+         保证 rootQueue 负责的请求任务和回调在同一个队列上，避免线程安全问题。
+         确保 Alamofire 或其他网络库可以正确管理请求和回调的生命周期。
          */
-        // Retarget the incoming rootQueue for safety, unless it's the main queue, which we know is safe.
-        let serialRootQueue = (rootQueue === DispatchQueue.main) ? rootQueue : DispatchQueue(label: rootQueue.label,
-                                                                                             target: rootQueue)
-        /// delegateQueue.是OperationQueue类型，其underlyingQueue 是 serialRootQueue，即Session.rootQueue
+        
+        /// delegateQueue.是OperationQueue类型，其underlyingQueue 是 serialRootQueue，即Session.rootQueue,Session.rootQueue的真实值为serialRootQueue
         let delegateQueue = OperationQueue(maxConcurrentOperationCount: 1, underlyingQueue: serialRootQueue, name: "\(serialRootQueue.label).sessionDelegate")
         
         /**
@@ -314,6 +307,12 @@ open class Session {
          */
         let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: delegateQueue)
 
+        /**
+         requestQueue、serializationQueue的targetQueue都是rootQueue,这里的rootQueue实际是作为了后续队列的targetQueue,
+         默认值是DispatchQueue(label: "org.alamofire.session.rootQueue")
+         
+         Session.rootQueue的真实值为serialRootQueue
+         */
         self.init(session: session,
                   delegate: delegate,
                   rootQueue: serialRootQueue, /// 一个以DispatchQueue(label: "org.alamofire.session.rootQueue")为targetQueue的串行队列
@@ -1129,6 +1128,7 @@ open class Session {
     /**
      这里request.state更新为resumed了？ 在哪变化的呢？ 注意：perform函数是异步函数，在调用perform函数后就返回了
      perform函数返回后，外界调用DataRequest.response函数这个函数内部会根据配置startRequestsImmediately、startImmediately,将Request的state更新
+     注意：requestQueue将rootQueue设置为了自己的target Queue
      */
             self.requestQueue.async {
                 
