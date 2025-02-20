@@ -267,6 +267,39 @@ open class Session {
          requestQueue、serializationQueue的targetQueue都是rootQueue
          这里的rootQueue实际是作为了后续队列的targetQueue ， 默认值是DispatchQueue(label: "org.alamofire.session.rootQueue")
          Session.rootQueue的真实值为serialRootQueue， 一个以rootQueue为targetQueue的串行队列
+         
+         
+         ChatGPT
+         在 GCD（Grand Central Dispatch）中，DispatchQueue 的 target 参数 用于指定该队列的目标队列（Target Queue），从而控制任务的执行顺序和继承行为。
+         (1) 影响队列的优先级继承
+         let rootQueue = DispatchQueue(label: "com.example.root", qos: .utility)
+         let childQueue = DispatchQueue(label: "com.example.child", target: rootQueue
+         childQueue 不会单独管理自己的执行优先级，而是 继承 rootQueue 的 QoS（Quality of Service，服务质量）。
+         这样可以确保 childQueue 的任务不会因为 qos 级别不同而意外地比 rootQueue 的任务更快或更慢执行。
+         
+         (2) 控制队列的执行上下文
+         通常，一个 DispatchQueue 会将任务提交到 系统默认的 GCD 线程池，但是如果设置 target，它的任务会优先在 target 队列所运行的线程上下文中执行
+         let serialQueue = DispatchQueue(label: "com.example.serial")
+         let workerQueue = DispatchQueue(label: "com.example.worker", target: serialQueue)
+         workerQueue 不是独立运行的，而是 其所有任务都将在 serialQueue 上执行。
+         这样可以保证 多个子队列的任务都按 serialQueue 设定的顺序运行。
+         
+         3) 组合多个子队列到同一个目标队列
+         假设有多个不同的 DispatchQueue，但你希望它们的任务最终都交由同一个 targetQueue 处理：
+         let rootQueue = DispatchQueue(label: "com.example.root", qos: .utility)
+         let queue1 = DispatchQueue(label: "com.example.queue1", target: rootQueue)
+         let queue2 = DispatchQueue(label: "com.example.queue2", target: rootQueue)
+         queue1 和 queue2 都将它们的任务提交到 rootQueue，最终在 rootQueue 的执行上下文中被调度。
+         这可以确保 不同队列的任务按 rootQueue 的规则执行，而不会相互竞争 CPU 资源。
+         
+         3. target 与 underlyingQueue 的区别
+         属性    target（目标队列）                 underlyingQueue（底层队列）
+         适用于    DispatchQueue                  OperationQueue
+         作用    控制任务提交到哪个 DispatchQueue    允许 OperationQueue 共享一个 DispatchQueue
+         影响    影响 QoS 继承、任务调度             主要用于 OperationQueue 与 DispatchQueue 结合
+         
+         target 主要用于 DispatchQueue，让多个队列共享同一个执行上下文。
+         underlyingQueue 主要用于 OperationQueue，让 OperationQueue 在 GCD 队列上运行。
          */
         // Retarget the incoming rootQueue for safety, unless it's the main queue, which we know is safe.
         let serialRootQueue = (rootQueue === DispatchQueue.main) ? rootQueue : DispatchQueue(label: rootQueue.label,
@@ -349,8 +382,9 @@ open class Session {
 
         func asURLRequest() throws -> URLRequest {
             var request = try URLRequest(url: url, method: method, headers: headers)
+            
+            // 在构建完URLRequest后，触发 1.requestModifier 2.encoding请求参数编码
             try requestModifier?(&request)
-
             return try encoding.encode(request, with: parameters)
         }
     }
@@ -1219,7 +1253,8 @@ open class Session {
         /// 报告状态: 执行回调函数
         request.didCreateTask(task)
         
-        /// Alamofire.Request的withState闭包，回调中会更新更新task状态
+        /// Alamofire.Request的withState闭包，回调中会更新更新task状态。
+        /// 通过request的resume状态来启动task,即task.resume()
         updateStatesForTask(task, request: request)
     }
 
@@ -1244,6 +1279,7 @@ open class Session {
                 // Do nothing.
                 break
             case .resumed:
+                // 启动task
                 task.resume()
                 rootQueue.async { request.didResumeTask(task) }
             case .suspended:
