@@ -79,10 +79,89 @@ final class UnfairLock: Lock {
     }
 }
 #endif
+/// #关于 @propertyWrapper的说明 - wrappedValue
+/**
+##官方翻译文档 https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#propertywrapper
+## DeepSeek解释
+一个简单的案例
+ @propertyWrapper
+ struct Trimmed {
+     private var value: String = ""
+     
+     var wrappedValue: String {
+         get { value }
+         set { value = newValue.trimmingCharacters(in: .whitespacesAndNewlines) }
+     }
+     
+     init(wrappedValue: String) {
+         self.wrappedValue = wrappedValue
+     }
+ }
+ struct User {
+     @Trimmed var name: String
+ }
+
+ let user = User(name: "  Alice  ")
+ print(user.name) // 输出 "Alice"（自动去除了前后空格）
+ 
+ 
+ 编译器会将其展开为类似以下的代码：
+ 
+ struct User {
+     // 编译器生成的存储属性
+     private var _name: Trimmed
+     
+     // 编译器生成的访问逻辑
+     var name: String {
+         get { _name.wrappedValue }
+         set { _name.wrappedValue = newValue }
+     }
+     
+     // 编译器生成的初始化方法
+     init(name: String) {
+         self._name = Trimmed(wrappedValue: name)
+     }
+ }
+
+ // 使用
+ let user = User(name: "  Alice  ")
+ print(user.name) // 输出 "Alice"（自动去除了前后空格）
+ 
+ 具体展开逻辑
+ 存储属性：编译器会生成一个私有属性 _name，类型为 Trimmed，用于存储实际的包装器实例。
+ 访问逻辑：编译器会生成一个计算属性 name，其 get 和 set 方法分别调用 _name.wrappedValue 的 get 和 set。
+ 初始化方法：编译器会生成一个初始化方法，将传入的值传递给 Trimmed 的初始化方法。
+
+ 展开后的调用过程：
+ - 当调用 User(name: " Alice ") 时：编译器会调用 User 的初始化方法，将 " Alice " 传递给 Trimmed 的初始化方法。Trimmed 的初始化方法会调用 wrappedValue 的 set 方法，去除空格并存储值。
+ - 当访问 user.name 时：编译器会调用 name 的 get 方法，返回 _name.wrappedValue 的值（即去除空格后的字符串）。
+
+ 总结
+ @propertyWrapper 的本质：编译器通过生成额外的存储属性和计算属性，将包装器的逻辑嵌入到属性访问中。
+ 代码展开后的结构：
+ 一个私有存储属性（_name）。
+ 一个计算属性（name），用于访问包装器的 wrappedValue。
+ 一个初始化方法，用于初始化包装器。
+ 这种展开方式使得 @propertyWrapper 的使用更加直观，同时保持了代码的简洁性和可读性。
+ */
+
+/// #关于 @propertyWrapper的说明 - projectedValue
+/**
+ ##官方翻译文档 https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#propertywrapper
+
+*/
+
+/// #关于 @dynamicMemberLookup的说明
+/**
+ ## 官方翻译文档 https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
+  - 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。
+  
+
+*/
 
 /// A thread-safe wrapper around a value.
 @propertyWrapper
-@dynamicMemberLookup /// https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
+@dynamicMemberLookup
 final class Protected<T> {
     #if os(macOS) || os(iOS) || os(watchOS) || os(tvOS)
     private let lock = UnfairLock()
