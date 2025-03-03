@@ -26,6 +26,73 @@ import Foundation
 /**
  EventMonitor 是 Alamofire 中用于监视网络请求生命周期事件的协议。通过实现这个协议，你可以监视网络请求的各个阶段，并且在这些阶段执行一些自定义的逻辑，比如记录日志、统计请求耗时等。
  具体来说，EventMonitor 定义了一系列网络请求生命周期事件，包括请求的开始、结束、失败等。你可以根据自己的需求来实现这些事件的处理方法，以便在请求的不同阶段执行自定义的逻辑。
+ 
+ EventMonitor    监听 Alamofire Request 的生命周期事件 ，适用于自定义事件监听器，比如日志、调试、分析等。
+ CompositeEventMonitor    允许多个 EventMonitor 共享事件，允许多个 EventMonitor 共享同一个 Session。
+ ClosureEventMonitor      使用闭包方式监听请求事件，适用于简单的调试或小范围事件监听。
+ 
+ 如果需要全局监听所有请求，可以使用 CompositeEventMonitor 组合多个 EventMonitor，或者使用 ClosureEventMonitor 进行临时调试。
+ 
+ 
+ 
+ EventMonitor协议用于监听网络请求的各个阶段和事件。以下是EventMonitor协议中监听的主要事件，按类别总结：
+
+ 1. 请求生命周期事件
+ requestDidResume(_:)：请求开始执行时触发。
+
+ requestDidSuspend(_:)：请求暂停时触发。
+
+ requestDidCancel(_:)：请求被取消时触发。
+
+ requestDidFinish(_:)：请求完成时触发。
+
+ 2. 请求重试事件
+ requestIsRetrying(_:)：请求正在重试时触发。
+
+ 3. URLSession事件
+ urlSession(_:task:didCompleteWithError:)：URLSession任务完成时触发。
+
+ urlSession(_:task:didFinishCollecting:)：URLSession任务完成收集指标时触发。
+
+ urlSession(_:task:didReceive:completionHandler:)：URLSession任务收到挑战时触发。
+
+ urlSession(_:dataTask:didReceive:)：URLSession数据任务收到数据时触发。
+
+ urlSession(_:downloadTask:didFinishDownloadingTo:)：URLSession下载任务完成下载时触发。
+
+ urlSession(_:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:)：URLSession下载任务写入数据时触发。
+
+ urlSession(_:downloadTask:didResumeAtOffset:expectedTotalBytes:)：URLSession下载任务恢复时触发。
+
+ 4. 请求状态事件
+ request(_:didCreateURLRequest:)：请求创建URLRequest时触发。
+
+ request(_:didCreateInitialURLRequest:)：请求创建初始URLRequest时触发。
+
+ request(_:didCreateAdaptedURLRequest:)：请求创建适配后的URLRequest时触发。
+
+ request(_:didFailToCreateURLRequestWithError:)：请求创建URLRequest失败时触发。
+
+ request(_:didCreateTask:)：请求创建任务时触发。
+
+ request(_:didGatherMetrics:)：请求收集到指标时触发。
+
+ 5. 请求结果事件
+ request(_:didParseResponse:)：请求解析响应时触发。
+
+ request(_:didFailToParseResponse:withError:)：请求解析响应失败时触发。
+
+ request(_:didCompleteTask:with:)：请求完成任务时触发。
+
+ 6. 其他事件
+ request(_:didReceiveData:)：请求收到数据时触发。
+
+ request(_:didReceiveInputStream:)：请求收到输入流时触发。
+
+ request(_:didReceiveRedirect:newRequest:completionHandler:)：请求收到重定向时触发。
+
+ 通过这些事件，EventMonitor协议允许开发者监控和响应网络请求的各个阶段，便于调试、日志记录和性能分析。
+ 
  */
 /// Protocol outlining the lifetime events inside Alamofire. It includes both events received from the various
 /// `URLSession` delegate protocols as well as various events from the lifetime of `Request` and its subclasses.

@@ -295,7 +295,7 @@ final class Protected<T> {
     func write<U>(_ closure: (inout T) throws -> U) rethrows -> U {
         try lock.around { try closure(&self.value) }
     }
-
+    //  @dynamicMemberLookup 使 Protected<T> 能够 直接访问 T 的属性，从而避免写 read { $0.state } 这样的样板代码。
     subscript<Property>(dynamicMember keyPath: WritableKeyPath<T, Property>) -> Property {
         // keyPath = \MutableState.state  具体值是个Key-path表达式
         get { lock.around { value[keyPath: keyPath] } }
