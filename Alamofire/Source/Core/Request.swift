@@ -140,9 +140,7 @@ public class Request {
      ## 在 Swift 中，如果你使用 @Protected 修饰一个属性 mutableState，你可以用 $mutableState 访问它的包装器。因为内部的projectedValue返回的是包装器本身
          所以 $mutableState.state 实际上等价于：mutableState.wrappedValue.state这会 在 @Protected 内部自动进行线程安全的读写。
      */
-    
-    
-    
+
     /// Protected `MutableState` value that provides thread-safe access to state values.
     @Protected
     fileprivate var mutableState = MutableState()
@@ -152,7 +150,7 @@ public class Request {
      所以$mutableState.state是在访问 `Protected<MutableState>` 的 `state` 属性
      - 编译器会转成：$mutableState[dynamicMember: \MutableState.state]
      Q: 编译器是如何知道state是来自于MutableState类型呢
-     A: 因为 $mutableState 本身是 Protected<MutableState> 类型，而 @dynamicMemberLookup 允许自动解析Protected<MutableState>的属性。 编译器自动推断 T = MutableState，因此 state 被解析为 MutableState.state。
+     A: 因为 $mutableState 本身是 Protected<MutableState> 类型，而 @dynamicMemberLookup 允许自动解析Protected<MutableState>的属性。通过 @Protected内部实现可知，编译器自动推断 T = MutableState，因此 state 被解析为 MutableState.state。
      */
     /// `State` of the `Request`.
     public var state: State {
