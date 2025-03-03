@@ -137,48 +137,23 @@ public class Request {
          如果直接用 DispatchQueue.sync 读写 mutableState，那么每次访问都要手动调用 sync 或 async，代码会变得复杂。
          使用 @Protected 封装了并发控制，开发者可以像普通属性一样使用它，而不需要关心底层的线程同步问题。
      
-     ## 在 Swift 中，如果你使用 @Protected 修饰一个属性 mutableState，你可以用 $mutableState 访问它的包装器。
-         所以 $mutableState.state 实际上等价于：
-         mutableState.wrappedValue.state
-         这会 在 @Protected 内部自动进行线程安全的读写。
+     ## 在 Swift 中，如果你使用 @Protected 修饰一个属性 mutableState，你可以用 $mutableState 访问它的包装器。因为内部的projectedValue返回的是包装器本身
+         所以 $mutableState.state 实际上等价于：mutableState.wrappedValue.state这会 在 @Protected 内部自动进行线程安全的读写。
      */
+    
+    
     
     /// Protected `MutableState` value that provides thread-safe access to state values.
     @Protected
     fileprivate var mutableState = MutableState()
-
+    
     /**
-     ## $:在Swift中，当你在使用属性包装器时，可以通过在属性名称前加上$符号来访问被包装器包装的值的特定属性。这个符号用于访问包装器的投影（projection）。
-        当你在使用属性包装器时，实际上编译器会为你自动创建一个具有特定命名规则的属性，用于访问被包装器包装的值。这个属性的名称通常是在原始属性名称前加上$符号。
-    
-     ## 因为 @Protected 是一个 @propertyWrapper，Swift自动生成 $mutableState 变量，它的值就是 Protected<MutableState> 本身
-        $mutableState 访问的是 `Protected<MutableState>` 实例
-        $mutableState.state 访问 `Protected<MutableState>` 的 `state` 属性
-        这里 state 是 MutableState 里的一个属性。
-     
-        $mutableState访问的是projectedValue，它返回的是整个Protected<MutableState>实例。
-
-     ## @dynamicMemberLookup 让 $mutableState.state 变得可行
-        - 奇怪,$mutableState是 Alamofire.Protected<Alamofire.Request.MutableState>类型 ， 怎么获取state呢？
-        - @Protected这个包装类，支持 @dynamicMemberLookup 特性 ,https://gitbook.swiftgg.team/swift/yu-yan-can-kao/07_attributes#dynamicmemberlookup
-        - 这个 @dynamicMemberLookup 允许我们直接通过 $mutableState.state 访问 MutableState.state，而不用显式调用 read {} 方法。
-     
-        ## 这样封装后，state 变量的访问方式看起来像普通变量，但实际上受锁保护，避免并发问题！
-     
-     ## @dynamicMemberLookup 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。
-     - 该特性用于类、结构体、枚举或协议，让其能在运行时查找成员。该类型必须实现 subscript(dynamicMember:) 下标。
-     
-     - 在显式成员表达式中，如果指定成员没有相应的声明，则该表达式被理解为对该类型的 subscript(dynamicMember:) 下标调用，将有关该成员的信息作为参数传递。下标接收参数既可以是键路径，也可以是成员名称字符串；如果你同时实现这两种方式的下标调用，那么以键路径参数方式为准。
-     
-     - subscript(dynamicMember:) 实现允许接收 KeyPath，WritableKeyPath 或 ReferenceWritableKeyPath 类型的键路径参数。它可以使用遵循 ExpressibleByStringLiteral 协议的类型作为参数来接受成员名 -- 通常情况下是 String。下标返回值类型可以为任意类型。
-     
-     - 按成员名进行的动态成员查找可用于围绕编译时无法进行类型检查的数据创建包装类型，例如在将其他语言的数据桥接到 Swift 时
-     
-     ## 这样封装后，state 变量的访问方式看起来像普通变量，但实际上受锁保护，避免并发问题！
-        $mutableState 访问的是 Protected<MutableState> 实例。
-        @dynamicMemberLookup 让 $mutableState.state 自动等价于 Protected.read { $0.state }，保证线程安全。
+     因为@Protected内部的projectedValue返回的是包装器本身，所以$mutableState是在访问它的包装器 @Protected<MutableState>，
+     所以$mutableState.state是在访问 `Protected<MutableState>` 的 `state` 属性
+     - 编译器会转成：$mutableState[dynamicMember: \MutableState.state]
+     Q: 编译器是如何知道state是来自于MutableState类型呢
+     A: 因为 $mutableState 本身是 Protected<MutableState> 类型，而 @dynamicMemberLookup 允许自动解析Protected<MutableState>的属性。 编译器自动推断 T = MutableState，因此 state 被解析为 MutableState.state。
      */
-    
     /// `State` of the `Request`.
     public var state: State {
      $mutableState.state
