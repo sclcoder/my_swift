@@ -126,19 +126,31 @@ public class Request {
     }
 
     /**
-     ## @Protected包装器的作用
+    ## @Protected包装器的作用
          在 Alamofire 的 Request 类中，mutableState 使用了 @Protected 属性包装器，这是为了 线程安全地访问和修改 mutableState。它的作用是保证多线程环境下对 mutableState 的读写是安全的，防止数据竞争（Race Condition）。
     
-    ## mutableState 维护的是 Request 的可变状态，可能包含：
-         - 请求的当前状态（进行中、完成、失败等）、响应数据、进度信息、其他动态参数
-         - 这些状态可能在多个线程中被访问或修改，比如：主线程 可能会检查请求状态、网络线程 可能会修改状态，比如收到响应后更新 mutableStateadad、回调线程 可能会处理请求完成的逻辑
-     
-     ## 为什么不能直接用 DispatchQueue 来管理？
-         如果直接用 DispatchQueue.sync 读写 mutableState，那么每次访问都要手动调用 sync 或 async，代码会变得复杂。
-         使用 @Protected 封装了并发控制，开发者可以像普通属性一样使用它，而不需要关心底层的线程同步问题。
-     
-     ## 在 Swift 中，如果你使用 @Protected 修饰一个属性 mutableState，你可以用 $mutableState 访问它的包装器。因为内部的projectedValue返回的是包装器本身
+    ## 在 Swift 中，如果你使用 @Protected 修饰一个属性 mutableState，你可以用 $mutableState 访问它的包装器。因为内部的projectedValue返回的是包装器本身
          所以 $mutableState.state 实际上等价于：mutableState.wrappedValue.state这会 在 @Protected 内部自动进行线程安全的读写。
+     
+     ## mutableState 维护的是 Request 的可变状态，可能包含：
+          - 请求的当前状态（进行中、完成、失败等）、响应数据、进度信息、其他动态参数
+          - 这些状态可能在多个线程中被访问或修改，比如：主线程 可能会检查请求状态、网络线程 可能会修改状态，比如收到响应后更新 mutableStateadad、回调线程 可能会处理请求完成的逻辑
+     
+     ## 这些属性什么时候会在多线程中被访问和修改？ 如 tasks、requests等
+      Alamofire 的 URLSessionTask 生命周期事件（例如重定向、认证挑战、任务完成等）是由底层的 URLSession 在 后台线程 触发的。例如：
+      重定向：当服务器返回 3xx 状态码时，系统会在后台线程创建新的 URLSessionTask。
+      重试：通过 RetryPolicy 重试请求时，新的任务可能在任意线程创建。
+      适配器修改：RequestAdapter 可能在任意线程生成新的 URLRequest 并创建新任务。
+      这些操作会修改 Request 内部的 tasks 数组，因此存在多线程并发访问的可能性。
+      
+      如该didCreateInitialURLRequest方法在Session中是这样调用的
+      rootQueue.async { request.didCreateInitialURLRequest(initialRequest) } ,可知是在子线程执行操作对MutableState中的数据进行更改
+     
+    ## Alamofire 的 mutableState 被设计为完全线程安全，无论外部代码在哪个队列调用，其内部状态始终通过锁（如 os_unfair_lock 或 NSLock）保护。
+       这种设计：
+            统一性：所有对 mutableState 的访问都强制加锁，避免遗漏。
+            防御性：即使未来代码变动导致 mutableState 被其他队列访问，也能保证线程安全。
+            兼容性：与某些特殊场景兼容（如外部代码直接操作 Request 的状态）
      */
 
     /// Protected `MutableState` value that provides thread-safe access to state values.
@@ -154,7 +166,7 @@ public class Request {
      */
     /// `State` of the `Request`.
     public var state: State {
-     $mutableState.state
+        $mutableState.state
     }
     /// Returns whether `state` is `.initialized`.
     public var isInitialized: Bool { state == .initialized }
@@ -233,12 +245,79 @@ public class Request {
     /// Current `URLRequest` created on behalf of the `Request`.
     public var request: URLRequest? { lastRequest }
 
+    /** ## 闭包和泛型
+     compactMap 是 Swift 的高阶函数，用于对集合中的每个元素进行转换并过滤掉 nil 值。
+     \.currentRequest 是 KeyPath 语法，表示从 URLSessionTask 中提取 currentRequest 属性。
+     currentRequest 是 URLSessionTask 的一个属性，表示当前正在执行或已执行的 URLRequest。
+     如果某个任务尚未开始执行（currentRequest 为 nil），则会被 compactMap 过滤掉。
+     
+     mutableState.requests：存储了所有生成的 URLRequest 对象（包括初始请求、重定向请求、适配后的请求等）。这些请求可能尚未执行。
+     performedRequests：仅包含已执行的 URLRequest 对象（即 URLSessionTask.currentRequest）。这些请求已经由 URLSession 实际发送到服务器。
+     
+     完整写法如下
+     public var performedRequests: [URLRequest] {
+         $mutableState.read { mutableState in
+             return mutableState.tasks.compactMap { task in
+                 return task.currentRequest
+             }
+         }
+     }
+     
+     解析 $mutableState.read { $0.tasks.compactMap(\.currentRequest) }
+     这一行代码相当于：
+     $mutableState.read { mutableState in
+         mutableState.tasks.compactMap { task in
+             task.currentRequest
+         }
+     }
+     
+     简化点：
+     省略 return 关键字（单表达式闭包自动返回）。
+     省略 mutableState in（Swift 自动推断 $0 代表 mutableState）。
+     使用 KeyPath 语法 \.currentRequest 代替 { task in task.currentRequest }。
+    
+     这里使用了**尾随闭包（Trailing Closure）**的写法！
+     在 Swift 中，当函数的最后一个参数是一个闭包时，可以将闭包移到括号外部，这就是尾随闭包。
+    
+     不使用尾随闭包，完整写法如下：
+     public var performedRequests: [URLRequest] {
+         $mutableState.read({ mutableState in
+             return mutableState.tasks.compactMap { $0.currentRequest }
+         })
+     }
+     该方法内部在执行闭包时将self.value传递出来，其类型就是Protected<T>中的T，在当前环境下就是MutableState这个结构体类型
+     func read<U>(_ closure: (T) throws -> U) rethrows -> U {
+         try lock.around { try closure(self.value) }
+     }
+
+     */
     /// `URLRequest`s from all of the `URLSessionTask`s executed on behalf of the `Request`. May be different from
     /// `requests` due to `URLSession` manipulation.
     public var performedRequests: [URLRequest] { $mutableState.read { $0.tasks.compactMap(\.currentRequest) } }
 
     // MARK: HTTPURLResponse
 
+    /** ## 计算属性和尾随闭包
+     不是 尾随闭包，而是 计算属性（computed property） 的简写形式。
+     response 是一个计算属性，它的值是 lastTask?.response as? HTTPURLResponse，表示获取 lastTask 的 response 并尝试转换为 HTTPURLResponse。
+     这里的 {} 并不是闭包，而是计算属性的 getter 省略了 return 的简写形式。
+     
+     如果不省略 return，完整写法如下：
+     public var response: HTTPURLResponse? {
+         return lastTask?.response as? HTTPURLResponse
+     }
+     
+     如何区分计算属性和尾随闭包？
+     1️⃣ 计算属性
+     {} 代表 计算属性的 getter，并不会传递参数。
+     return 关键字可以省略（Swift 允许单行表达式的计算属性省略 return）。
+     本例中的 { lastTask?.response as? HTTPURLResponse } 不是闭包，而是计算属性的 getter。
+     
+     2️⃣ 尾随闭包
+     尾随闭包必须传递给某个函数，并作为该函数的参数。
+     如果 {} 里面的代码是一个闭包，通常会有 in 关键字（但如果是 $0 这种隐式参数的简写可能不会有 in）。
+
+     */
     /// `HTTPURLResponse` received from the server, if any. If the `Request` was retried, this is the response of the
     /// last `URLSessionTask`.
     public var response: HTTPURLResponse? { lastTask?.response as? HTTPURLResponse }
