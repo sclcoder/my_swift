@@ -941,55 +941,6 @@ public class Request {
     // MARK: - Lifetime APIs
 
     
-    /**
-     Q: 为什么设置 cURLHandler？
-     A:
-     1.请求尚未开始：
-     当调用cURLDescription(on: calling:)时，如果请求尚未开始（即mutableState.requests.last为nil），此时无法立即生成cURL命令。
-     为了在这种情况下仍然能够获取cURL命令，Alamofire设置了一个cURLHandler闭包，并将其存储在mutableState中。
-
-     2.延迟执行：
-     当请求最终开始执行时（即mutableState.requests.last不再为nil），Alamofire会调用之前存储的cURLHandler闭包，并在指定的DispatchQueue上执行它。
-     这样可以确保即使在请求尚未开始时调用cURLDescription(on: calling:)，仍然能够在请求开始后获取到cURL命令。
-
-     3.异步处理：
-     通过将cURLHandler存储在mutableState中，Alamofire能够在请求开始后异步地生成并返回cURL命令，而不会阻塞当前线程。
-     
-     设置cURLHandler的主要目的是为了处理请求尚未开始时的场景，确保即使在请求未开始时调用cURLDescription(on: calling:)，仍然能够在请求开始后获取到cURL命令。这种设计提高了方法的灵活性和可用性，使得开发者可以在请求的任何阶段获取cURL命令
-     
-     Q: 为什么mutableState.requests.last != nil 可以说明请求已经开始？
-     A:
-     在Alamofire中，mutableState.requests.last != nil 用于判断请求是否已经开始。这个判断的依据与Alamofire内部的状态管理机制有关。以下是详细的解释：
-     
-     1. mutableState.requests 的作用
-     mutableState 是一个用于管理请求状态的结构体，它包含一个 requests 数组。
-     # requests 数组存储了与当前请求相关的所有 URLRequest 对象。
-     当请求开始执行时，Alamofire会将生成的 URLRequest 添加到 requests 数组中
-     
-     2. mutableState.requests.last 的含义
-     mutableState.requests.last 是 requests 数组的最后一个元素。
-     如果 requests 数组不为空（即 last != nil），说明至少有一个 URLRequest 已经被创建并添加到数组中，这意味着请求已经开始。
-     如果 requests 数组为空（即 last == nil），说明请求尚未开始，还没有生成 URLRequest。
-     
-     3. 请求的生命周期
-     在Alamofire中，请求的生命周期大致如下：
-     创建请求：初始化 Request 对象，但此时 URLRequest 还未生成。
-     生成 URLRequest：在请求开始执行时，Alamofire会根据配置生成 URLRequest，并将其添加到 mutableState.requests 中。
-     执行请求：将 URLRequest 发送到网络。
-     完成请求：请求完成后，清理状态。
-     因此，mutableState.requests.last != nil 是请求已经开始的一个标志，因为它表明 URLRequest 已经生成并准备执行。
-     
-     4. 为什么用 last 而不是 first？
-     使用 last 是因为 requests 数组可能包含多个 URLRequest 对象。
-     例如，如果请求发生了重定向，Alamofire会为每个重定向生成一个新的 URLRequest，并将其添加到 requests 数组中。
-     last 表示最新的 URLRequest，因此它可以准确地反映当前请求的状态。
-     
-     Q: handler(self.cURLDescription()) 中使用的self.cURLDescription() 与first和last没有关系啊
-     A:
-     虽然代码中没有显式传递 requests.last，但 self.cURLDescription() 的底层实现隐式依赖 mutableState.requests.last：
-     查看 cURLDescription的实现方法，的确使用到lastRequest
-     cURLDescription() 方法是通过 lastRequest 属性来生成 cURL 命令的，而 lastRequest 的实现与 mutableState.requests.last是同一个值
-     */
     /// Sets a handler to be called when the cURL description of the request is available.
     ///
     /// - Note: When waiting for a `Request`'s `URLRequest` to be created, only the last `handler` will be called.
@@ -1011,6 +962,13 @@ public class Request {
 
         return self
     }
+    
+    /**
+     cURLDescription(calling:) 方法的作用是，当 Request 可以提供 cURL 描述时，执行 handler 回调。
+     mutableState.requests.last != nil 说明 Request 已经有 URLRequest，这时直接在 underlyingQueue 上调用 handler(self.cURLDescription())，立即执行回调。
+     如果 Request 还没有 URLRequest，那么 mutableState.cURLHandler 会被赋值 (underlyingQueue, handler)，等待 URLRequest 生成后再执行。
+     由于 mutableState.cURLHandler 只能存储一个 handler，如果在 URLRequest 生成前多次调用 cURLDescription(calling:)，那么 mutableState.cURLHandler 里的 handler 就会被后来的调用覆盖，只保留最后一个。
+     */
 
     /// Sets a handler to be called when the cURL description of the request is available.
     ///
@@ -1045,10 +1003,10 @@ public class Request {
     @discardableResult
     public func onURLRequestCreation(on queue: DispatchQueue = .main, perform handler: @escaping (URLRequest) -> Void) -> Self {
         $mutableState.write { state in
-            if let request = state.requests.last {
+            if let request = state.requests.last { // Request在设置这个方法的回调时，URLRequest可能还没有创建
                 queue.async { handler(request) }
             }
-
+            // didCreateURLRequest方法中会调用urlRequestHandler
             state.urlRequestHandler = (queue, handler)
         }
 
@@ -1072,7 +1030,7 @@ public class Request {
             if let task = state.tasks.last {
                 queue.async { handler(task) }
             }
-
+            /// didCreateTask中会调用urlSessionTaskHandler
             state.urlSessionTaskHandler = (queue, handler)
         }
 
