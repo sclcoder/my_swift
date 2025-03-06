@@ -62,6 +62,19 @@ public protocol DownloadResponseSerializerProtocol {
     func serializeDownload(request: URLRequest?, response: HTTPURLResponse?, fileURL: URL?, error: Error?) throws -> SerializedObject
 }
 
+/**
+ ✅ 作用：ResponseSerializer 负责解析 Data，提供 JSON、String、UIImage 等解析方式。
+ ✅ 内置解析器：
+ JSONResponseSerializer：解析 JSON。
+ StringResponseSerializer：解析字符串。
+ DataResponseSerializer：直接返回 Data。
+ URLResponseSerializer:
+ DecodableResponseSerializer：解析 Codable 类型。
+ ✅ 支持自定义解析器，可以解析 CSV、XML、加密数据等。
+ ✅ 简化数据解析流程，避免手写 JSONSerialization 或 JSONDecoder。
+ 开发者可以简单调用 .responseJSON()、.responseDecodable()，而不用手动解析 Data，大
+    
+ */
 /// A serializer that can handle both data and download responses.
 public protocol ResponseSerializer: DataResponseSerializerProtocol & DownloadResponseSerializerProtocol {
     /// `DataPreprocessor` used to prepare incoming `Data` for serialization.
@@ -195,6 +208,13 @@ extension DataRequest {
             // End work that should be on the serialization queue.
 
             self.underlyingQueue.async {
+                /**
+                请求URLSessionTask完成后，构建DataResponse
+                task的创建流程: 在Session调用request方法时，内部就创建了URLRequest，并且进一步创建task(URLSessionTask), 并在Request的tasks数组、requestTaskMap字典中保存这个task。 当task启动后，URLSession会执行一系列回调执行在Session实现的SessionDelegate协议方法，最终URLSession内部应该会设置URLSessionTask的request\response等属性，Alamofire设置data、metrics等属性。
+                所以这里可以通过Request的tasks获取到最终的task，进而通过其一系列的属性（request、response、data、metrics等）来构建Alamofire层的DataResponse。
+                 
+                注意： URLSessionTask.response 只包含 HTTPURLResponse，不包含 data。 这里的data由Alamofire来处理，存储在Request的data中
+                 */
                 let response = DataResponse(request: self.request,
                                             response: self.response,
                                             data: self.data,
@@ -211,6 +231,13 @@ extension DataRequest {
         return self
     }
 
+    /**
+     responseSerializer: Serializer
+     一个遵循 DataResponseSerializerProtocol 的序列化器，用于解析 data。
+     可能是 JSONResponseSerializer（解析 JSON）、StringResponseSerializer（解析字符串）等。
+     
+     如 responseJSON、responseString、responseDecodable方法就会最终调用到这里
+     */
     private func _response<Serializer: DataResponseSerializerProtocol>(queue: DispatchQueue = .main,
                                                                        responseSerializer: Serializer,
                                                                        completionHandler: @escaping (AFDataResponse<Serializer.SerializedObject>) -> Void)
@@ -218,7 +245,27 @@ extension DataRequest {
         appendResponseSerializer {
             // Start work that should be on the serialization queue.
             let start = ProcessInfo.processInfo.systemUptime
+            
+            /** ## 关于Result - 这是个枚举
+             Result 的基本结构
+             public enum Result<Success, Failure> where Failure: Error, Success: ~Copyable {
+                 case success(Success)
+                 case failure(Failure)
+             }
+             Result 是 Swift 标准库中的一个枚举类型，用于表示一个操作的 成功 或 失败 结果。这种模式在异步操作、网络请求、文件 I/O 等需要返回成功或失败状态的场景中非常常见。
+             Result 是一个泛型枚举，有两个关联值：
+              Success：表示 成功时返回的数据类型。
+              Failure：表示 失败时返回的错误类型。where Failure: Error：约束 Failure 必须是 Error 类型或其子类，这符合 Swift 的错误处理系统。
+             Success: ~Copyable（Swift 5.9+ 新特性）：Success 不能是 Copyable（可复制的），这通常用于 值语义优化，特别是对大型数据结构或非复制类型的约束。
+             
+             
+             
+             public init(catching body: () throws(Failure) -> Success)
+             初始化方法接收一个闭包:
+             */
+            
             let result: AFResult<Serializer.SerializedObject> = Result {
+                /// 执行序列化操作
                 try responseSerializer.serialize(request: self.request,
                                                  response: self.response,
                                                  data: self.data,
@@ -237,14 +284,15 @@ extension DataRequest {
                                             metrics: self.metrics,
                                             serializationDuration: end - start,
                                             result: result)
-
+                /// didParseResponse回调
                 self.eventMonitor?.request(self, didParseResponse: response)
 
                 guard let serializerError = result.failure, let delegate = self.delegate else {
+                    /// 解析成功后的回调
                     self.responseSerializerDidComplete { queue.async { completionHandler(response) } }
                     return
                 }
-
+                /// 解析失败后的操作
                 delegate.retryResult(for: self, dueTo: serializerError) { retryResult in
                     var didComplete: (() -> Void)?
 

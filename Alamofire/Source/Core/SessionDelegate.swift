@@ -230,6 +230,22 @@ extension SessionDelegate: URLSessionTaskDelegate {
 // MARK: URLSessionDataDelegate
 
 extension SessionDelegate: URLSessionDataDelegate {
+    /**
+     urlSession(_ session:dataTask:didReceive response:)
+     当服务器返回响应头 (HTTPURLResponse) 时，会触发这个方法。
+     这个回调的主要作用是决定如何处理服务器的响应，你可以：
+     继续接收数据、取消请求、转换成下载任务
+     调用时机 :发送 HTTP 请求、收到 HTTP 头部响应（不包含 Body），此时 data 还没有到达、触发 didReceive response 回调，让你决定如何处理这个 response
+     
+     
+     urlSession(_ session:dataTask:didReceive data:)
+     当服务器返回 Body 数据时，会多次触发这个方法，每次调用都会传入一块 data，直到整个 response 完成。
+     调用时机：didReceive response 触发后，如果 completionHandler(.allow) 继续接收数据，才会调用 didReceive data。
+     服务器返回的 data 可能是分块传输的，所以 didReceive data 可能会被多次调用，每次传入部分 data。你需要自己手动拼接 data，否则拿到的只是数据片段。
+     
+     ## 这部分值是需要自己存储的，这里由Alamofire处理了，并不会存储在URLSessionDataTask中
+     URLSessionTask.response 只包含 HTTPURLResponse，不包含 data。 URLSessionTask 的 response 只能获取 HTTPURLResponse（即 HTTP 响应的元数据），而不会存储 data。
+     */
     open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         eventMonitor?.urlSession(session, dataTask: dataTask, didReceive: data)
 

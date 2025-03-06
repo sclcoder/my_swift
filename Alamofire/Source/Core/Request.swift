@@ -479,7 +479,7 @@ public class Request {
         dispatchPrecondition(condition: .onQueue(underlyingQueue))
 
         $mutableState.write { state in
-            state.tasks.append(task)
+            state.tasks.append(task) /// 保存task，在构建DataResponse是会用到task
 
             guard let urlSessionTaskHandler = state.urlSessionTaskHandler else { return }
 
@@ -580,7 +580,7 @@ public class Request {
         validators.forEach { $0() }
         /// 这个监视器,是为了对外发送相关状态通知的, 外界可以监听相关的状态
         eventMonitor?.request(self, didCompleteTask: task, with: error)
-        /// 执行完成Task的代码
+        /// 执行完成Task的代码 - 如果是Finish则会执行Response的解析回调
         retryOrFinish(error: self.error)
     }
 
@@ -698,7 +698,7 @@ public class Request {
                 mutableState.responseSerializerProcessingFinished = true
                 mutableState.isFinishing = false
             }
-
+            /// 如果没有要处理的responseSerializer回调，就取出responseSerializerCompletions回调并依次执行
             completions.forEach { $0() }
 
             // Cleanup the request
