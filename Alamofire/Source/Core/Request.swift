@@ -852,7 +852,7 @@ public class Request {
     @discardableResult
     public func authenticate(username: String, password: String, persistence: URLCredential.Persistence = .forSession) -> Self {
         let credential = URLCredential(user: username, password: password, persistence: persistence)
-
+        /// Request可以直接使用点语法调用其他方法，因为Request的方法都返回了Self
         return authenticate(with: credential)
     }
 
@@ -880,7 +880,7 @@ public class Request {
     @discardableResult
     public func downloadProgress(queue: DispatchQueue = .main, closure: @escaping ProgressHandler) -> Self {
         $mutableState.downloadProgressHandler = (handler: closure, queue: queue)
-
+        /// Request可以直接使用点语法调用downloadProgress方法，并设置好进度回调。因为Request的方法都返回了Self
         return self
     }
 
