@@ -1193,34 +1193,36 @@ open class Session {
         let initialRequest: URLRequest
 
         do {
-            /// 通过传递过来的参数URLRequestConvertible, 初始化initialRequest
+            /// 创建URLRequest : 通过传递过来的参数URLRequestConvertible, 初始化initialRequest
             initialRequest = try convertible.asURLRequest()
             try initialRequest.validate()
         } catch {
-            /// 报告状态：执行Alamofire.Request类中的函数 didFailToCreateURLRequest
+            /// 报告URLRequest状态：执行Alamofire.Request类中的函数 didFailToCreateURLRequest
             rootQueue.async { request.didFailToCreateURLRequest(with: error.asAFError(or: .createURLRequestFailed(error: error))) }
             return
         }
-        /// 报告状态：执行Alamofire.Request类中的函数 didCreateInitialURLRequest
+        /// 报告URLRequest状态：执行Alamofire.Request类中的函数 didCreateInitialURLRequest
         rootQueue.async { request.didCreateInitialURLRequest(initialRequest) }
         
         guard !request.isCancelled else { return }
         
+        /// 获取适配器
         guard let adapter = adapter(for: request) else {
             guard shouldCreateTask() else { return }
-            /// 1.没有适配器: 处理创建URLRequest之后的事情， 直接使用initialRequest作为最终的参数，创建Task
+            /// 1.没有适配器: didCreateURLRequest中创建URLSessionTask
             rootQueue.async { self.didCreateURLRequest(initialRequest, for: request) }
             return
         }
         
-        /// 2.有适配器 : 这部分暂未研究
+        /// 2.有适配器 : 对URLRequest进行调整、 didCreateURLRequest中创建URLSessionTask
         let adapterState = RequestAdapterState(requestID: request.id, session: self)
+        
         adapter.adapt(initialRequest, using: adapterState) { result in
             do {
                 let adaptedRequest = try result.get()
                 
                 try adaptedRequest.validate()
-                
+                /// 报告URLRequest状态:执行Alamofire.Request类中的函数 didAdaptInitialRequest
                 self.rootQueue.async { request.didAdaptInitialRequest(initialRequest, to: adaptedRequest) }
                 
                 guard shouldCreateTask() else { return }
