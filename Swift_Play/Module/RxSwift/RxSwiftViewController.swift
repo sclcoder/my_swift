@@ -31,16 +31,6 @@ class RxSwiftViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "RxSwift"
-    
-//        testBtn()
-//        testTF()
-        
-//        createObserableMethod()
-        
-//        debugObserable()
-        
-//        debugOperator()
-    
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -49,6 +39,13 @@ class RxSwiftViewController: UIViewController {
         testRelay()
 //        testOperations()
         
+        
+//        testBtn()
+//        testTF()
+        
+//        createObserableMethod()
+//        debugObserable()
+//        debugOperator()
     }
     
     func testSubject() -> Void {
@@ -135,10 +132,9 @@ class RxSwiftViewController: UIViewController {
     }
 }
 
+// MARK: Subject
 
 extension RxSwiftViewController{
-    // MARK: Subject
-
     /**
      在 RxSwift 中，Subject 是一个非常重要的类型。它既是一个 Observable，又是一个 Observer，这种双重身份使得 Subject 在 RxSwift 中非常灵活和强大。
      Subject 的双重身份
@@ -481,8 +477,10 @@ extension RxSwiftViewController{
     }
 }
 
+// MARK: RxRelay
+
 extension RxSwiftViewController{
-    // MARK: RxRelay
+ 
     /**
      RxRelay 既是 可监听序列 也是 观察者。
      他和 Subjects 相似，唯一的区别是不会接受 onError 或 onCompleted 这样的终止事件。
@@ -613,8 +611,7 @@ extension RxSwiftViewController{
 
 }
 
-//MARK: Operations 操作符
-
+// MARK: Operations
 // https://beeth0ven.github.io/RxSwift-Chinese-Documentation/content/decision_tree.html
 extension RxSwiftViewController{
 
