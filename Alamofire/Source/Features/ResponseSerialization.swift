@@ -238,6 +238,107 @@ extension DataRequest {
      
      如 responseJSON、responseString、responseDecodable方法就会最终调用到这里
      */
+    
+    /** ## 关于Result - 这是个枚举
+     Result 的基本结构
+     public enum Result<Success, Failure> where Failure: Error, Success: ~Copyable {
+         case success(Success)
+         case failure(Failure)
+     }
+     Result 是 Swift 标准库中的一个枚举类型，用于表示一个操作的 成功 或 失败 结果。这种模式在异步操作、网络请求、文件 I/O 等需要返回成功或失败状态的场景中非常常见。
+     Result 是一个泛型枚举，有两个关联值：
+      Success：表示 成功时返回的数据类型。
+      Failure：表示 失败时返回的错误类型。where Failure: Error：约束 Failure 必须是 Error 类型或其子类，这符合 Swift 的错误处理系统。
+     Success: ~Copyable（Swift 5.9+ 新特性）：Success 不能是 Copyable（可复制的），这通常用于 值语义优化，特别是对大型数据结构或非复制类型的约束。
+     
+     
+     
+     public init(catching body: () throws(Failure) -> Success)
+     
+     初始化方法接收一个闭包:
+     其内部逻辑大概如下
+     public init(catching body: () throws(Failure) -> Success) {
+         do {
+             let value = try body()  // 执行闭包
+             self = .success(value)  // 成功
+         } catch let error as Failure {
+             self = .failure(error)  // 失败
+         } catch {
+             fatalError("Unexpected error type: \(error)")  // 失败但类型不匹配
+         }
+     }
+     ✅ 示例 1：成功的情况
+     let result = Result<Int, Error>(catching: {
+         return 100  // 成功，返回整数 100
+     })
+     print(result)  // 输出：success(100)
+     
+     ❌ 示例 2：抛出错误的情况
+     enum NetworkError: Error {
+         case invalidURL
+     }
+
+     let result = Result<Int, NetworkError>(catching: {
+         throw NetworkError.invalidURL  // 失败，抛出错误
+     })
+     print(result)  // 输出：failure(invalidURL)
+     */
+    
+    /**
+     ## Result<Success, Failure>
+     Result<Success, Failure> 是一个泛型枚举，用于表示一个操作的结果，它有两个成员（cases）：
+     .success(Success)：表示操作成功，并关联一个 Success 类型的值。
+     .failure(Failure)：表示操作失败，并关联一个 Failure 类型的值，其中 Failure 必须遵循 Error 协议。
+     Result 枚举的默认初始化器是成员初始化器（memberwise initializer），它允许你通过 .success 或 .failure 成员来创建 Result 实例。
+     
+     Result 枚举的默认初始化器是基于其成员的，具体如下：
+     成功情况的初始化器： init(_ success: Success)
+     失败情况的初始化器： init(_ failure: Failure)
+     
+     
+     初始化器 init(catching body: () throws -> Success) 是 Result 的一个扩展初始化器，它的作用是通过执行一个可能抛出错误的闭包来创建 Result 实例。如果闭包成功执行并返回一个值，Result 会被初始化为 .success；如果闭包抛出错误，Result 会被初始化为 .failure。
+    
+     let result: Result<Serializer.SerializedObject, Error>
+     do {
+         let value = try responseSerializer.serialize(request: self.request,
+                                                      response: self.response,
+                                                      data: self.data,
+                                                      error: self.error)
+         result = .success(value)  // 成功情况
+     } catch {
+         result = .failure(error as! AFError)  // 失败情况
+     }
+     
+     这里的 Result 自动执行 do-catch 逻辑，捕获 try 可能抛出的 Error。
+     如果 serialize(...) 成功执行，result 赋值为 .success(返回值)。
+     如果 serialize(...) 抛出错误，result 赋值为 .failure(error as! AFError)。
+     
+     
+     如何调用这个初始化器
+     你可以通过传递一个可能抛出错误的闭包来调用这个初始化器。闭包的返回值类型必须与 Result 的 Success 类型一致。
+     
+     当你使用尾随闭包（trailing closure）语法时，如果闭包是函数的最后一个参数，并且函数的其他参数都有默认值或者不需要显式传递，那么你可以省略参数标签（如 catching:）。这是 Swift 语法的一种简化形式，旨在让代码更简洁易读。
+     
+     1. 不使用尾随闭包
+     let result = Result<String, Error>(catching: {
+         try fetchData()
+     })
+     
+     2. 使用尾随闭包（省略 catching:）
+     let result = Result<String, Error> {
+         try fetchData()
+     }
+     
+
+     */
+
+    /**
+     ## 异常
+     函数：在参数列表后加 throws，调用时使用 try、try? 或 try!。
+     闭包：在参数列表和返回类型之间加 throws，调用时使用 try、try? 或 try!。
+     错误处理：使用 do-catch 显式处理错误，或使用 try? 将错误转换为可选值。
+     rethrows：用于标记函数本身不会抛出错误，但可能传递闭包抛出的错误。
+     */
     private func _response<Serializer: DataResponseSerializerProtocol>(queue: DispatchQueue = .main,
                                                                        responseSerializer: Serializer,
                                                                        completionHandler: @escaping (AFDataResponse<Serializer.SerializedObject>) -> Void)
@@ -246,24 +347,7 @@ extension DataRequest {
             // Start work that should be on the serialization queue.
             let start = ProcessInfo.processInfo.systemUptime
             
-            /** ## 关于Result - 这是个枚举
-             Result 的基本结构
-             public enum Result<Success, Failure> where Failure: Error, Success: ~Copyable {
-                 case success(Success)
-                 case failure(Failure)
-             }
-             Result 是 Swift 标准库中的一个枚举类型，用于表示一个操作的 成功 或 失败 结果。这种模式在异步操作、网络请求、文件 I/O 等需要返回成功或失败状态的场景中非常常见。
-             Result 是一个泛型枚举，有两个关联值：
-              Success：表示 成功时返回的数据类型。
-              Failure：表示 失败时返回的错误类型。where Failure: Error：约束 Failure 必须是 Error 类型或其子类，这符合 Swift 的错误处理系统。
-             Success: ~Copyable（Swift 5.9+ 新特性）：Success 不能是 Copyable（可复制的），这通常用于 值语义优化，特别是对大型数据结构或非复制类型的约束。
-             
-             
-             
-             public init(catching body: () throws(Failure) -> Success)
-             初始化方法接收一个闭包:
-             */
-            
+
             let result: AFResult<Serializer.SerializedObject> = Result {
                 /// 执行序列化操作
                 try responseSerializer.serialize(request: self.request,
