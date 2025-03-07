@@ -81,7 +81,10 @@ internal protocol Requestable {
 extension DataRequest: Requestable {
     internal func response(callbackQueue: DispatchQueue?, completionHandler: @escaping RequestableCompletion) -> Self {
         if let callbackQueue = callbackQueue {
-            return response(queue: callbackQueue) { handler  in
+            /// ## 调用 Alamofire中的DataRequest.response方法
+            return response(queue: callbackQueue) {
+                /// 这里handler类型是Alamofire中的DataResponse<Success, AFError>，handler.response是HTTPURLResponse类型
+                handler  in
                 completionHandler(handler.response, handler.request, handler.data, handler.error)
             }
         } else {
@@ -117,9 +120,15 @@ final class MoyaRequestInterceptor: RequestInterceptor {
         self.willSend = willSend
     }
 
+    /// 这个方法是要实现的Alamofire.RequestInterceptor中的协议。 Alamofire会调用MoyaRequestInterceptor中的这个方法
     func adapt(_ urlRequest: URLRequest, for session: Alamofire.Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+        /// 调用Moay层设置的prepare回调
         let request = prepare?(urlRequest) ?? urlRequest
+        
+        /// 调用Moay层设置的willSend回调
         willSend?(request)
+        
+        /// 将调整后的URLRequest传递出去
         completion(.success(request))
     }
 }

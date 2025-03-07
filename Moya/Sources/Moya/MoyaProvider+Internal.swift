@@ -20,8 +20,12 @@ public extension Method {
 public extension MoyaProvider {
     /// Performs normal requests.
     func requestNormal(_ target: Target, callbackQueue: DispatchQueue?, progress: Moya.ProgressBlock?, completion: @escaping Moya.Completion) -> Cancellable {
+        /// 构建Endpoint, self.endpoint默认是 MoyaProvider.defaultEndpointMapping.
+        /// Endpoint中包含使用者设置的请求相关信息
         let endpoint = self.endpoint(target)
+        /// 构建Endpoint, self.stubClosure默认是 MoyaProvider.neverStub
         let stubBehavior = self.stubClosure(target)
+        
         let cancellableToken = CancellableWrapper()
 
         // Allow plugins to modify response
@@ -67,10 +71,12 @@ public extension MoyaProvider {
                 pluginsWithCompletion(result)
               }
             }
-            /// 得到最终的request后,发送请求performRequest中会对各种请求（data,upload,download,etc）进行针对性处理
+            /// 得到最终的URLRequest后,发送请求performRequest中会对各种请求（data,upload,download,etc）进行针对性处理
             cancellableToken.innerCancellable = self.performRequest(target, request: request, callbackQueue: callbackQueue, progress: progress, completion: networkCompletion, endpoint: endpoint, stubBehavior: stubBehavior)
         }
 
+        /// 构建URLRequest , requestClosure默认是MoyaProvider.defaultRequestMapping。
+        /// requestClosure内部由endpoint创建URLRquest,并会会处理错误场景，包装为(Result<URLRequest, MoyaError>)后作为performNetworking闭包的参数
         requestClosure(endpoint, performNetworking)
 
         return cancellableToken
@@ -161,6 +167,7 @@ public extension MoyaProvider {
 private extension MoyaProvider {
     private func interceptor(target: Target) -> MoyaRequestInterceptor {
         return MoyaRequestInterceptor(prepare: { [weak self] urlRequest in
+            /// 这个闭包里会调用Plugins设置的prepare回调
             return self?.plugins.reduce(urlRequest) { $1.prepare($0, target: target) } ?? urlRequest
        })
     }
@@ -170,10 +177,33 @@ private extension MoyaProvider {
             guard let self = self, let request = request else { return }
 
             let stubbedAlamoRequest = RequestTypeWrapper(request: request, urlRequest: urlRequest)
+            /// 这个闭包里会调用Plugins设置willSend的回调
             self.plugins.forEach { $0.willSend(stubbedAlamoRequest, target: target) }
         }
     }
+    
+    func sendRequest(_ target: Target, request: URLRequest, callbackQueue: DispatchQueue?, progress: Moya.ProgressBlock?, completion: @escaping Moya.Completion) -> CancellableToken {
+        /// 创建moya拦截器，默认设置了prepare回调属性
+        let interceptor = self.interceptor(target: target)
+        /**
+         MoyaProvider的session,默认值是MoyaProvider<Target>.defaultAlamofireSession()，startRequestsImmediately的值是false
+         */
+        let initialRequest: DataRequest = session.requestQueue.sync {
+            /// ## 调用Alamofire.Session.request的方法，直接将构建的URLRequest和拦截器interceptor传入
+            let initialRequest = session.request(request, interceptor: interceptor)
+            /// 配置moya拦截器中的willSend回调属性
+            setup(interceptor: interceptor, with: target, and: initialRequest)
 
+            return initialRequest
+        }
+
+        let validationCodes = target.validationType.statusCodes
+        let alamoRequest = validationCodes.isEmpty ? initialRequest : initialRequest.validate(statusCode: validationCodes)
+       
+        /// 发送Alamofire请求: 由Moya启动request的发送，即task的resume。 如果不使用moya，Alamofire默认是在执行response方法时立即启动task的
+        return sendAlamofireRequest(alamoRequest, target: target, callbackQueue: callbackQueue, progress: progress, completion: completion)
+    }
+    
     func sendUploadMultipart(_ target: Target, request: URLRequest, callbackQueue: DispatchQueue?, multipartBody: [MultipartFormData], progress: Moya.ProgressBlock? = nil, completion: @escaping Moya.Completion) -> CancellableToken {
         let formData = RequestMultipartFormData()
         formData.applyMoyaMultipartFormData(multipartBody)
@@ -219,24 +249,6 @@ private extension MoyaProvider {
         return sendAlamofireRequest(alamoRequest, target: target, callbackQueue: callbackQueue, progress: progress, completion: completion)
     }
 
-    func sendRequest(_ target: Target, request: URLRequest, callbackQueue: DispatchQueue?, progress: Moya.ProgressBlock?, completion: @escaping Moya.Completion) -> CancellableToken {
-        /// 获取拦截器
-        let interceptor = self.interceptor(target: target)
-        /// session,默认Moya使用的是Alamofire的session
-        let initialRequest: DataRequest = session.requestQueue.sync {
-            /// session.request
-            let initialRequest = session.request(request, interceptor: interceptor)
-            /// 配置拦截器
-            setup(interceptor: interceptor, with: target, and: initialRequest)
-
-            return initialRequest
-        }
-
-        let validationCodes = target.validationType.statusCodes
-        let alamoRequest = validationCodes.isEmpty ? initialRequest : initialRequest.validate(statusCode: validationCodes)
-        return sendAlamofireRequest(alamoRequest, target: target, callbackQueue: callbackQueue, progress: progress, completion: completion)
-    }
-
     // swiftlint:disable:next cyclomatic_complexity
     func sendAlamofireRequest<T>(_ alamoRequest: T, target: Target, callbackQueue: DispatchQueue?, progress progressCompletion: Moya.ProgressBlock?, completion: @escaping Moya.Completion) -> CancellableToken where T: Requestable, T: Request {
         // Give plugins the chance to alter the outgoing request
@@ -274,7 +286,9 @@ private extension MoyaProvider {
         }
 
         let completionHandler: RequestableCompletion = { response, request, data, error in
+            /// 转为Result<Moya.Response, MoyaError>
             let result = convertResponseToResult(response, request: request, data: data, error: error)
+            /// ## 调用plugin的didReceive回调
             // Inform all plugins about the response
             plugins.forEach { $0.didReceive(result, target: target) }
             if let progressCompletion = progressCompletion {
@@ -290,11 +304,14 @@ private extension MoyaProvider {
                     progressCompletion(ProgressResponse(response: value))
                 }
             }
+            /// ## Moya的响应结果
             completion(result)
         }
 
+        /// ## 调用Moya中的response(callbackQueue: DispatchQueue?, completionHandler: @escaping RequestableCompletion) -> Self
         progressAlamoRequest = progressAlamoRequest.response(callbackQueue: callbackQueue, completionHandler: completionHandler)
 
+        /// ## Moya启动AlamoRequest,resume()内部会启动task任务
         progressAlamoRequest.resume()
 
         return CancellableToken(request: progressAlamoRequest)
