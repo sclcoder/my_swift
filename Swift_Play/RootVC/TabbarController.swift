@@ -69,6 +69,10 @@ class TabbarController: UITabBarController {
            self.addChild(navVC)
         }
        
+       
+       let mvvmVC = UserListViewController()
+       configVC(mvvmVC, "mvvm", "tab_home", "tab_home")
+       
        let richTextVC = RichTextEditorVeiwController()
        configVC(richTextVC, "Editor", "tab_settings", "tab_settings")
        
@@ -85,7 +89,6 @@ class TabbarController: UITabBarController {
        let CodingVC = CodableViewController()
        configVC(CodingVC, "CodingVC", "tab_settings", "tab_settings")
         
-
 //       
 //       let settingVC = SettingViewController()
 //       configVC(settingVC, "Setting", "tab_settings", "tab_settings")

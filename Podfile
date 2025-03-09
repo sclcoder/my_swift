@@ -16,7 +16,11 @@ target 'my_swift' do
   pod 'SnapKit'
   pod 'Alamofire', :path => './Alamofire'
   pod 'Moya', :path => './Moya'
+  pod 'Moya/RxSwift', :path => './Moya'
 
+#  pod 'Moya'
+#  pod 'Moya/RxSwift'
+  
   pod 'RxSwift'
   pod 'RxCocoa'
   
