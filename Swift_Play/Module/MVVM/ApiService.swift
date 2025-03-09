@@ -13,7 +13,8 @@ class APIService {
     private let provider = MoyaProvider<UserAPI>()
 
     private init() {}
-
+    // MARK: Moya并没有提供异步函数的接口，但提供RxSwift接口。
+    // 不过，我们可以通过 自定义扩展 来为 Moya 添加 async/await 能力。 https://github.com/Moya/Moya/issues/2265
     // 获取用户列表
     func fetchUsers() -> Single<[User]> {
         return provider.rx.request(.getUsers)
