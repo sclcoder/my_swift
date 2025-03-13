@@ -46,6 +46,7 @@ class RxSwiftViewController: UIViewController {
 //        createObserableMethod()
 //        debugObserable()
 //        debugOperator()
+        // TODO: 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
     }
     
     func testSubject() -> Void {
