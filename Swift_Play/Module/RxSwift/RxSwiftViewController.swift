@@ -46,7 +46,220 @@ class RxSwiftViewController: UIViewController {
 //        createObserableMethod()
 //        debugObserable()
 //        debugOperator()
-        // TODO: 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
+        
+        // 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
+//        testSequence()
+    }
+    
+    
+    
+    func testSequence() -> Void {
+        /**
+         
+         第一类：一次性序列（Single, Completable, Maybe）
+         这些序列只会发送一次事件，然后就终止。
+         
+         1. Single（成功或失败）
+         特点：
+         只会发送 一个成功值（success(value)） 或 一个错误（failure(error)），然后终止。
+         适用场景：
+         API 请求（请求返回数据或失败）
+         从数据库读取数据
+         
+         
+         2. Completable（只关心完成或失败）
+         特点：
+         只会发送 一个 .completed 或 一个错误（failure(error)），没有数据返回。
+         适用场景：
+         写入数据库、保存文件、发送日志，只关心操作是否完成。
+         
+         
+         3. Maybe（可能有值，也可能没有）
+         特点：
+         可能发送 一个 .success(value)，也可能 直接 .completed，或者 错误（failure(error)）。
+         适用场景：
+         适用于 缓存读取（数据可能存在，也可能不存在）。
+         
+         
+         
+         第二类：持续序列（Driver, Signal, ControlEvent）
+         这些序列会持续发送数据，适用于 UI 绑定 和 用户交互。
+
+         4. Driver（适用于 UI 绑定，重放最新值）
+         特点：
+         共享状态（多个订阅者共享同一个流）
+         重放最新值（新的订阅者立即收到最近的值）
+         主线程运行
+         无错误（不会发送 .error）
+         适用场景：
+         UI 绑定（如 textField.rx.text）
+         
+         5. Signal（适用于事件流，不重放最新值）
+         特点：
+         共享状态（多个订阅者共享同一个流）
+         不重放最新值
+         主线程运行
+         无错误
+         适用场景：
+         事件驱动（如弹框事件、按钮点击）
+
+         
+         6. ControlEvent（适用于 UI 控件事件）
+         特点：
+         基于 Signal，专门用于 UI 事件
+         不重放最新值
+         主线程运行
+         无错误
+         适用场景：
+         UI 控件事件（如 button.rx.tap）
+
+         
+         一次性序列（Single、Completable、Maybe） 和 持续序列（Driver、Signal、ControlEvent） 的最大区别之一就是 是否共享同一个数据流。
+         1. 一次性序列（Single / Completable / Maybe）
+         ✅ 每次订阅都会触发新的数据流，即每个订阅者都会重新执行数据流中的逻辑。
+
+         不会共享 之前的计算结果，新的订阅者会重新执行代码。
+         适用于 API 请求、数据库查询 这类场景，每个订阅者都需要独立获取数据。
+         
+         2. 持续序列（Driver / Signal / ControlEvent）
+         ✅ 多个订阅者共享同一个数据流，即不会因为新的订阅而重新触发上游逻辑。
+
+         共享状态，不会每次订阅都执行新的逻辑，而是所有订阅者都接收同样的事件。
+         适用于 UI 绑定、用户交互 等场景，多个 UI 组件需要监听同一个数据流。
+
+         
+         
+         类型    订阅时是否共享数据流    适用场景
+         Single    ❌ 不共享，每次订阅都会触发新逻辑    API 请求、数据库查询
+         Completable    ❌ 不共享，每次订阅都会触发新逻辑    写入数据库、存储文件
+         Maybe    ❌ 不共享，每次订阅都会触发新逻辑    可能有值的操作（缓存查询）
+         Driver    ✅ 共享，同一个数据流被多个订阅者复用    UI 绑定（文本输入、列表数据）
+         Signal    ✅ 共享，同一个数据流被多个订阅者复用    事件流（按钮点击、弹框事件）
+         ControlEvent    ✅ 共享，专门用于 UI 控件事件    UI 控件事件（button.rx.tap）
+         🌟 结论：
+         一次性序列（Single / Completable / Maybe）：不共享数据流，每个订阅者都会触发新的数据流（适用于需要独立计算的请求）。
+         持续序列（Driver / Signal / ControlEvent）：共享数据流，所有订阅者共享同一个流，适用于 UI 绑定和事件处理（减少重复计算，提高性能）。
+
+         
+         
+         
+         
+         
+         一次性序列（Single / Completable / Maybe）
+         这些序列本质上都是 PrimitiveSequence<Trait, Element>，它们是 Observable 的特化版本：
+         public class PrimitiveSequence<Trait, Element>
+         其中：
+         Trait 定义了这个序列的行为（比如 SingleTrait、MaybeTrait 等）。
+         Element 是这个序列发送的数据类型。
+         
+         类型    继承自    说明
+         Single<Element>    PrimitiveSequence<SingleTrait, Element>    只会发送 .success(value) 或 .failure(error)
+         Completable    PrimitiveSequence<CompletableTrait, Never>    只会发送 .completed 或 .failure(error)，没有元素
+         Maybe<Element>    PrimitiveSequence<MaybeTrait, Element>    可能发送 .success(value)，或者 .completed，或者 .failure(error)
+         📌 总结：
+
+         Single、Completable 和 Maybe 都是 PrimitiveSequence 的特化，它们的底层仍然是 Observable，但通过 Trait 限制了行为。
+
+         
+         
+         持续序列（Driver / Signal / ControlEvent）
+         这些序列最终也基于 Observable，但它们进行了额外的封装，使其更适用于 UI 绑定和事件流。
+
+         类型    继承自    说明
+         Driver<Element>    SharedSequence<DriverSharingStrategy, Element>    共享状态、重放最新值、不发送 .error，适用于 UI 绑定
+         Signal<Element>    SharedSequence<SignalSharingStrategy, Element>    共享状态、不重放最新值、不发送 .error，适用于事件流
+         ControlEvent<Element>    Signal<Element>    基于 Signal，专门用于 UI 控件事件（如 button.rx.tap）
+         其中，SharedSequence<SharingStrategy, Element> 继承自 Observable<Element>，只是在 Driver 和 Signal 里定义了特定的 SharingStrategy 以确保 共享、无错误、主线程调度。
+
+         📌 总结：
+         Driver 和 Signal 都是 SharedSequence 的特化，用于 UI 绑定和事件流，确保线程安全和共享状态。
+         ControlEvent 继承自 Signal，专门用于 UI 控件事件。
+         
+         
+         
+         
+         完整的继承关系
+         Observable<Element>
+          ├── PrimitiveSequence<Trait, Element>
+          │    ├── Single<Element>  (SingleTrait)
+          │    ├── Completable      (CompletableTrait)
+          │    ├── Maybe<Element>   (MaybeTrait)
+          │
+          ├── SharedSequence<SharingStrategy, Element>
+               ├── Driver<Element>  (DriverSharingStrategy)
+               ├── Signal<Element>  (SignalSharingStrategy)
+                    ├── ControlEvent<Element> (专门用于 UI 控件事件)
+         
+         
+         结论
+         类型    继承关系    适用场景
+         Single    PrimitiveSequence<SingleTrait, Element>    API 请求，获取单次数据
+         Completable    PrimitiveSequence<CompletableTrait, Never>    只关心操作是否完成（写入数据库、存储文件）
+         Maybe    PrimitiveSequence<MaybeTrait, Element>    可能有值，可能没有（缓存查询）
+         Driver    SharedSequence<DriverSharingStrategy, Element>    UI 绑定，共享状态，重放最新值
+         Signal    SharedSequence<SignalSharingStrategy, Element>    事件流，共享状态，不重放最新值
+         ControlEvent    Signal<Element>    UI 控件事件（如 button.rx.tap）
+         🚀 重点：
+
+         一次性序列（Single、Completable、Maybe）继承自 PrimitiveSequence，不会共享状态，每次订阅都会触发新的数据流。
+         持续序列（Driver、Signal、ControlEvent）继承自 SharedSequence，确保数据共享、无 .error，适用于 UI 绑定和事件驱动。
+         
+         
+         
+         
+         在 RxSwift 中，是否重放最新值（Replay Last Value）主要取决于 底层的共享策略（Sharing Strategy） 以及使用的操作符。
+         
+         对于 Driver 和 Signal，它们基于 SharedSequence，但行为不同：
+         Driver 会重放最新值，即新的订阅者会立即收到上次的最新值。
+         Signal 不会重放最新值，新的订阅者只会收到后续的事件，不会收到订阅前的任何值。
+         
+         1. Driver 如何重放最新值
+         Driver 之所以会重放最新值，是因为它在实现时使用了 share(replay: 1, scope: .whileConnected)。
+         这是 RxSwift 中 share() 操作符的一种用法，它确保：
+
+         新的订阅者可以立即接收到最新值（replay: 1）。
+         当没有订阅者时，序列会被释放（scope: .whileConnected）。
+         源码
+         Driver 在 asDriver() 方法中，最终调用了：
+
+         return self
+             .observe(on: MainScheduler.instance)  // 确保主线程
+             .share(replay: 1, scope: .whileConnected)  // 共享 & 重放最新值
+         📌 关键点：
+         share(replay: 1, scope: .whileConnected) 缓存了最新的 1 个值，新订阅者立即收到最新值。
+         这样可以保证 UI 绑定时，订阅者始终能获得 最新的 UI 状态，不会出现空数据。
+
+         2. Signal 为什么不会重放最新值
+         Signal 的实现与 Driver 类似，但 没有使用 share(replay: 1, scope: .whileConnected)，而是只用了 share(scope: .whileConnected)，不缓存任何值。
+
+         源码
+         return self
+             .observe(on: MainScheduler.instance) // 确保主线程
+             .share(scope: .whileConnected) // 共享但不重放值
+         📌 关键点：
+
+         share(scope: .whileConnected) 不缓存事件，所以新的订阅者不会收到之前的值，只能收到后续的新事件。
+         适用于事件流，如按钮点击、弹框展示等，不希望重复收到旧事件。
+         */
+ 
+        
+        
+        /**
+         共享状态（Shared State）
+         定义：指的是多个订阅者共享同一个数据流，而不是每个订阅者都会创建一个新的独立流。
+
+         Driver 和 Signal 都是 SharedSequence 的特化版本，它们本质上都是 共享的，意味着：
+         多个订阅者不会触发新的数据流，而是共享同一个数据流。
+         它们内部会使用 share(replay: 0, scope: .whileConnected) 来保证共享性，不会每次订阅时重新执行上游的操作。
+         这样可以减少不必要的计算或副作用，特别适用于 UI 绑定。
+         
+         
+         重放最新值（Replay Latest Value）
+         定义：指的是新的订阅者是否会立即收到数据流的最新值。
+
+         Driver 会重放最新值（基于 BehaviorRelay），新的订阅者会立即收到最后一次的值。
+         Signal 不会重放最新值（基于 PublishRelay），新的订阅者只会收到订阅后产生的新事件，而不会收到历史值。
+         */
     }
     
     func testSubject() -> Void {
