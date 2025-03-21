@@ -465,9 +465,36 @@ extension RxSwiftViewController{
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             Observable.just("Hello Binder")
-                .bind(to: self.contentLabel.rx.text) // self.contentLabel.rx.text是RX内置的Binder , 这版RxSwift可能调整了，和中文文档解释的不一样
+                .bind(to: self.contentLabel.rx.text)
         }
         
+        /**
+         self.contentLabel.rx实际返回了Reactive(self)
+         Reactive实现了 @dynamicMemberLookup，通过keyPath获取到        
+         Binder(self.base) { base, value in base[keyPath: keyPath] = value} 这个Binder
+         
+         @dynamicMemberLookup
+         public struct Reactive<Base> {
+             /// Base object to extend.
+             public let base: Base
+
+             /// Creates extensions with base object.
+             ///
+             /// - parameter base: Base object.
+             public init(_ base: Base) {
+                 self.base = base
+             }
+
+             /// Automatically synthesized binder for a key path between the reactive
+             /// base and one of its properties
+             public subscript<Property>(dynamicMember keyPath: ReferenceWritableKeyPath<Base, Property>) -> Binder<Property> where Base: AnyObject {
+                 Binder(self.base) { base, value in
+                     base[keyPath: keyPath] = value
+                 }
+             }
+         }
+         
+         */
         
 //        self.startBtn.rx.isEnabled
     }
