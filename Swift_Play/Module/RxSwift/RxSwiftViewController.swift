@@ -48,11 +48,39 @@ class RxSwiftViewController: UIViewController {
 //        debugOperator()
         
         // 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
-        testSequence()
+//        testSequence()
+        
+        
+        testObserver()
     }
     
     
- 
+    func testObserver() -> Void {
+        /**
+         1. Observer 的概念
+         Observer 是 RxSwift 响应式编程的核心组件之一，它主要负责：
+
+         监听 Observable 发出的事件。
+         对事件进行处理（如更新 UI、执行逻辑等）。
+         Observer 本质上是一个 闭包 或者 对象，用于处理 Observable 发送的 三种事件：
+
+         .next(value: T)：新的数据项。
+         .error(error: Error)：发生错误，序列终止。
+         .completed：数据发送完毕，序列正常终止。
+        
+         2. 创建 Observer
+         在 RxSwift 中，Observer 主要通过 订阅 Observable 来自动创建，也可以手动创建 AnyObserver 或 Binder。
+         
+         */
+    
+//        self.testSubscribe()
+        
+//        self.testAnyObserver()
+        
+        self.testAnyBinder()
+
+    }
+    
     func testSequence() -> Void {
         
         self.testSharedSequence()
@@ -350,6 +378,101 @@ class RxSwiftViewController: UIViewController {
 //        rxReplay()
 //        rxShareReplay()
     }
+}
+
+// MARK: Observer
+extension RxSwiftViewController{
+    
+    
+//    （1）直接使用 subscribe 订阅 Observable
+    func testSubscribe() -> Void {
+        let observable = Observable.of("Hello", "RxSwift")
+        observable.subscribe { event in
+            switch event {
+            case .next(let value):
+                print("Next:", value)
+            case .error(let error):
+                print("Error:", error)
+            case .completed:
+                print("Completed")
+            }
+        }
+        /**
+         Next: Hello
+         Next: RxSwift
+         Completed
+         在 subscribe 方法中，闭包本身就是一个 Observer。
+         */
+        
+        
+//        （2）使用 onNext 订阅  如果你只关心 .next 事件，可以简化写法：
+        observable.subscribe(onNext: { value in
+            print("Received:", value)
+        })
+    }
+    
+    
+    
+//    (3）使用 AnyObserver AnyObserver 可以封装事件处理逻辑，适用于手动创建 Observer
+    func testAnyObserver() -> Void {
+        
+        let observer = AnyObserver<String> { event in
+            switch event {
+            case .next(let value):
+                print("AnyObserver received:", value)
+            case .completed:
+                print("AnyObserver completed")
+            case .error(let error):
+                print("AnyObserver error:", error)
+            }
+        }
+
+        observer.on(.next("RxSwift"))
+        observer.on(.completed)
+
+        /**
+         AnyObserver received: RxSwift
+         AnyObserver completed
+         */
+        
+        let observable = Observable.of("Hello", "RxSwift")
+        observable.subscribe(observer)
+        /**
+         AnyObserver received: Hello
+         AnyObserver received: RxSwift
+         AnyObserver completed
+         */
+        
+    }
+    
+    
+    //    （4）使用 Binder（适用于 UI 绑定）
+    func testAnyBinder() -> Void {
+
+        /**
+         📌 特点
+         Binder 只接收 .next 事件，不会处理 .error 和 .completed。
+         确保代码运行在主线程。
+         */
+        
+        let binder = Binder<String>(self.contentLabel) { label, text in
+            label.text = text
+        }
+
+        Observable.just("Hello RxSwift")
+            .bind(to: binder) // 绑定数据到 UI
+        
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            Observable.just("Hello Binder")
+                .bind(to: self.contentLabel.rx.text) // self.contentLabel.rx.text是RX内置的Binder , 这版RxSwift可能调整了，和中文文档解释的不一样
+        }
+        
+        
+//        self.startBtn.rx.isEnabled
+    }
+        
+    
 }
 
 // MARK: Sequence
