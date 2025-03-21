@@ -36,7 +36,7 @@ class RxSwiftViewController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
 //        testSubject()
-        testRelay()
+//        testRelay()
 //        testOperations()
         
         
@@ -48,12 +48,18 @@ class RxSwiftViewController: UIViewController {
 //        debugOperator()
         
         // 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
-//        testSequence()
+        testSequence()
     }
     
     
-    
+ 
     func testSequence() -> Void {
+        
+        self.testSharedSequence()
+        
+//        self.testSharedSequenceReplay()
+    
+        
         /**
          
          第一类：一次性序列（Single, Completable, Maybe）
@@ -343,6 +349,186 @@ class RxSwiftViewController: UIViewController {
         
 //        rxReplay()
 //        rxShareReplay()
+    }
+}
+
+// MARK: Sequence
+extension RxSwiftViewController{
+    /**** 演示是否共享数据流  ****/
+    func testSharedSequence() -> Void {
+        
+        /// 单独数据流
+        func fetchData() -> Single<Int> {
+            return Single.create { single in
+                print("Fetching data...") // 订阅者各自触发
+                single(.success(Int.random(in: 1...100)))
+                return Disposables.create()
+            }
+        }
+
+        let single = fetchData()
+
+        single.subscribe(onSuccess: { print("Sub1 received: \($0)") }).disposed(by: disposeBag)
+        single.subscribe(onSuccess: { print("Sub2 received: \($0)") }).disposed(by: disposeBag)
+
+        /**
+         Fetching data...
+         Sub1 received: 47
+         Fetching data...
+         Sub2 received: 65
+         
+         由2次输出 Fetching data... 可知是订阅者各自触发
+         */
+        
+        
+        
+        /// 这个案例没有正确的共享数据流！！！
+//        let sharedDriver = Observable.create { (observer : AnyObserver<Int>) -> Disposable in
+//            print("Create Observable")
+//            observer.onNext(123456789)
+//            observer.onCompleted()
+//            return Disposables.create()
+//        }.asDriver(onErrorJustReturn: 0)  // 转换为 Driver
+//        
+//        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
+//        
+//        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
+        
+        /**
+         Create Observable
+         Sub1 received: 123456789
+         Create Observable
+         Sub2 received: 123456789
+         */
+        
+        /** 原因分析
+         代码中 sharedDriver 的创建方式是导致数据流未共享的主要原因。让我们详细分析一下原因：
+
+         问题分析
+         Observable.create 创建的是一个冷信号（Cold Observable），它每次被订阅时都会执行 create 闭包中的代码。因此，每次 drive 订阅 sharedDriver 时，都会重新执行 print("Create Observable")。
+
+         .asDriver(onErrorJustReturn: 0) 虽然将 Observable 转换为了 Driver，但它 不会 自动使 Observable 变成共享的 热信号（Hot Observable），而是 基于原始的 Observable 重新创建一个新的 Driver。
+
+         由于 asDriver 内部每次都会重新创建 Driver，它不会复用之前的数据流，因此 sharedDriver 每次 drive 时，都会触发 Observable.create 的闭包，导致 Create Observable 被打印两次。
+         
+         
+         
+         如何修复
+         要共享数据流，你需要在 Observable 转换为 Driver 之前，使其变成 热信号（Hot Observable），可以使用 share(replay: 1, scope: .whileConnected) 或 replay(1).refCount() 等方式：
+
+         # 经过验证 share(replay: 1, scope: .whileConnected)、replay(1).refCount() 都不行！！！！
+         
+         */
+        
+//        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
+//                print("Create Observable")
+//                observer.onNext(123456789)
+//                observer.onCompleted()
+//                return Disposables.create()
+//            }
+//            .share(replay: 1, scope: .whileConnected) // 使 Observable 变成共享的热信号
+//            .asDriver(onErrorJustReturn: 0)
+//
+//        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
+//        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
+        
+         /**
+          Create Observable
+          Sub1 received: 123456789
+          Create Observable
+          Sub2 received: 123456789
+          */
+        
+        
+//        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
+//                print("Create Observable")
+//                observer.onNext(123456789)
+//                observer.onCompleted()
+//                return Disposables.create()
+//            }
+//            .replay(1) // 缓存最后一个值
+//            .refCount() // 只有订阅者存在时才保持活动
+//            .asDriver(onErrorJustReturn: 0)
+//
+//        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
+//        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
+        
+        /**
+         Create Observable
+         Sub1 received: 123456789
+         Create Observable
+         Sub2 received: 123456789
+         */
+        
+        // MARK: 有效的方法 share(replay: 1, scope: .forever)
+        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
+                print("Create Observable")
+                observer.onNext(123456789)
+                observer.onCompleted()
+                return Disposables.create()
+            }
+            .share(replay: 1, scope: .forever)  // 共享数据流，保持最新的值
+            .asDriver(onErrorJustReturn: 0)  // 转换为 Driver
+
+        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
+        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
+
+        /**
+         Create Observable
+         Sub1 received: 123456789
+         Sub2 received: 123456789
+         */
+        
+    }
+    
+    /**** 演示回放效果  ****/
+    func testSharedSequenceReplay() -> Void {
+        let driver = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .asDriver(onErrorJustReturn: -1)
+
+        driver.drive(onNext: { print("🔵 订阅1: \($0)") }).disposed(by: self.bag)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            driver.drive(onNext: { print("🟢 订阅2: \($0)") }).disposed(by: self.bag)
+        }
+        
+        /**
+         🔵 订阅1: 0
+         🔵 订阅1: 1
+         🔵 订阅1: 2
+         🟢 订阅2: 2 // 订阅时立即收到最新值
+         🔵 订阅1: 3
+         🟢 订阅2: 3
+         🔵 订阅1: 4
+         🟢 订阅2: 4
+         🔵 订阅1: 5
+         🟢 订阅2: 5
+         */
+
+        
+//        let signal = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+//            .asSignal(onErrorJustReturn: -1)
+//
+//        signal.emit(onNext: { print("🔵 订阅1: \($0)") }).disposed(by: self.bag)
+//
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//            signal.emit(onNext: { print("🟢 订阅2: \($0)") }).disposed(by: self.bag)
+//        }
+        
+        /**
+         🔵 订阅1: 0
+         🔵 订阅1: 1
+         🔵 订阅1: 2
+         🟢 订阅2: (无输出)  // 订阅时不会收到 2
+         🔵 订阅1: 3
+         🟢 订阅2: 3
+         🔵 订阅1: 4
+         🟢 订阅2: 4
+         🔵 订阅1: 5
+         🟢 订阅2: 5
+         */
+
+        
     }
 }
 
