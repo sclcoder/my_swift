@@ -48,10 +48,10 @@ class RxSwiftViewController: UIViewController {
 //        debugOperator()
         
         // 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
-//        testSequence()
+        testSequence()
         
         
-        testObserver()
+//        testObserver()
     }
     
     
@@ -83,10 +83,27 @@ class RxSwiftViewController: UIViewController {
     
     func testSequence() -> Void {
         
-        self.testSharedSequence()
+//        self.testSharedSequenceShare()
+
+        self.testDriver()
         
 //        self.testSharedSequenceReplay()
     
+        /**
+         # 核心问题
+         public enum SubjectLifetimeScope {
+             /// 只有在**至少有一个订阅者时**，Observable 才会共享数据流。所有订阅者断开后，数据流会被释放，下次订阅时会重新执行。
+             case whileConnected
+             /// 共享的数据流**会一直存在**，即使没有订阅者也不会被释放。新订阅者可以收到之前的数据（如果 `replay > 0`）。
+             case forever
+         }
+         
+         share(replay: 1, scope: .whileConnected)
+         .whileConnected：这个作用域意味着，数据流会在有至少一个订阅者时保持活跃，而当最后一个订阅者取消订阅时，数据流会停止。这通常用于表示 短暂的共享，因此它会在订阅者断开时变为冷流。
+         
+         share(replay: 1, scope: .whileConnected)
+         .forever：这个作用域意味着，即使没有订阅者，数据流也会继续存在，直到被显式地停止。这通常表示 永久共享，因此它会保持热流，直到显式结束。
+         */
         
         /**
          
@@ -275,8 +292,6 @@ class RxSwiftViewController: UIViewController {
          share(scope: .whileConnected) 不缓存事件，所以新的订阅者不会收到之前的值，只能收到后续的新事件。
          适用于事件流，如按钮点击、弹框展示等，不希望重复收到旧事件。
          */
- 
-        
         
         /**
          共享状态（Shared State）
@@ -505,21 +520,90 @@ extension RxSwiftViewController{
 // MARK: Sequence
 extension RxSwiftViewController{
     /**** 演示是否共享数据流  ****/
-    func testSharedSequence() -> Void {
+    
+    func testSharedSequenceShare() -> Void {
         
-        /// 单独数据流
-        func fetchData() -> Single<Int> {
-            return Single.create { single in
-                print("Fetching data...") // 订阅者各自触发
-                single(.success(Int.random(in: 1...100)))
-                return Disposables.create()
-            }
+//        let observable = Observable<Int>.create { observer in
+//            print("Observable created")
+//            observer.onNext(1)
+//            observer.onNext(2)
+//            return Disposables.create()
+//        }
+//
+//        let disposable1 = observable.subscribe(onNext: { print("Sub1 received: \($0)") })
+//
+//        let disposable2 = observable.subscribe(onNext: { print("Sub2 received: \($0)") })
+//
+//        disposable1.dispose()
+//        disposable2.dispose()  // 这里所有订阅者断开，数据流被释放
+//
+//        let disposable3 = observable.subscribe(onNext: { print("Sub3 received: \($0)") }) // 重新订阅
+        
+        /**  不能共享数据流，即使之前的数据流没有释放
+         Observable created
+         Sub1 received: 1
+         Sub1 received: 2
+         Observable created
+         Sub2 received: 1
+         Sub2 received: 2
+         Observable created
+         Sub3 received: 1
+         Sub3 received: 2
+         */
+        
+        /// 如何正确共享数据流
+        let observable = Observable<Int>.create { observer in
+            print("Observable created")
+            observer.onNext(1)
+            observer.onNext(2)
+            return Disposables.create()
         }
+        .share(replay: 1, scope: .whileConnected)
 
-        let single = fetchData()
+        let disposable1 = observable.subscribe(onNext: { print("Sub1 received: \($0)") })
 
-        single.subscribe(onSuccess: { print("Sub1 received: \($0)") }).disposed(by: disposeBag)
-        single.subscribe(onSuccess: { print("Sub2 received: \($0)") }).disposed(by: disposeBag)
+        let disposable2 = observable.subscribe(onNext: { print("Sub2 received: \($0)") })
+
+        disposable1.dispose()
+        disposable2.dispose()  // 这里所有订阅者断开，数据流被释放
+
+        let disposable3 = observable.subscribe(onNext: { print("Sub3 received: \($0)") }) // 重新订阅
+
+        /**
+         Observable created
+         Sub1 received: 1
+         Sub1 received: 2
+         Sub2 received: 2   /// 可知 有订阅者时，共享了数据流
+         Observable created /// 可知 当没有订阅者后，数据流被释放
+         Sub3 received: 1
+         Sub3 received: 2
+         
+         如果 share(replay: 2, scope: .whileConnected) 即replay改为2 ，输出如下
+         Observable created
+         Sub1 received: 1
+         Sub1 received: 2
+         Sub2 received: 1
+         Sub2 received: 2
+         Observable created
+         Sub3 received: 1
+         Sub3 received: 2
+         */
+    }
+    
+    func testDriver() -> Void {
+        /// 单独数据流
+//        func fetchData() -> Single<Int> {
+//            return Single.create { single in
+//                print("Fetching data...") // 订阅者各自触发
+//                single(.success(Int.random(in: 1...100)))
+//                return Disposables.create()
+//            }
+//        }
+//
+//        let single = fetchData()
+//
+//        single.subscribe(onSuccess: { print("Sub1 received: \($0)") }).disposed(by: disposeBag)
+//        single.subscribe(onSuccess: { print("Sub2 received: \($0)") }).disposed(by: disposeBag)
 
         /**
          Fetching data...
@@ -531,19 +615,30 @@ extension RxSwiftViewController{
          */
         
         
+//        let sharedDriver = Driver.just(123456789)
+//        let disposable1 = sharedDriver.drive(onNext: { print("Sub1 received: \($0)") })
+//        let disposable2 = sharedDriver.drive(onNext: { print("Sub2 received: \($0)") })
+        
+        
+        
         
         /// 这个案例没有正确的共享数据流！！！
-//        let sharedDriver = Observable.create { (observer : AnyObserver<Int>) -> Disposable in
-//            print("Create Observable")
-//            observer.onNext(123456789)
-//            observer.onCompleted()
-//            return Disposables.create()
-//        }.asDriver(onErrorJustReturn: 0)  // 转换为 Driver
-//        
-//        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
-//        
-//        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
+        let sharedDriver = Observable.create { (observer : AnyObserver<Int>) -> Disposable in
+            print("Create Observable")
+            observer.onNext(123456789)
+            observer.onCompleted()
+            return Disposables.create()
+        }.asDriver(onErrorJustReturn: 0) // 转换为 Driver
+
+        let disposable1 = sharedDriver.drive(onNext: { print("Sub1 received: \($0)") })
+
+        let disposable2 = sharedDriver.drive(onNext: { print("Sub2 received: \($0)") })
         
+        disposable1.dispose()
+        disposable2.dispose()
+        
+        let disposable3 = sharedDriver.drive(onNext: { print("Sub3 received: \($0)") })
+
         /**
          Create Observable
          Sub1 received: 123456789
@@ -551,24 +646,13 @@ extension RxSwiftViewController{
          Sub2 received: 123456789
          */
         
-        /** 原因分析
-         代码中 sharedDriver 的创建方式是导致数据流未共享的主要原因。让我们详细分析一下原因：
+        /**
+         为什么 asDriver(onErrorJustReturn:) 无法共享数据流？
+         asDriver 并没有自动将 Observable 转换为共享的热流。asDriver 是通过将冷 Observable 转换为热 Driver，而热流的特性是多个订阅者共享同一个数据源，但它的实现并不直接处理数据流的共享。
 
-         问题分析
-         Observable.create 创建的是一个冷信号（Cold Observable），它每次被订阅时都会执行 create 闭包中的代码。因此，每次 drive 订阅 sharedDriver 时，都会重新执行 print("Create Observable")。
-
-         .asDriver(onErrorJustReturn: 0) 虽然将 Observable 转换为了 Driver，但它 不会 自动使 Observable 变成共享的 热信号（Hot Observable），而是 基于原始的 Observable 重新创建一个新的 Driver。
-
-         由于 asDriver 内部每次都会重新创建 Driver，它不会复用之前的数据流，因此 sharedDriver 每次 drive 时，都会触发 Observable.create 的闭包，导致 Create Observable 被打印两次。
-         
-         
-         
-         如何修复
-         要共享数据流，你需要在 Observable 转换为 Driver 之前，使其变成 热信号（Hot Observable），可以使用 share(replay: 1, scope: .whileConnected) 或 replay(1).refCount() 等方式：
-
-         # 经过验证 share(replay: 1, scope: .whileConnected)、replay(1).refCount() 都不行！！！！
-         
+         Driver 本身会对数据流进行某种缓存和共享，但对于 Observable.create 这种冷流，默认并不会自动实现共享。即每次drive时，都会执行create 闭包中的代码
          */
+        
         
 //        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
 //                print("Create Observable")
@@ -588,40 +672,19 @@ extension RxSwiftViewController{
           Create Observable
           Sub2 received: 123456789
           */
-        
-        
+
+        // MARK: 有效的方法 share(replay: 1, scope: .forever)
 //        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
 //                print("Create Observable")
 //                observer.onNext(123456789)
 //                observer.onCompleted()
 //                return Disposables.create()
 //            }
-//            .replay(1) // 缓存最后一个值
-//            .refCount() // 只有订阅者存在时才保持活动
-//            .asDriver(onErrorJustReturn: 0)
+//            .share(replay: 1, scope: .forever)  // 共享数据流，保持最新的值
+//            .asDriver(onErrorJustReturn: 0)  // 转换为 Driver
 //
 //        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
 //        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
-        
-        /**
-         Create Observable
-         Sub1 received: 123456789
-         Create Observable
-         Sub2 received: 123456789
-         */
-        
-        // MARK: 有效的方法 share(replay: 1, scope: .forever)
-        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
-                print("Create Observable")
-                observer.onNext(123456789)
-                observer.onCompleted()
-                return Disposables.create()
-            }
-            .share(replay: 1, scope: .forever)  // 共享数据流，保持最新的值
-            .asDriver(onErrorJustReturn: 0)  // 转换为 Driver
-
-        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
-        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
 
         /**
          Create Observable
@@ -630,6 +693,7 @@ extension RxSwiftViewController{
          */
         
     }
+    
     
     /**** 演示回放效果  ****/
     func testSharedSequenceReplay() -> Void {
@@ -3404,6 +3468,22 @@ extension RxSwiftViewController{
     }
     
     func rxShareReplay() -> Void {
+        /**
+         .whileConnected：这个作用域意味着，数据流会在有至少一个订阅者时保持活跃，而当最后一个订阅者取消订阅时，数据流会停止。这通常用于表示 短暂的共享，因此它会在订阅者断开时变为冷流。
+         .forever：这个作用域意味着，即使没有订阅者，数据流也会继续存在，直到被显式地停止。这通常表示 永久共享，因此它会保持热流，直到显式结束。
+         
+         热流 (Hot Stream) 和 冷流 (Cold Stream)
+         冷流 (Cold Observable)：每次有新的订阅者订阅时，它会重新执行其产生数据的过程。也就是说，每个订阅者会得到一个独立的数据流。
+         热流 (Hot Observable)：无论有多少个订阅者，它都会从同一个源流中接收数据，因此不会重新执行数据产生的过程。
+
+         share(replay: 1, scope: .forever) 和 share(replay: 1, scope: .whileConnected)
+         share 的作用是将冷流转换成热流，并控制其共享行为。它依赖于两个重要的参数：
+         replay: 1：表示缓存最后一个数据项，当新的订阅者订阅时，能接收到缓存的值。
+         scope：
+         .whileConnected：这个作用域意味着，数据流会在有至少一个订阅者时保持活跃，而当最后一个订阅者取消订阅时，数据流会停止。这通常用于表示 短暂的共享，因此它会在订阅者断开时变为冷流。
+         .forever：这个作用域意味着，即使没有订阅者，数据流也会继续存在，直到被显式地停止。这通常表示 永久共享，因此它会保持热流，直到显式结束。
+         */
+        
         /**
          shareReplay
          使观察者共享 Observable，观察者会立即收到最新的元素，即使这些元素是在订阅前产生的

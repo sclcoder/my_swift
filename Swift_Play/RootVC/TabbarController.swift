@@ -69,6 +69,8 @@ class TabbarController: UITabBarController {
            self.addChild(navVC)
         }
        
+       let rxSwiftVC = RxSwiftViewController()
+       configVC(rxSwiftVC, "RxSwift", "tab_settings", "tab_settings")
        
        let mvvmVC = UserListViewController()
        configVC(mvvmVC, "mvvm", "tab_home", "tab_home")
@@ -78,10 +80,6 @@ class TabbarController: UITabBarController {
        
        let homeVC = HomeViewController()
        configVC(homeVC, "Home", "tab_home", "tab_home")
-
-       
-       let rxSwiftVC = RxSwiftViewController()
-       configVC(rxSwiftVC, "RxSwift", "tab_settings", "tab_settings")
        
        let networkVC = NetworkViewController()
        configVC(networkVC, "Net", "tab_more", "tab_more")
