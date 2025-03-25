@@ -83,9 +83,9 @@ class RxSwiftViewController: UIViewController {
     
     func testSequence() -> Void {
         
-//        self.testSharedSequenceShare()
+        self.testSharedSequenceShare()
 
-        self.testDriver()
+//        self.testDriver()
         
 //        self.testSharedSequenceReplay()
     
@@ -539,7 +539,7 @@ extension RxSwiftViewController{
 //
 //        let disposable3 = observable.subscribe(onNext: { print("Sub3 received: \($0)") }) // 重新订阅
         
-        /**  不能共享数据流，即使之前的数据流没有释放
+        /**  不能共享数据流，即使之前的数据流没有释放,因为没有share
          Observable created
          Sub1 received: 1
          Sub1 received: 2
@@ -614,19 +614,11 @@ extension RxSwiftViewController{
          由2次输出 Fetching data... 可知是订阅者各自触发
          */
         
-        
-//        let sharedDriver = Driver.just(123456789)
-//        let disposable1 = sharedDriver.drive(onNext: { print("Sub1 received: \($0)") })
-//        let disposable2 = sharedDriver.drive(onNext: { print("Sub2 received: \($0)") })
-        
-        
-        
-        
-        /// 这个案例没有正确的共享数据流！！！
+        /// 共享数据流
         let sharedDriver = Observable.create { (observer : AnyObserver<Int>) -> Disposable in
             print("Create Observable")
             observer.onNext(123456789)
-            observer.onCompleted()
+            // observer.onCompleted()  // 如果添加onCompleted()调用，则不能共享数据流
             return Disposables.create()
         }.asDriver(onErrorJustReturn: 0) // 转换为 Driver
 
@@ -642,57 +634,44 @@ extension RxSwiftViewController{
         /**
          Create Observable
          Sub1 received: 123456789
-         Create Observable
          Sub2 received: 123456789
-         */
-        
-        /**
-         为什么 asDriver(onErrorJustReturn:) 无法共享数据流？
-         asDriver 并没有自动将 Observable 转换为共享的热流。asDriver 是通过将冷 Observable 转换为热 Driver，而热流的特性是多个订阅者共享同一个数据源，但它的实现并不直接处理数据流的共享。
-
-         Driver 本身会对数据流进行某种缓存和共享，但对于 Observable.create 这种冷流，默认并不会自动实现共享。即每次drive时，都会执行create 闭包中的代码
+         Create Observable
+         Sub3 received: 123456789
          */
         
         
-//        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
-//                print("Create Observable")
-//                observer.onNext(123456789)
-//                observer.onCompleted()
-//                return Disposables.create()
-//            }
-//            .share(replay: 1, scope: .whileConnected) // 使 Observable 变成共享的热信号
-//            .asDriver(onErrorJustReturn: 0)
-//
-//        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
-//        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
         
-         /**
-          Create Observable
-          Sub1 received: 123456789
-          Create Observable
-          Sub2 received: 123456789
-          */
-
-        // MARK: 有效的方法 share(replay: 1, scope: .forever)
-//        let sharedDriver = Observable.create { (observer: AnyObserver<Int>) -> Disposable in
-//                print("Create Observable")
-//                observer.onNext(123456789)
-//                observer.onCompleted()
-//                return Disposables.create()
-//            }
-//            .share(replay: 1, scope: .forever)  // 共享数据流，保持最新的值
-//            .asDriver(onErrorJustReturn: 0)  // 转换为 Driver
+        /// 错误案例，导致不能共享数据流 -  observer.onCompleted()会导致 Driver 不能共享数据流
+        /// 调用 observer.onCompleted() 后，Driver 不会再持有原来的 Observable，因此 新的订阅者会触发重新创建，导致 Create Observable 被多次打印。
+//        let sharedDriver = Observable.create { (observer : AnyObserver<Int>) -> Disposable in
+//            print("Create Observable")
+//            observer.onNext(123456789)
+//            observer.onCompleted()  // 如果添加onCompleted()调用，则不能共享数据流
+//            return Disposables.create()
+//        }.asDriver(onErrorJustReturn: 0) // 转换为 Driver
 //
-//        sharedDriver.drive(onNext: { print("Sub1 received: \($0)") }).disposed(by: self.bag)
-//        sharedDriver.drive(onNext: { print("Sub2 received: \($0)") }).disposed(by: self.bag)
-
+//        let disposable1 = sharedDriver.drive(onNext: { print("Sub1 received: \($0)") })
+//
+//        let disposable2 = sharedDriver.drive(onNext: { print("Sub2 received: \($0)") })
+//        
+//        disposable1.dispose()
+//        disposable2.dispose()
+//        
+//        let disposable3 = sharedDriver.drive(onNext: { print("Sub3 received: \($0)") })
+        
         /**
          Create Observable
          Sub1 received: 123456789
+         Create Observable
          Sub2 received: 123456789
+         Create Observable
+         Sub3 received: 123456789
          */
-        
+       
     }
+    
+    
+    
     
     
     /**** 演示回放效果  ****/
