@@ -552,22 +552,22 @@ extension RxSwiftViewController{
          */
         
         /// 如何正确共享数据流
-        let observable = Observable<Int>.create { observer in
-            print("Observable created")
-            observer.onNext(1)
-            observer.onNext(2)
-            return Disposables.create()
-        }
-        .share(replay: 1, scope: .whileConnected)
-
-        let disposable1 = observable.subscribe(onNext: { print("Sub1 received: \($0)") })
-
-        let disposable2 = observable.subscribe(onNext: { print("Sub2 received: \($0)") })
-
-        disposable1.dispose()
-        disposable2.dispose()  // 这里所有订阅者断开，数据流被释放
-
-        let disposable3 = observable.subscribe(onNext: { print("Sub3 received: \($0)") }) // 重新订阅
+//        let observable = Observable<Int>.create { observer in
+//            print("Observable created")
+//            observer.onNext(1)
+//            observer.onNext(2)
+//            return Disposables.create()
+//        }
+//        .share(replay: 1, scope: .whileConnected)
+//
+//        let disposable1 = observable.subscribe(onNext: { print("Sub1 received: \($0)") })
+//
+//        let disposable2 = observable.subscribe(onNext: { print("Sub2 received: \($0)") })
+//
+//        disposable1.dispose()
+//        disposable2.dispose()  // 这里所有订阅者断开，数据流被释放
+//
+//        let disposable3 = observable.subscribe(onNext: { print("Sub3 received: \($0)") }) // 重新订阅
 
         /**
          Observable created
@@ -588,6 +588,53 @@ extension RxSwiftViewController{
          Sub3 received: 1
          Sub3 received: 2
          */
+        
+        
+        // 错误共享数据流
+        let observable = Observable<Int>.create { observer in
+            print("Observable created")
+            observer.onNext(1)
+            observer.onNext(2)
+            observer.onCompleted() // ✅ 现在添加了 onCompleted()
+            return Disposables.create()
+        }
+        .share(replay: 1, scope: .whileConnected)
+
+        let disposable1 = observable.subscribe(onNext: { print("Sub1 received: \($0)") })
+
+        let disposable2 = observable.subscribe(onNext: { print("Sub2 received: \($0)") })
+
+        disposable1.dispose()
+        disposable2.dispose()  // 这里所有订阅者断开，数据流被释放
+
+        let disposable3 = observable.subscribe(onNext: { print("Sub3 received: \($0)") })
+        
+        /**
+         observer.onCompleted() 代表 Observable 数据流终止。
+         share(replay: 1, scope: .whileConnected) 仍然可以缓存 onNext(2)。
+         但由于 onCompleted()，当所有订阅者取消订阅后，数据流会被释放，新订阅者会触发 Observable 重新创建。
+         ## 注意： 不是 Observable.create {} 直接重新创建，而是 ShareReplay1WhileConnectedConnection 被释放后重新建立，进而触发 Observable.create {} 代码块重新执行。
+         
+         observer.onCompleted()会触发ShareReplay1WhileConnectedConnection内部调用synchronized_dispose
+         ShareReplay1WhileConnectedConnection - synchronized_dispose -  self.parent.connection = nil
+         即内部的observable被置空了，外部在下次订阅时，内部会创建新的内部observable（即self.parent.connection）
+         
+   
+         */
+        
+        /**
+         Observable created
+         Sub1 received: 1
+         Sub1 received: 2
+         Observable created
+         Sub2 received: 1
+         Sub2 received: 2
+         Observable created
+         Sub3 received: 1
+         Sub3 received: 2
+         */
+
+
     }
     
     func testDriver() -> Void {
