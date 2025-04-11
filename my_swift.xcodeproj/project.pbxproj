@@ -54,6 +54,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1863547F2DA8E42000647C12 /* CustomCodable.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = CustomCodable.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		18F3515A2CE713B80012EC85 /* RichTextEditorVeiwController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichTextEditorVeiwController.swift; sourceTree = "<group>"; };
 		18F3515C2CE715680012EC85 /* editor.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = editor.html; sourceTree = "<group>"; };
 		18F3515E2CE71ADF0012EC85 /* quill.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = quill.html; sourceTree = "<group>"; };
@@ -180,6 +181,7 @@
 		6012ABA529D875CB001F94A6 /* Coding */ = {
 			isa = PBXGroup;
 			children = (
+				1863547F2DA8E42000647C12 /* CustomCodable.playground */,
 				6012ABA629D875CB001F94A6 /* CodableViewController.swift */,
 				6012ABA729D875CB001F94A6 /* CodableViewController.xib */,
 			);

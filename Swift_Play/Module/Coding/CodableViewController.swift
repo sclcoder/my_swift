@@ -21,7 +21,9 @@ class CodableViewController: UIViewController {
 }
 
 
+
 extension CodableViewController{
+    
     func baseUse() -> Void {
         /// Codable 协议 https://juejin.cn/post/6971997599725256734
         struct Person: Codable {
@@ -35,6 +37,7 @@ extension CodableViewController{
             }
             
             init(from decoder: Decoder) throws {
+                // 标准库的 KeyedDecodingContainer，它们的本质都是包装了一层底层的「字典」结构，并提供了类型安全的 decode(_:forKey:) 接口，来按需取值。
                 let container = try decoder.container(keyedBy: CodingKeys.self)
                 firstName = try container.decode(String.self, forKey: .firstName)
 
@@ -219,4 +222,5 @@ extension CodableViewController{
         }
 
     }
+    
 }
