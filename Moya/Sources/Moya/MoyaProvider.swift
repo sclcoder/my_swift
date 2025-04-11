@@ -100,7 +100,7 @@ open class MoyaProvider<Target: TargetType>: MoyaProviderType {
     /**
       MoyaProvider的默认值
       endpointClosure： MoyaProvider.defaultEndpointMapping 该闭包创建EndPoint
-      requestClosure： MoyaProvider.defaultRequestMapping 该闭包创建(Result<URLRequest, MoyaError>)
+      requestClosure： MoyaProvider.defaultRequestMapping 该闭包内部执行EndPoint的方法，生成Request，并catch Error,创建(Result<URLRequest, MoyaError>)
       session：默认值是MoyaProvider<Target>.defaultAlamofireSession()，startRequestsImmediately的值是false
      */
     /// Initializes a provider.
@@ -209,8 +209,10 @@ public extension MoyaProvider {
 }
 
 /// A public function responsible for converting the result of a `URLRequest` to a Result<Moya.Response, MoyaError>.
-public func convertResponseToResult(_ response: HTTPURLResponse?, request: URLRequest?, data: Data?, error: Swift.Error?) ->
-    Result<Moya.Response, MoyaError> {
+public func convertResponseToResult(_ response: HTTPURLResponse?,
+                                    request: URLRequest?,
+                                    data: Data?,
+                                    error: Swift.Error?) -> Result<Moya.Response, MoyaError>{
         switch (response, data, error) {
         case let (.some(response), data, .none):
             let response = Moya.Response(statusCode: response.statusCode, data: data ?? Data(), request: request, response: response)

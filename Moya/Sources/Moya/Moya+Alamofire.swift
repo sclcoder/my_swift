@@ -122,10 +122,16 @@ final class MoyaRequestInterceptor: RequestInterceptor {
 
     /// 这个方法是要实现的Alamofire.RequestInterceptor中的协议。 Alamofire会调用MoyaRequestInterceptor中的这个方法
     func adapt(_ urlRequest: URLRequest, for session: Alamofire.Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        /// 调用Moay层设置的prepare回调
+        /**
+         func prepare(_ request: URLRequest, target: TargetType) -> URLRequest { request }
+         
+         func willSend(_ request: RequestType, target: TargetType) { }
+         */
+        
+        /// 调用Moay层设置的prepare回调， 注意: 这里为prepare传入的是Alamofire内部生成的URLRequest
         let request = prepare?(urlRequest) ?? urlRequest
         
-        /// 调用Moay层设置的willSend回调
+        /// 调用Moay层设置的willSend回调，注意: 这里为willSend传入的是prepare处理后的URLRequest
         willSend?(request)
         
         /// 将调整后的URLRequest传递出去

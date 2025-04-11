@@ -167,7 +167,7 @@ public extension MoyaProvider {
 private extension MoyaProvider {
     private func interceptor(target: Target) -> MoyaRequestInterceptor {
         return MoyaRequestInterceptor(prepare: { [weak self] urlRequest in
-            /// 这个闭包里会调用Plugins设置的prepare回调
+            /// 这个闭包里会调用Plugins设置的prepare回调。 MoyaRequestInterceptor.prepare接收参数urlRequest是URLRqeust类型，并且直接将其传递给了plugin的prepare方法
             return self?.plugins.reduce(urlRequest) { $1.prepare($0, target: target) } ?? urlRequest
        })
     }
@@ -175,7 +175,7 @@ private extension MoyaProvider {
     private func setup(interceptor: MoyaRequestInterceptor, with target: Target, and request: Request) {
         interceptor.willSend = { [weak self, weak request] urlRequest in
             guard let self = self, let request = request else { return }
-
+            /// willSend接收参数urlRequest是URLRqeust类型。但是在传递给plugin的willSend的是RequestTypeWrapper，内部包装了URLRqeust
             let stubbedAlamoRequest = RequestTypeWrapper(request: request, urlRequest: urlRequest)
             /// 这个闭包里会调用Plugins设置willSend的回调
             self.plugins.forEach { $0.willSend(stubbedAlamoRequest, target: target) }
