@@ -786,7 +786,100 @@ extension RxSwiftViewController{
      
      Subject 是 RxSwift 中的一个核心类型，既是 Observable，又是 Observer。
      常见的 Subject 类型包括 PublishSubject、BehaviorSubject、ReplaySubject 和 AsyncSubject，每种类型的行为不同，适用于不同的场景。
-     Subject 在 RxSwift 中扮演着桥梁和多播的角色，是连接命令式代码和响应式代码的重要工具。
+     Subject 在 RxSwift 中扮演着桥梁和多播的角色，是连接命令式代码和响应式代码的重要工具。\
+     
+     
+     
+     /**
+      1. 桥接非响应式代码与响应式链
+      问题：当需要将传统非响应式代码（如回调、用户输入、网络请求）接入 RxSwift 的响应式链时，需要一个既能接收外部事件，又能向订阅者发送事件的中间层。
+
+      解决：Subject 作为 Observer 可以接收外部事件（如 onNext），同时作为 Observable 将这些事件转发给订阅者。
+      示例：将按钮点击事件转换为 Observable：
+      */
+        let buttonTapSubject = PublishSubject<Void>()
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+
+        @objc func buttonTapped() {
+            buttonTapSubject.onNext(())
+        }
+
+        buttonTapSubject.subscribe(onNext: { print("Button tapped") })
+     
+     
+     2. 动态注入事件
+     问题：普通的 Observable 通常是静态的（创建后事件序列固定），但某些场景需要运行时动态添加事件（如用户交互、实时数据更新）。
+
+     解决：Subject 允许通过 onNext、onError、onCompleted 手动控制事件流。
+     示例：实时搜索框输入：
+     let searchSubject = PublishSubject<String>()
+     searchSubject
+         .debounce(.milliseconds(300), scheduler: MainScheduler.instance)
+         .subscribe(onNext: { query in print("Searching: \(query)") })
+
+     searchTextField.rx.text
+         .compactMap { $0 }
+         .bind(to: searchSubject)
+     
+     
+     3. 多播（Multicast）
+     问题：普通的 Observable 是单播的（每个订阅重新执行序列），但某些场景需要多个订阅者共享同一事件源（如网络请求结果共享）。
+
+     解决：Subject 可以作为中间代理，将事件广播给所有订阅者。结合 multicast 操作符使用更高效。
+     示例：共享网络请求结果：
+     let responseSubject = ReplaySubject<Data>(bufferSize: 1)
+     let request = URLSession.shared.rx.data(request: urlRequest)
+         .subscribe(onNext: { data in
+             responseSubject.onNext(data)
+         })
+
+     responseSubject.subscribe(onNext: { data in print("Subscriber 1: \(data)") })
+     responseSubject.subscribe(onNext: { data in print("Subscriber 2: \(data)") })
+     
+     
+     4. 状态管理（如 BehaviorSubject）
+     问题：需要维护和传递当前状态（如用户登录状态、界面数据缓存），新订阅者需要立即获取最新值。
+
+     解决：BehaviorSubject 保存最近一个值，并在订阅时立即发送给订阅者。
+     示例：用户登录状态管理：
+
+     let userState = BehaviorSubject<User?>(value: nil)
+     // 登录成功后更新状态
+     login().subscribe(onSuccess: { user in
+         userState.onNext(user)
+     })
+
+     // 订阅者总能获取当前状态
+     userState.subscribe(onNext: { user in
+         print("Current user: \(user?.name ?? "nil")")
+     })
+     
+     5. 错误与完成事件的集中处理
+     问题：需要统一处理错误或完成事件（如终止多个订阅）。
+
+     解决：通过 Subject 发送 onError 或 onCompleted 可同时终止所有订阅。
+     示例：全局错误处理：
+     let errorSubject = PublishSubject<Error>()
+
+     errorSubject.subscribe(onNext: { error in
+         showAlert("Error: \(error.localizedDescription)")
+     })
+
+     networkRequest().catch { error in
+         errorSubject.onNext(error)
+         return .empty()
+     }
+     
+     
+     常见 Subject 类型及适用场景
+     类型    特点    典型场景
+     PublishSubject    仅发送订阅后的事件，无初始值。    用户交互事件（按钮点击、输入）。
+     BehaviorSubject    保存最新值，新订阅者立即接收它。    状态管理（如当前用户、界面数据）。
+     ReplaySubject    缓存指定数量的事件，新订阅者重放它们。    需要历史数据的场景（如日志）。
+     AsyncSubject    仅在 onCompleted 时发送最后一个事件（不常用）。    需要最终结果的异步操作。
+    
+     总结
+     Subject 的核心目的是提供一种 灵活的事件桥接机制，解决非响应式代码接入、动态事件注入、多播共享、状态管理等问题。它是 RxSwift 中连接命令式世界与响应式世界的关键组件。
      */
     
     
