@@ -54,6 +54,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		186263A52DAE2FDD0031F385 /* RxSwift.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = RxSwift.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		1863547F2DA8E42000647C12 /* CustomCodable.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = CustomCodable.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		18F3515A2CE713B80012EC85 /* RichTextEditorVeiwController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichTextEditorVeiwController.swift; sourceTree = "<group>"; };
 		18F3515C2CE715680012EC85 /* editor.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = editor.html; sourceTree = "<group>"; };
@@ -164,6 +165,7 @@
 		6012AB9B29D86F2F001F94A6 /* RxSwift */ = {
 			isa = PBXGroup;
 			children = (
+				186263A52DAE2FDD0031F385 /* RxSwift.playground */,
 				6012AB9C29D8701F001F94A6 /* RxSwiftViewController.swift */,
 				6012AB9D29D87020001F94A6 /* RxSwiftViewController.xib */,
 			);

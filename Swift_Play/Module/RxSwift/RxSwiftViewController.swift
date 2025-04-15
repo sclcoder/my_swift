@@ -34,7 +34,7 @@ class RxSwiftViewController: UIViewController {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
+        rxOf()
 //        testSubject()
 //        testRelay()
 //        testOperations()
@@ -48,7 +48,7 @@ class RxSwiftViewController: UIViewController {
 //        debugOperator()
         
         // 特征序列 Single、Completable、Maybe     Driver、Signal 、ControlEvent
-        testSequence()
+//        testSequence()
         
         
 //        testObserver()
