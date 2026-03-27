@@ -43,11 +43,39 @@ Moya/                   # Moya + RxMoya 本地源码（local pod）
 
 | 库 | 说明 |
 |---|---|
-| **Alamofire** (local pod) | HTTP 网络库，本地源码引入便于学习 |
-| **Moya / Moya+RxSwift** (local pod) | 基于 Alamofire 的网络抽象层 |
+| **Alamofire** (local pod) | HTTP 网络库，本地源码引入并附有大量中文注释 |
+| **Moya / Moya+RxSwift** (local pod) | 基于 Alamofire 的网络抽象层，同样附有详细中文注释 |
 | **RxSwift / RxCocoa** | 响应式编程框架 |
 | **SnapKit** | Auto Layout DSL |
 | **Toast-Swift / PKHUD / ProgressHUD** | HUD 与 Toast 提示 |
+
+## 源码注释
+
+本项目对本地引入的 Alamofire 和 Moya 源码添加了大量**中文注释**，适合用于学习框架内部实现：
+
+### Alamofire 注释覆盖
+
+Session、Request、SessionDelegate、Protected、ParameterEncoding/Encoder、HTTPMethod、HTTPHeaders、AFError 等核心文件，涵盖：
+
+- 框架初始化与 Session 配置流程
+- 队列管理（DispatchQueue / OperationQueue / target queue）
+- 请求生命周期与状态管理（@Protected 线程安全）
+- 多线程安全机制（竞态条件、锁同步）
+- ParameterEncoding vs ParameterEncoder 设计演进
+- 相关 Swift 语言特性（闭包、可选项、属性包装器等）
+
+### Moya 注释覆盖
+
+MoyaProvider、MoyaProvider+Internal、Endpoint、Response、Task、TargetType、ValidationType 等文件，涵盖：
+
+- Endpoint 抽象层设计与自定义
+- 请求完整流程（Endpoint → stub → URLRequest → Plugin 链）
+- Stub/Mock 测试机制
+- Task 枚举 9 种变体及使用场景
+- Plugin 插件的 reduce 处理模式
+- 相关 Swift 语言特性（关联值、模式匹配、RangeExpression 等）
+
+> RxMoya 部分暂无中文注释。
 
 ## 网络层示例（MVVM 模块）
 

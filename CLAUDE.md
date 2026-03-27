@@ -45,7 +45,31 @@ The app is a tab-based UIKit application (`TabbarController` → `NavigationCont
 - **SnapKit** — Auto Layout DSL
 - **Toast-Swift**, **PKHUD**, **ProgressHUD** — HUD/toast UI
 
-Alamofire and Moya are included as local pods for source-level study. The local copies may diverge from upstream releases.
+Alamofire and Moya are included as local pods，并添加了大量中文源码注释，用于深入学习框架内部实现。
+
+### Alamofire 中文注释覆盖范围
+
+已注释的核心文件：Session.swift、Request.swift、SessionDelegate.swift、Protected.swift、ParameterEncoding.swift、ParameterEncoder.swift、HTTPMethod.swift、HTTPHeaders.swift、AFError.swift。注释内容包括：
+
+- 框架初始化与配置流程（Session 创建）
+- 队列管理机制（DispatchQueue / OperationQueue、target queue）
+- 请求生命周期与状态管理（Request 状态流转、@Protected 线程安全包装）
+- 多线程与线程安全（竞态条件、锁同步、URLSession 回调线程）
+- 协议设计对比（ParameterEncoding vs ParameterEncoder 的演进）
+- Swift 语言特性说明（闭包、可选项、属性包装器、标识符规则等，附官方文档链接）
+
+### Moya 中文注释覆盖范围
+
+已注释的文件：MoyaProvider.swift、MoyaProvider+Internal.swift、Endpoint.swift、Response.swift、Task.swift、TargetType.swift、ValidationType.swift、URL+Moya.swift、Moya+Alamofire.swift。注释内容包括：
+
+- Endpoint 抽象层设计（URL / method / task / headers 的组装与自定义）
+- 请求完整流程（requestNormal 构建 Endpoint → stub 判断 → URLRequest 生成 → Plugin 处理）
+- Stub/Mock 机制（开发与测试场景下的 stub 用法）
+- Task 枚举的 9 种变体及使用场景
+- Plugin 插件链的 reduce 处理模式
+- Swift 语言特性（关联值、模式匹配、RangeExpression 协议、协议属性要求等）
+
+> RxMoya 部分暂无中文注释。
 
 ### Networking pattern
 
